@@ -1,1 +1,2 @@
-export type Screen = 'home' | 'dashboard';
+export type Screen = 'home' | 'dashboard' | 'music' | 'radio';
+export type MainScreen = 'home' | 'dashboard';

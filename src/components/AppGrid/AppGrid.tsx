@@ -1,7 +1,9 @@
 import type { ReactNode } from 'react';
 import { AppIcon } from '../AppIcon/AppIcon';
 import { CalendarGlyph } from '../AppIcon/CalendarGlyph';
-import { VehicleFallbackGlyph } from '../AppIcon/VehicleFallbackGlyph';
+import { BrandLogoGlyph } from '../AppIcon/BrandLogoGlyph';
+import { NotificationGlyph } from '../AppIcon/NotificationGlyph';
+import { MessageGlyph } from '../AppIcon/MessageGlyph';
 import type { AppDefinition } from '../../data/apps';
 import type { TruckBrand } from '../../data/truckBrands';
 import './AppGrid.css';
@@ -42,12 +44,12 @@ export function AppGrid({
 
         if (app.id === 'kalender') {
           renderGlyph = () => <CalendarGlyph />;
+        } else if (app.id === 'mitteilungen') {
+          renderGlyph = () => <NotificationGlyph />;
+        } else if (app.id === 'nachrichten') {
+          renderGlyph = () => <MessageGlyph />;
         } else if (app.id === 'fahrzeug') {
-          if (currentTruckBrand.logo) {
-            icon = currentTruckBrand.logo;
-          } else {
-            renderGlyph = () => <VehicleFallbackGlyph brandName={currentTruckBrand.name} />;
-          }
+          renderGlyph = () => <BrandLogoGlyph brand={currentTruckBrand} />;
         }
 
         return (

@@ -1,6 +1,6 @@
 import { chromium } from 'playwright';
 
-const url = process.argv[2] ?? 'http://localhost:5174/';
+const url = process.argv[2] ?? 'http://localhost:5173/';
 const outPath = process.argv[3] ?? 'comparacoes/dashboard.png';
 
 const browser = await chromium.launch();

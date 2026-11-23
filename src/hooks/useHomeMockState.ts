@@ -4,12 +4,17 @@ import { truckBrands } from '../data/truckBrands';
 
 const MOCK_BADGE_CYCLE = [0, 1, 2, 5];
 
+interface UseHomeMockStateOptions {
+  onOpenMusic: () => void;
+  onOpenRadio: () => void;
+}
+
 /**
  * Mock/demo state for the Home shortcuts that need it (badges, marca do
  * veículo). Lives above HomeScreen (in Shell) so it survives switching to
  * the Dashboard and back — only the edit-mode UI itself resets per visit.
  */
-export function useHomeMockState() {
+export function useHomeMockState({ onOpenMusic, onOpenRadio }: UseHomeMockStateOptions) {
   const [badgeCounts, setBadgeCounts] = useState<Record<string, number>>({
     mitteilungen: 0,
     nachrichten: 2,
@@ -26,6 +31,14 @@ export function useHomeMockState() {
   };
 
   const handleOpenApp = (app: AppDefinition) => {
+    if (app.id === 'spotify') {
+      onOpenMusic();
+      return;
+    }
+    if (app.id === 'radio') {
+      onOpenRadio();
+      return;
+    }
     if (app.id === 'fahrzeug') {
       setTruckBrandIndex((index) => (index + 1) % truckBrands.length);
       return;
@@ -34,9 +47,8 @@ export function useHomeMockState() {
       cycleBadge(app.id);
       return;
     }
-    // Fase 2: nenhuma outra tela/app foi implementada ainda — apenas o
-    // feedback de toque (ver AppIcon) acontece, sem navegar para telas
-    // inventadas.
+    // Nenhuma outra tela/app foi implementada ainda — apenas o feedback de
+    // toque (ver AppIcon) acontece, sem navegar para telas inventadas.
     console.info(`[NeoBladeConnectOS] "${app.label}" ainda não implementado.`);
   };
 

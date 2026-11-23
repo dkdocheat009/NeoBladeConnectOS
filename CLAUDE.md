@@ -11,9 +11,16 @@
 
 Reproduzida a Home Screen (1280×720): papel de parede, dock lateral, relógio/status, grade de apps, ícones, legendas, paginação e interações básicas de toque. Textos preservados como na captura original (inclusive alemão), sem tradução nesta fase.
 
-## Fase 2 (atual) — ajustes da Home + Dashboard
+## Fase 2 (concluída) — ajustes da Home + Dashboard
 
-- Home: legendas dos aplicativos traduzidas para português (lista fixa definida na tarefa da fase); Google Maps e Spotify preservados. Alinhamento do bloco de status do dock corrigido. Badges de Mensagens/Notificações são elementos reais, controlados por estado mock (não mais desenhados na imagem do ícone). Calendário mostra data real do sistema em português. Veículo tem seleção mock de marca (Scania real; demais marcas sem asset local usam fallback neutro — ver limitações no README). Legendas sem fundos/sombras inconsistentes.
+- Home: legendas dos aplicativos traduzidas para português (lista fixa definida na tarefa da fase); Google Maps e Spotify preservados. Badges de Mensagens/Notificações são elementos reais, controlados por estado mock. Calendário mostra data real do sistema em português. Veículo tem seleção mock de marca. Legendas sem fundos/sombras inconsistentes.
 - Home ganha um modo de edição estilo iPhone: pressionar e segurar (~600 ms) ativa jiggle + botão de remover atalho (apenas o atalho, não o app); remoção persiste em `localStorage`; há um jeito simples de restaurar atalhos removidos; clique curto continua funcionando normalmente. O dock lateral é fixo e não entra no modo de edição.
 - Nova tela de **Dashboard** (estilo CarPlay, modo escuro), acessível pelo botão inferior do dock (alterna com a Home). Painel de mapa e cartões (navegação, player de música) são uma representação visual de demonstração com dados mock — não há integração real de mapa/GPS/telemetria.
-- Não avançar para outras telas/apps além de Home e Dashboard nesta fase.
+- Pendências identificadas ao final da Fase 2 (corrigidas na Fase 3): ícones de Mensagens/Notificações com retângulo claro visível no canto (artefato do recorte com badge removido); apenas a marca Scania tinha logo real (demais marcas usavam fallback); alinhamento do bloco de status do dock não era estruturalmente robusto a mudanças de hora.
+
+## Fase 3 (atual) — correções da Fase 2 + Música e Rádio
+
+- Corrigidos os 3 defeitos acima: ícones de Notificações/Mensagens reconstruídos do zero em SVG (sem asset recortado, sem retângulo residual); as 7 marcas de veículo pedidas (Scania, Volvo, Mercedes-Benz, DAF, MAN, Iveco, Renault Trucks) têm logo real e verificável (ver README para origem/licença de cada arquivo); `StatusBar` reestruturado (grid com padding único) para alinhamento consistente em qualquer horário.
+- Novas telas **Música** (reproduz `de/music.png`/`en/music.png`) e **Rádio** (reproduz `de/radio.png`/`en/radio.png`), abertas a partir do app/atalho correspondente na Home ou no dock, com botão de voltar para Home/Dashboard. Estado de reprodução de Música é compartilhado entre a tela cheia e o cartão do Dashboard. Rádio usa estações/categorias 100% fictícias (sem emissoras reais). Controles sem efeito real (ex.: "Letra"/"Fila" da tela Música) ficam documentados no README, não escondidos.
+- Home, Dashboard e o modo de edição por pressionar-e-segurar foram preservados sem alterações de comportamento além das correções listadas acima.
+- Não avançar para outras telas/apps além de Home, Dashboard, Música e Rádio nesta fase; sem GPS/TruckSimMap/telemetria real.

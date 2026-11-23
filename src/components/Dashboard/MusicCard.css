@@ -1,6 +1,7 @@
 .music-card {
   position: relative;
   flex: 1;
+  width: 100%;
   border-radius: 24px;
   background: linear-gradient(160deg, #3a7bd5 0%, #2b4fb0 45%, #2a1f6e 100%);
   border: 1px solid rgba(255, 255, 255, 0.1);
@@ -11,6 +12,9 @@
   padding: 28px 28px 24px;
   box-sizing: border-box;
   overflow: hidden;
+  cursor: pointer;
+  font: inherit;
+  text-align: center;
 }
 
 .music-card__art {

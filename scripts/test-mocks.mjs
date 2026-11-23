@@ -2,7 +2,7 @@ import { chromium } from 'playwright';
 
 const browser = await chromium.launch();
 const page = await browser.newPage({ viewport: { width: 1280, height: 720 } });
-await page.goto('http://localhost:5174/', { waitUntil: 'networkidle' });
+await page.goto('http://localhost:5173/', { waitUntil: 'networkidle' });
 
 // Badge cycling: Notificações starts at 0 (no badge), click cycles to 1.
 console.log('badges before:', await page.locator('.badge').allTextContents());

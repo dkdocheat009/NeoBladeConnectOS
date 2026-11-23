@@ -4,8 +4,11 @@ import { Wallpaper } from '../Wallpaper/Wallpaper';
 import { Dock } from '../Dock/Dock';
 import { HomeScreen } from '../HomeScreen/HomeScreen';
 import { DashboardScreen } from '../Dashboard/DashboardScreen';
+import { MusicScreen } from '../Music/MusicScreen';
+import { RadioScreen } from '../Radio/RadioScreen';
 import { useHomeMockState } from '../../hooks/useHomeMockState';
-import type { Screen } from '../../types';
+import { useMusicPlayerState } from '../../hooks/useMusicPlayerState';
+import type { MainScreen, Screen } from '../../types';
 import './Shell.css';
 
 const slideVariants = {
@@ -16,15 +19,49 @@ const slideVariants = {
 
 export function Shell() {
   const [screen, setScreen] = useState<Screen>('home');
+  const [mainScreen, setMainScreen] = useState<MainScreen>('home');
   const [direction, setDirection] = useState(1);
-  const { badgeCounts, currentTruckBrand, handleOpenApp } = useHomeMockState();
+  const player = useMusicPlayerState();
 
-  const toggleScreen = () => {
+  const openMusic = () => {
+    setDirection(1);
+    setScreen('music');
+  };
+  const openRadio = () => {
+    setDirection(1);
+    setScreen('radio');
+  };
+
+  const { badgeCounts, currentTruckBrand, handleOpenApp } = useHomeMockState({
+    onOpenMusic: openMusic,
+    onOpenRadio: openRadio,
+  });
+
+  const backToMain = () => {
+    setDirection(-1);
+    setScreen(mainScreen);
+  };
+
+  // Botão inferior do dock: a partir de Música/Rádio volta direto para a
+  // Home; na Home abre o Dashboard; no Dashboard volta para a Home.
+  const handleDockButton = () => {
+    if (screen === 'music' || screen === 'radio') {
+      setDirection(-1);
+      setMainScreen('home');
+      setScreen('home');
+      return;
+    }
+    const next: MainScreen = screen === 'home' ? 'dashboard' : 'home';
     setDirection(screen === 'home' ? -1 : 1);
-    setScreen((current) => (current === 'home' ? 'dashboard' : 'home'));
+    setMainScreen(next);
+    setScreen(next);
   };
 
   const handleActivateShortcut = (id: string) => {
+    if (id === 'dock-spotify') {
+      openMusic();
+      return;
+    }
     console.info(`[NeoBladeConnectOS] atalho "${id}" ainda não implementado.`);
   };
 
@@ -43,22 +80,23 @@ export function Shell() {
           exit="exit"
           transition={{ duration: 0.26, ease: 'easeInOut' }}
         >
-          {screen === 'home' ? (
+          {screen === 'home' && (
             <HomeScreen
               badgeCounts={badgeCounts}
               currentTruckBrand={currentTruckBrand}
               onActivateApp={handleOpenApp}
             />
-          ) : (
-            <DashboardScreen />
           )}
+          {screen === 'dashboard' && <DashboardScreen player={player} onOpenMusic={openMusic} />}
+          {screen === 'music' && <MusicScreen player={player} onBack={backToMain} />}
+          {screen === 'radio' && <RadioScreen onBack={backToMain} />}
         </motion.div>
       </AnimatePresence>
 
       <Dock
         screen={screen}
         onActivateShortcut={handleActivateShortcut}
-        onToggleScreen={toggleScreen}
+        onToggleScreen={handleDockButton}
       />
     </div>
   );
