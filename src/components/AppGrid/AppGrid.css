@@ -1,0 +1,9 @@
+.app-grid {
+  position: absolute;
+  inset: 0;
+}
+
+.app-grid__slot {
+  position: absolute;
+  transform: translateX(-50%);
+}

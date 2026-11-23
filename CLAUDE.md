@@ -1,0 +1,9 @@
+# NeoBladeConnectOS — regras do projeto
+
+- Projeto novo. Objetivo: reproduzir **com a maior fidelidade visual possível** as capturas fornecidas em `referencias/Fotos/bilder/`, no estilo Apple CarPlay. A referência tem prioridade sobre qualquer preferência estética do agente.
+- **Fase 1 somente:** reproduza `referencias/Fotos/bilder/home.png` (1280×720): papel de parede, dock lateral, relógio/status, grade de apps, ícones, legendas, paginação e interações de Home. Preserve inicialmente os textos/ícones visíveis na imagem (inclusive alemão), sem traduzir, improvisar ou adicionar elementos.
+- Tecnologias: React + TypeScript + Vite, CSS preciso e Motion apenas onde uma transição for necessária. Componentes reais em HTML/CSS; **não** use a captura completa como fundo da interface. Use assets adequados quando a licença permitir.
+- Não desenvolver GPS, TruckSimMap, telemetria ETS2, backend, plugins do simulador nem os outros aplicativos nesta fase. Um clique em aplicativo ainda não implementado não deve exibir uma tela inventada.
+- Use a skill `.claude/skills/fidelidade-visual/SKILL.md`. Meça e compare com a imagem original na viewport **1280×720**. Teste `npm run build` e a navegação visual no navegador com Playwright; corrija os desvios antes de considerar concluído. Não afirme “100% idêntico” sem evidência visual.
+- Adicione instruções mínimas de execução ao `README.md`; mantenha código limpo, sem dependências/plugins desnecessários. Referências (`referencias/` e `foto.zip`) são somente locais e **não** devem ser publicadas no repositório público.
+- Ao concluir a Fase 1, faça commit e push dos **arquivos de código** para `https://github.com/dkdocheat009/NeoBladeConnectOS` (`main`), verificando antes que `origin` corresponde a esse repositório. Se houver impedimento de autenticação ou divergência remota, informe sem forçar alterações. Resuma o que está pronto e o que falta para alcançar maior fidelidade.

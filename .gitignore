@@ -1,0 +1,12 @@
+node_modules/
+dist/
+.env
+.env.*
+!.env.example
+referencias/
+imagens/
+TAREFA_CLAUDE.txt
+foto.zip
+comparacoes/
+playwright-report/
+test-results/

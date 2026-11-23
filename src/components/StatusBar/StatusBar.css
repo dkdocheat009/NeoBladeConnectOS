@@ -1,0 +1,31 @@
+.status-bar {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  padding: 10px 0 0 13px;
+}
+
+.status-bar__clock {
+  font-size: 25px;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: 0.2px;
+  line-height: 1;
+}
+
+.status-bar__signal {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.status-bar__network {
+  font-size: 15px;
+  font-weight: 600;
+  color: #fff;
+}
+
+.status-bar__battery {
+  margin-top: 2px;
+}
