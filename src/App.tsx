@@ -1,10 +1,10 @@
 import { Stage } from './components/Stage/Stage';
-import { HomeScreen } from './components/HomeScreen/HomeScreen';
+import { Shell } from './components/Shell/Shell';
 
 function App() {
   return (
     <Stage>
-      <HomeScreen />
+      <Shell />
     </Stage>
   );
 }

@@ -1,31 +1,54 @@
-import { Wallpaper } from '../Wallpaper/Wallpaper';
-import { Dock } from '../Dock/Dock';
+import { useState } from 'react';
 import { AppGrid } from '../AppGrid/AppGrid';
 import { Pagination } from '../Pagination/Pagination';
+import { EditModeBar } from '../EditModeBar/EditModeBar';
 import { homeApps, type AppDefinition } from '../../data/apps';
+import type { TruckBrand } from '../../data/truckBrands';
+import { useRemovedApps } from '../../hooks/useRemovedApps';
 import './HomeScreen.css';
 
-export function HomeScreen() {
-  // Fase 1: nenhum app/tela foi implementado ainda. Um toque apenas
-  // reproduz o feedback visual de toque, sem navegar para telas inventadas.
-  const handleOpenApp = (app: AppDefinition) => {
-    console.info(`[NeoBladeConnectOS] "${app.label}" ainda não implementado.`);
-  };
+interface HomeScreenProps {
+  badgeCounts: Record<string, number>;
+  currentTruckBrand: TruckBrand;
+  onActivateApp: (app: AppDefinition) => void;
+}
 
-  const handleActivateShortcut = (id: string) => {
-    console.info(`[NeoBladeConnectOS] atalho "${id}" ainda não implementado.`);
-  };
+export function HomeScreen({ badgeCounts, currentTruckBrand, onActivateApp }: HomeScreenProps) {
+  const [editing, setEditing] = useState(false);
+  const { removedIds, removeApp, restoreAll } = useRemovedApps();
 
-  const handleHome = () => {
-    // já estamos na Home; não há outras telas na Fase 1.
-  };
+  const visibleApps = homeApps.filter((app) => !removedIds.includes(app.id));
 
   return (
-    <div className="home-screen">
-      <Wallpaper />
-      <Dock onActivateShortcut={handleActivateShortcut} onHome={handleHome} />
-      <AppGrid apps={homeApps} onOpenApp={handleOpenApp} />
-      <Pagination />
+    <div className="home-content">
+      {editing && (
+        <button
+          type="button"
+          className="home-content__scrim"
+          aria-label="Sair do modo de edição"
+          onClick={() => setEditing(false)}
+        />
+      )}
+
+      <AppGrid
+        apps={visibleApps}
+        editing={editing}
+        badgeCounts={badgeCounts}
+        currentTruckBrand={currentTruckBrand}
+        onActivateApp={onActivateApp}
+        onLongPress={() => setEditing(true)}
+        onRemoveApp={removeApp}
+      />
+
+      {editing ? (
+        <EditModeBar
+          removedCount={removedIds.length}
+          onRestoreAll={restoreAll}
+          onDone={() => setEditing(false)}
+        />
+      ) : (
+        <Pagination />
+      )}
     </div>
   );
 }

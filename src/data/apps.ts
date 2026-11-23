@@ -1,29 +1,32 @@
 import googleMaps from '../assets/icons/google-maps.png';
 import spotify from '../assets/icons/spotify.png';
 import radio from '../assets/icons/radio.png';
-import fahrzeug from '../assets/icons/fahrzeug.png';
 import auftrag from '../assets/icons/auftrag.png';
-import mitteilungen from '../assets/icons/mitteilungen.png';
-import nachrichten from '../assets/icons/nachrichten.png';
+import mitteilungen from '../assets/icons/mitteilungen-clean.png';
+import nachrichten from '../assets/icons/nachrichten-clean.png';
 import tankenRasten from '../assets/icons/tanken-rasten.png';
 import fahrtenbuch from '../assets/icons/fahrtenbuch.png';
-import kalender from '../assets/icons/kalender.png';
 
 export interface AppDefinition {
   id: string;
   label: string;
-  icon: string;
+  /** Static icon image. Omitted for apps rendered with a dynamic glyph (see AppGrid). */
+  icon?: string;
 }
 
+// Legendas traduzidas para português (Fase 2). Google Maps e Spotify são
+// nomes de marca e foram preservados. Ícones são recortes da referência
+// local; mitteilungen/nachrichten usam versões "limpas" (sem badge
+// desenhado) — o badge real é renderizado como elemento independente.
 export const homeApps: AppDefinition[] = [
   { id: 'google-maps', label: 'Google Maps', icon: googleMaps },
   { id: 'spotify', label: 'Spotify', icon: spotify },
-  { id: 'radio', label: 'Radio', icon: radio },
-  { id: 'fahrzeug', label: 'Fahrzeug', icon: fahrzeug },
-  { id: 'auftrag', label: 'Auftrag', icon: auftrag },
-  { id: 'mitteilungen', label: 'Mitteilungen', icon: mitteilungen },
-  { id: 'nachrichten', label: 'Nachrichten', icon: nachrichten },
-  { id: 'tanken-rasten', label: 'Tanken & Rasten', icon: tankenRasten },
-  { id: 'fahrtenbuch', label: 'Fahrtenbuch', icon: fahrtenbuch },
-  { id: 'kalender', label: 'Kalender', icon: kalender },
+  { id: 'radio', label: 'Rádio', icon: radio },
+  { id: 'fahrzeug', label: 'Veículo' }, // ícone dinâmico: marca selecionada (ver AppGrid)
+  { id: 'auftrag', label: 'Trabalho', icon: auftrag },
+  { id: 'mitteilungen', label: 'Notificações', icon: mitteilungen },
+  { id: 'nachrichten', label: 'Mensagens', icon: nachrichten },
+  { id: 'tanken-rasten', label: 'Abastecer e Descansar', icon: tankenRasten },
+  { id: 'fahrtenbuch', label: 'Diário de Bordo', icon: fahrtenbuch },
+  { id: 'kalender', label: 'Calendário' }, // ícone dinâmico: data do sistema (ver AppGrid)
 ];

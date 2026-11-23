@@ -1,7 +1,13 @@
-.home-screen {
-  position: relative;
-  width: 1280px;
-  height: 720px;
-  overflow: hidden;
-  background: #000;
+.home-content {
+  position: absolute;
+  inset: 0;
+}
+
+.home-content__scrim {
+  position: absolute;
+  inset: 0;
+  border: none;
+  background: transparent;
+  padding: 0;
+  cursor: default;
 }

@@ -1,0 +1,15 @@
+.dashboard {
+  position: absolute;
+  inset: 0;
+}
+
+.dashboard__side {
+  position: absolute;
+  left: 872px;
+  top: 12px;
+  width: 396px;
+  height: 696px;
+  display: flex;
+  flex-direction: column;
+  gap: 13px;
+}

@@ -1,0 +1,30 @@
+.edit-bar {
+  position: absolute;
+  left: 50%;
+  bottom: 22px;
+  transform: translateX(calc(-50% + 58px));
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.edit-bar__pill {
+  border: none;
+  border-radius: 16px;
+  padding: 8px 18px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.edit-bar__pill--primary {
+  background: #0a84ff;
+  color: #fff;
+}
+
+.edit-bar__pill--ghost {
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+}

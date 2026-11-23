@@ -4,32 +4,74 @@
   align-items: center;
   gap: 8px;
   width: max-content;
-  background: none;
-  border: none;
-  padding: 0;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
+}
+
+.app-icon__glyph-wrap {
+  position: relative;
+  width: 96px;
+  height: 96px;
 }
 
 .app-icon__glyph {
   width: 96px;
   height: 96px;
   display: block;
+  cursor: pointer;
   filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.35));
+}
+
+.app-icon__glyph img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  pointer-events: none;
+}
+
+.app-icon__glyph--jiggle {
+  animation: app-icon-jiggle 0.26s ease-in-out infinite;
+}
+
+@keyframes app-icon-jiggle {
+  0%,
+  100% {
+    transform: rotate(-1.3deg);
+  }
+  50% {
+    transform: rotate(1.3deg);
+  }
+}
+
+.app-icon__remove {
+  position: absolute;
+  top: -6px;
+  left: -6px;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: 2px solid rgba(10, 18, 36, 0.9);
+  background: #3a3d42;
+  color: #fff;
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.35);
 }
 
 .app-icon__label {
   display: inline-block;
   max-width: 160px;
-  padding: 3px 10px;
-  border-radius: 8px;
-  background: rgba(8, 18, 36, 0.45);
   color: #fff;
   font-size: 15px;
   font-weight: 600;
   line-height: 20px;
   letter-spacing: 0.1px;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.55);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;

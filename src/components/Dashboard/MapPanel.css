@@ -1,0 +1,119 @@
+.map-panel {
+  position: absolute;
+  left: 128px;
+  top: 12px;
+  width: 732px;
+  height: 696px;
+  border-radius: 24px;
+  overflow: hidden;
+  background: #07192f;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.4);
+}
+
+.map-panel__art {
+  position: absolute;
+  inset: 0;
+  display: block;
+}
+
+.map-panel__route {
+  filter: drop-shadow(0 0 6px rgba(47, 217, 232, 0.55));
+}
+
+.map-panel__badge {
+  position: absolute;
+  padding: 3px 9px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #fff;
+  background: #1f6fd6;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+}
+
+.map-panel__speed {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  background: rgba(8, 16, 30, 0.55);
+  border-radius: 20px;
+  padding: 6px;
+}
+
+.map-panel__sign {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: #fff;
+  border: 5px solid #e01f27;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.map-panel__sign span {
+  font-size: 18px;
+  font-weight: 800;
+  color: #111;
+}
+
+.map-panel__speed-now {
+  min-width: 76px;
+  padding: 4px 12px;
+  border-radius: 14px;
+  background: rgba(10, 14, 26, 0.65);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  line-height: 1.05;
+}
+
+.map-panel__speed-value {
+  font-size: 22px;
+  font-weight: 800;
+  color: #fff;
+}
+
+.map-panel__speed-unit {
+  font-size: 11px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.map-panel__eta {
+  position: absolute;
+  left: 16px;
+  right: 16px;
+  bottom: 16px;
+  height: 56px;
+  border-radius: 28px;
+  background: rgba(8, 14, 26, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  padding: 0 26px;
+}
+
+.map-panel__eta-time {
+  font-size: 18px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.map-panel__eta-duration {
+  font-size: 17px;
+  font-weight: 700;
+  color: #3ddc73;
+}
+
+.map-panel__eta-distance {
+  font-size: 17px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.85);
+}

@@ -1,0 +1,28 @@
+.calendar-glyph {
+  width: 96px;
+  height: 96px;
+  border-radius: 21px;
+  background: #ffffff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 13px;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.calendar-glyph__weekday {
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 18px;
+  letter-spacing: 0.3px;
+  color: #ff3b30;
+}
+
+.calendar-glyph__day {
+  font-size: 42px;
+  font-weight: 600;
+  line-height: 46px;
+  color: #1c1c1e;
+  margin-top: -2px;
+}

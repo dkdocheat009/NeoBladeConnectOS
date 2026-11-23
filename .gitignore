@@ -5,7 +5,7 @@ dist/
 !.env.example
 referencias/
 imagens/
-TAREFA_CLAUDE.txt
+TAREFA_CLAUDE*.txt
 foto.zip
 comparacoes/
 playwright-report/

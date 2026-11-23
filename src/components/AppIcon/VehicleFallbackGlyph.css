@@ -1,0 +1,20 @@
+.vehicle-fallback {
+  position: relative;
+  width: 96px;
+  height: 96px;
+  border-radius: 21px;
+  background: linear-gradient(160deg, #3a4150, #20242e);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+}
+
+.vehicle-fallback__initial {
+  position: absolute;
+  bottom: 10px;
+  right: 12px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #c3cad6;
+}

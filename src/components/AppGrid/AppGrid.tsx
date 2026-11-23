@@ -1,5 +1,9 @@
+import type { ReactNode } from 'react';
 import { AppIcon } from '../AppIcon/AppIcon';
+import { CalendarGlyph } from '../AppIcon/CalendarGlyph';
+import { VehicleFallbackGlyph } from '../AppIcon/VehicleFallbackGlyph';
 import type { AppDefinition } from '../../data/apps';
+import type { TruckBrand } from '../../data/truckBrands';
 import './AppGrid.css';
 
 const COLUMNS = 5;
@@ -8,10 +12,23 @@ const ROW_TOPS = [171, 363];
 
 interface AppGridProps {
   apps: AppDefinition[];
-  onOpenApp: (app: AppDefinition) => void;
+  editing: boolean;
+  badgeCounts: Record<string, number>;
+  currentTruckBrand: TruckBrand;
+  onActivateApp: (app: AppDefinition) => void;
+  onLongPress: () => void;
+  onRemoveApp: (id: string) => void;
 }
 
-export function AppGrid({ apps, onOpenApp }: AppGridProps) {
+export function AppGrid({
+  apps,
+  editing,
+  badgeCounts,
+  currentTruckBrand,
+  onActivateApp,
+  onLongPress,
+  onRemoveApp,
+}: AppGridProps) {
   return (
     <div className="app-grid">
       {apps.map((app, index) => {
@@ -19,12 +36,32 @@ export function AppGrid({ apps, onOpenApp }: AppGridProps) {
         const row = Math.floor(index / COLUMNS);
         const left = COLUMN_CENTERS[col];
         const top = ROW_TOPS[row];
+
+        let icon = app.icon;
+        let renderGlyph: (() => ReactNode) | undefined;
+
+        if (app.id === 'kalender') {
+          renderGlyph = () => <CalendarGlyph />;
+        } else if (app.id === 'fahrzeug') {
+          if (currentTruckBrand.logo) {
+            icon = currentTruckBrand.logo;
+          } else {
+            renderGlyph = () => <VehicleFallbackGlyph brandName={currentTruckBrand.name} />;
+          }
+        }
+
         return (
           <div key={app.id} className="app-grid__slot" style={{ left, top }}>
             <AppIcon
               label={app.label}
-              icon={app.icon}
-              onActivate={() => onOpenApp(app)}
+              icon={icon}
+              renderGlyph={renderGlyph}
+              badgeCount={badgeCounts[app.id]}
+              editing={editing}
+              onActivate={() => onActivateApp(app)}
+              onLongPress={onLongPress}
+              onRemove={() => onRemoveApp(app.id)}
+              jiggleDelay={(index % 2) * -0.12}
             />
           </div>
         );

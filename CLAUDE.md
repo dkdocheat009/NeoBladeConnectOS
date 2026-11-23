@@ -1,9 +1,19 @@
 # NeoBladeConnectOS — regras do projeto
 
-- Projeto novo. Objetivo: reproduzir **com a maior fidelidade visual possível** as capturas fornecidas em `referencias/Fotos/bilder/`, no estilo Apple CarPlay. A referência tem prioridade sobre qualquer preferência estética do agente.
-- **Fase 1 somente:** reproduza `referencias/Fotos/bilder/home.png` (1280×720): papel de parede, dock lateral, relógio/status, grade de apps, ícones, legendas, paginação e interações de Home. Preserve inicialmente os textos/ícones visíveis na imagem (inclusive alemão), sem traduzir, improvisar ou adicionar elementos.
-- Tecnologias: React + TypeScript + Vite, CSS preciso e Motion apenas onde uma transição for necessária. Componentes reais em HTML/CSS; **não** use a captura completa como fundo da interface. Use assets adequados quando a licença permitir.
-- Não desenvolver GPS, TruckSimMap, telemetria ETS2, backend, plugins do simulador nem os outros aplicativos nesta fase. Um clique em aplicativo ainda não implementado não deve exibir uma tela inventada.
-- Use a skill `.claude/skills/fidelidade-visual/SKILL.md`. Meça e compare com a imagem original na viewport **1280×720**. Teste `npm run build` e a navegação visual no navegador com Playwright; corrija os desvios antes de considerar concluído. Não afirme “100% idêntico” sem evidência visual.
-- Adicione instruções mínimas de execução ao `README.md`; mantenha código limpo, sem dependências/plugins desnecessários. Referências (`referencias/` e `foto.zip`) são somente locais e **não** devem ser publicadas no repositório público.
-- Ao concluir a Fase 1, faça commit e push dos **arquivos de código** para `https://github.com/dkdocheat009/NeoBladeConnectOS` (`main`), verificando antes que `origin` corresponde a esse repositório. Se houver impedimento de autenticação ou divergência remota, informe sem forçar alterações. Resuma o que está pronto e o que falta para alcançar maior fidelidade.
+- Projeto novo. Objetivo: reproduzir **com a maior fidelidade visual possível** as capturas fornecidas (localmente, fora do repositório público), no estilo Apple CarPlay. A referência tem prioridade sobre qualquer preferência estética do agente.
+- Tecnologias: React + TypeScript + Vite, CSS preciso e Motion apenas onde uma transição for necessária. Componentes reais em HTML/CSS; **não** use a captura completa como fundo da interface. Use assets adequados quando a licença permitir; nunca invente uma logo/marca quando faltar um asset — registre a pendência e use um fallback neutro.
+- Não desenvolver GPS, TruckSimMap, telemetria ETS2, backend, plugins do simulador nem outros aplicativos além do combinado em cada fase. Um clique em aplicativo/tela ainda não implementado não deve exibir algo inventado.
+- Use a skill `.claude/skills/fidelidade-visual/SKILL.md`. Meça e compare com a imagem original na viewport **1280×720**. Teste `npm run build`, `npm run lint` e a navegação visual no navegador com Playwright; corrija os desvios antes de considerar concluído. Não afirme “100% idêntico” sem evidência visual.
+- Adicione instruções mínimas de execução ao `README.md`; mantenha código limpo, sem dependências/plugins desnecessários. Imagens de referência e arquivos de captura são somente locais e **não** devem ser publicadas no repositório público (ver `.gitignore`).
+- Ao concluir cada fase, faça commit e push dos **arquivos de código** para `https://github.com/dkdocheat009/NeoBladeConnectOS` (`main`), verificando antes que `origin` corresponde a esse repositório. Se houver impedimento de autenticação ou divergência remota, informe sem forçar alterações. Resuma o que está pronto, o que foi testado e quais limitações visuais ainda existem.
+
+## Fase 1 (concluída)
+
+Reproduzida a Home Screen (1280×720): papel de parede, dock lateral, relógio/status, grade de apps, ícones, legendas, paginação e interações básicas de toque. Textos preservados como na captura original (inclusive alemão), sem tradução nesta fase.
+
+## Fase 2 (atual) — ajustes da Home + Dashboard
+
+- Home: legendas dos aplicativos traduzidas para português (lista fixa definida na tarefa da fase); Google Maps e Spotify preservados. Alinhamento do bloco de status do dock corrigido. Badges de Mensagens/Notificações são elementos reais, controlados por estado mock (não mais desenhados na imagem do ícone). Calendário mostra data real do sistema em português. Veículo tem seleção mock de marca (Scania real; demais marcas sem asset local usam fallback neutro — ver limitações no README). Legendas sem fundos/sombras inconsistentes.
+- Home ganha um modo de edição estilo iPhone: pressionar e segurar (~600 ms) ativa jiggle + botão de remover atalho (apenas o atalho, não o app); remoção persiste em `localStorage`; há um jeito simples de restaurar atalhos removidos; clique curto continua funcionando normalmente. O dock lateral é fixo e não entra no modo de edição.
+- Nova tela de **Dashboard** (estilo CarPlay, modo escuro), acessível pelo botão inferior do dock (alterna com a Home). Painel de mapa e cartões (navegação, player de música) são uma representação visual de demonstração com dados mock — não há integração real de mapa/GPS/telemetria.
+- Não avançar para outras telas/apps além de Home e Dashboard nesta fase.
