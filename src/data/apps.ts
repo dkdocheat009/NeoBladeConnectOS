@@ -27,4 +27,5 @@ export const homeApps: AppDefinition[] = [
   { id: 'tanken-rasten', label: 'Abastecer e Descansar', icon: tankenRasten },
   { id: 'fahrtenbuch', label: 'Diário de Bordo', icon: fahrtenbuch },
   { id: 'kalender', label: 'Calendário' }, // ícone dinâmico: data do sistema (ver AppGrid)
+  { id: 'esportes', label: 'Esportes' }, // ícone SVG (ver AppGrid) — Fase 4
 ];

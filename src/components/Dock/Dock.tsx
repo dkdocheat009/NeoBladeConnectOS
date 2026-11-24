@@ -1,46 +1,117 @@
+import type { ReactNode } from 'react';
 import { motion } from 'motion/react';
 import { StatusBar } from '../StatusBar/StatusBar';
+import { BrandLogoGlyph } from '../AppIcon/BrandLogoGlyph';
+import { EsportesGlyph } from '../AppIcon/EsportesGlyph';
 import dockMaps from '../../assets/icons/dock-maps.png';
 import dockSpotify from '../../assets/icons/dock-spotify.png';
 import dockSettings from '../../assets/icons/dock-settings.png';
 import dockWeather from '../../assets/icons/dock-weather.png';
+import radioIcon from '../../assets/icons/radio.png';
+import auftragIcon from '../../assets/icons/auftrag.png';
 import type { Screen } from '../../types';
+import type { TruckBrand } from '../../data/truckBrands';
 import './Dock.css';
-
-const DOCK_SHORTCUTS = [
-  { id: 'dock-maps', icon: dockMaps, label: 'Google Maps' },
-  { id: 'dock-spotify', icon: dockSpotify, label: 'Spotify' },
-  { id: 'dock-settings', icon: dockSettings, label: 'Einstellungen' },
-  { id: 'dock-weather', icon: dockWeather, label: 'Wetter' },
-];
 
 const SHORTCUT_TOPS = [231, 303, 375, 447];
 
+// Apps que, quando abertos, assumem o 4º slot (contextual) do dock em vez
+// do Clima padrão — reproduz o comportamento visto nas referências
+// (fahrzeug.png, de/job.png, de/sports.png): o dock sempre mostra 4
+// ícones, e o 4º reflete o app atualmente aberto, com um ponto indicador.
+const CONTEXTUAL_SCREENS: Screen[] = ['radio', 'veiculo', 'trabalho', 'esportes'];
+
 interface DockProps {
   screen: Screen;
+  currentTruckBrand: TruckBrand;
+  onOpenScreen: (screen: Screen) => void;
   onActivateShortcut: (id: string) => void;
   onToggleScreen: () => void;
 }
 
-export function Dock({ screen, onActivateShortcut, onToggleScreen }: DockProps) {
+export function Dock({
+  screen,
+  currentTruckBrand,
+  onOpenScreen,
+  onActivateShortcut,
+  onToggleScreen,
+}: DockProps) {
+  const isContextual = CONTEXTUAL_SCREENS.includes(screen);
+  const slot4Target: Screen = isContextual ? screen : 'clima';
+  const slot4Active = isContextual || screen === 'clima';
+  const slot2Active = screen === 'music';
+
+  let slot4Content: ReactNode;
+  let slot4Label = 'Clima';
+  if (screen === 'radio') {
+    slot4Content = <img src={radioIcon} alt="" draggable={false} />;
+    slot4Label = 'Rádio';
+  } else if (screen === 'veiculo') {
+    slot4Content = <BrandLogoGlyph brand={currentTruckBrand} size={61} />;
+    slot4Label = 'Veículo';
+  } else if (screen === 'trabalho') {
+    slot4Content = <img src={auftragIcon} alt="" draggable={false} />;
+    slot4Label = 'Trabalho';
+  } else if (screen === 'esportes') {
+    slot4Content = <EsportesGlyph size={61} />;
+    slot4Label = 'Esportes';
+  } else {
+    slot4Content = <img src={dockWeather} alt="" draggable={false} />;
+  }
+
   return (
     <div className="dock">
       <StatusBar />
 
-      {DOCK_SHORTCUTS.map((shortcut, index) => (
-        <motion.button
-          key={shortcut.id}
-          type="button"
-          className="dock__shortcut"
-          style={{ top: SHORTCUT_TOPS[index] }}
-          aria-label={shortcut.label}
-          whileTap={{ scale: 0.88 }}
-          transition={{ type: 'spring', stiffness: 500, damping: 20 }}
-          onClick={() => onActivateShortcut(shortcut.id)}
-        >
-          <img src={shortcut.icon} alt={shortcut.label} draggable={false} />
-        </motion.button>
-      ))}
+      <motion.button
+        type="button"
+        className="dock__shortcut"
+        style={{ top: SHORTCUT_TOPS[0] }}
+        aria-label="Google Maps"
+        whileTap={{ scale: 0.88 }}
+        transition={{ type: 'spring', stiffness: 500, damping: 20 }}
+        onClick={() => onActivateShortcut('dock-maps')}
+      >
+        <img src={dockMaps} alt="" draggable={false} />
+      </motion.button>
+
+      <motion.button
+        type="button"
+        className="dock__shortcut"
+        style={{ top: SHORTCUT_TOPS[1] }}
+        aria-label="Spotify"
+        whileTap={{ scale: 0.88 }}
+        transition={{ type: 'spring', stiffness: 500, damping: 20 }}
+        onClick={() => onOpenScreen('music')}
+      >
+        <img src={dockSpotify} alt="" draggable={false} />
+      </motion.button>
+      {slot2Active && <span className="dock__dot" style={{ top: SHORTCUT_TOPS[1] + 30 }} />}
+
+      <motion.button
+        type="button"
+        className="dock__shortcut"
+        style={{ top: SHORTCUT_TOPS[2] }}
+        aria-label="Configurações"
+        whileTap={{ scale: 0.88 }}
+        transition={{ type: 'spring', stiffness: 500, damping: 20 }}
+        onClick={() => onActivateShortcut('dock-settings')}
+      >
+        <img src={dockSettings} alt="" draggable={false} />
+      </motion.button>
+
+      <motion.button
+        type="button"
+        className="dock__shortcut"
+        style={{ top: SHORTCUT_TOPS[3] }}
+        aria-label={slot4Label}
+        whileTap={{ scale: 0.88 }}
+        transition={{ type: 'spring', stiffness: 500, damping: 20 }}
+        onClick={() => onOpenScreen(slot4Target)}
+      >
+        {slot4Content}
+      </motion.button>
+      {slot4Active && <span className="dock__dot" style={{ top: SHORTCUT_TOPS[3] + 30 }} />}
 
       <motion.button
         type="button"

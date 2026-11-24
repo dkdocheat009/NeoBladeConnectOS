@@ -4,13 +4,14 @@ import { CalendarGlyph } from '../AppIcon/CalendarGlyph';
 import { BrandLogoGlyph } from '../AppIcon/BrandLogoGlyph';
 import { NotificationGlyph } from '../AppIcon/NotificationGlyph';
 import { MessageGlyph } from '../AppIcon/MessageGlyph';
+import { EsportesGlyph } from '../AppIcon/EsportesGlyph';
 import type { AppDefinition } from '../../data/apps';
 import type { TruckBrand } from '../../data/truckBrands';
 import './AppGrid.css';
 
 const COLUMNS = 5;
 const COLUMN_CENTERS = [248, 473, 698, 923, 1148];
-const ROW_TOPS = [171, 363];
+const ROW_TOPS = [171, 363, 540];
 
 interface AppGridProps {
   apps: AppDefinition[];
@@ -50,6 +51,8 @@ export function AppGrid({
           renderGlyph = () => <MessageGlyph />;
         } else if (app.id === 'fahrzeug') {
           renderGlyph = () => <BrandLogoGlyph brand={currentTruckBrand} />;
+        } else if (app.id === 'esportes') {
+          renderGlyph = () => <EsportesGlyph />;
         }
 
         return (

@@ -6,7 +6,7 @@ const errors = [];
 page.on('pageerror', (e) => errors.push(String(e)));
 page.on('console', (m) => { if (m.type() === 'error') errors.push(m.text()); });
 
-await page.goto('http://localhost:5173/', { waitUntil: 'networkidle' });
+await page.goto('http://localhost:5174/', { waitUntil: 'networkidle' });
 
 // Open Music from Home
 await page.getByText('Spotify', { exact: true }).click();

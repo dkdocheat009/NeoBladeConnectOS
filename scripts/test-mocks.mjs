@@ -2,7 +2,7 @@ import { chromium } from 'playwright';
 
 const browser = await chromium.launch();
 const page = await browser.newPage({ viewport: { width: 1280, height: 720 } });
-await page.goto('http://localhost:5173/', { waitUntil: 'networkidle' });
+await page.goto('http://localhost:5174/', { waitUntil: 'networkidle' });
 
 // Badge cycling: Notificações starts at 0 (no badge), click cycles to 1.
 console.log('badges before:', await page.locator('.badge').allTextContents());
@@ -10,12 +10,9 @@ await page.getByText('Notificações', { exact: true }).click();
 await page.waitForTimeout(150);
 console.log('badges after 1 click on Notificações:', await page.locator('.badge').allTextContents());
 
-// Brand cycling: click Veículo repeatedly, capture alt text/label state via aria on img.
-for (let i = 0; i < 3; i++) {
-  await page.getByText('Veículo', { exact: true }).click();
-  await page.waitForTimeout(120);
-}
-await page.screenshot({ path: 'comparacoes/vehicle_fallback.png' });
+// Nota: a partir da Fase 4, clicar em "Veículo" abre o app Veículo (a troca
+// de marca agora acontece dentro dele, aba "Cavalo Mecânico") — coberto em
+// scripts/test-fase4-apps.mjs, não mais aqui.
 
 // Navigate to Dashboard via dock bottom button.
 await page.locator('.dock__home').click();

@@ -4,7 +4,7 @@
   top: 12px;
   width: 103px;
   height: 695px;
-  border-radius: 51.5px;
+  border-radius: 26px;
   background: rgba(14, 24, 42, 0.5);
   backdrop-filter: blur(18px);
   -webkit-backdrop-filter: blur(18px);
@@ -29,6 +29,17 @@
   height: 100%;
   display: block;
   filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.3));
+}
+
+.dock__dot {
+  position: absolute;
+  left: 9px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #ffffff;
+  transform: translateY(-50%);
+  box-shadow: 0 0 2px rgba(255, 255, 255, 0.6);
 }
 
 .dock__home {

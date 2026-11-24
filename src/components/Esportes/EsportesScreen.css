@@ -1,0 +1,268 @@
+.esportes-screen {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(130% 130% at 10% 0%, #1c2550 0%, #0e1230 55%, #07081c 100%);
+  overflow: hidden;
+}
+
+.esportes-screen__sidebar {
+  position: absolute;
+  left: 143px;
+  top: 24px;
+  bottom: 24px;
+  width: 210px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  overflow-y: auto;
+}
+
+.esportes-screen__league {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border: none;
+  background: rgba(255, 255, 255, 0.05);
+  color: rgba(255, 255, 255, 0.75);
+  font-size: 15px;
+  font-weight: 700;
+  padding: 10px 14px;
+  border-radius: 14px;
+  cursor: pointer;
+  text-align: left;
+}
+
+.esportes-screen__league.is-active {
+  background: rgba(255, 255, 255, 0.16);
+  color: #fff;
+}
+
+.esportes-screen__league-code {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 800;
+  color: #fff;
+  flex-shrink: 0;
+}
+
+.esportes-screen__main {
+  position: absolute;
+  left: 380px;
+  right: 24px;
+  top: 24px;
+  bottom: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.esportes-screen__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.esportes-screen__title {
+  margin: 0;
+  font-size: 30px;
+  font-weight: 800;
+  color: #fff;
+}
+
+.esportes-screen__matchday {
+  font-size: 14px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.esportes-screen__grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  overflow-y: auto;
+}
+
+.esportes-screen__match {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  border: none;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 16px;
+  padding: 14px 18px;
+  cursor: pointer;
+  text-align: left;
+}
+
+.esportes-screen__team {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+  min-width: 0;
+}
+
+.esportes-screen__team span {
+  color: #fff;
+  font-size: 14px;
+  font-weight: 700;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.esportes-screen__team--away {
+  justify-content: flex-end;
+  text-align: right;
+}
+
+.esportes-screen__score-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  flex-shrink: 0;
+}
+
+.esportes-screen__score {
+  font-size: 22px;
+  font-weight: 800;
+  color: #fff;
+}
+
+.esportes-screen__status {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.45);
+  white-space: nowrap;
+}
+
+.esportes-screen__table {
+  display: flex;
+  flex-direction: column;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.05);
+  overflow: hidden;
+}
+
+.esportes-screen__table-head,
+.esportes-screen__table-row {
+  display: grid;
+  grid-template-columns: 2fr 0.5fr 0.5fr 0.5fr 0.5fr 0.5fr 0.5fr;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px;
+  font-size: 14px;
+}
+
+.esportes-screen__table-head {
+  color: rgba(255, 255, 255, 0.45);
+  font-weight: 700;
+  font-size: 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.esportes-screen__table-row {
+  color: rgba(255, 255, 255, 0.8);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.esportes-screen__table-club {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #fff;
+  font-weight: 700;
+}
+
+.esportes-screen__table-pos {
+  display: none;
+}
+
+.esportes-screen__table-pts {
+  font-weight: 800;
+  color: #fff;
+}
+
+.esportes-screen__overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.esportes-screen__detail {
+  width: 460px;
+  background: #171b33;
+  border-radius: 22px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  padding: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.esportes-screen__detail-teams {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.esportes-screen__detail-team {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+}
+
+.esportes-screen__detail-team span {
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+  text-align: center;
+}
+
+.esportes-screen__detail-score {
+  font-size: 28px;
+  font-weight: 800;
+  color: #fff;
+  padding: 0 12px;
+}
+
+.esportes-screen__detail-status {
+  margin: 0;
+  text-align: center;
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 14px;
+}
+
+.esportes-screen__detail-scorers {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 14px;
+}
+
+.esportes-screen__detail-close {
+  align-self: center;
+  border: none;
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 700;
+  padding: 10px 24px;
+  border-radius: 16px;
+  cursor: pointer;
+}

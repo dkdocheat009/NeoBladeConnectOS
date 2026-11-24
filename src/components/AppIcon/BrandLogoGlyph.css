@@ -1,13 +1,9 @@
 .brand-logo-card {
-  width: 96px;
-  height: 96px;
-  border-radius: 21px;
   background: #ffffff;
   display: flex;
   align-items: center;
   justify-content: center;
   box-sizing: border-box;
-  padding: 16px;
 }
 
 .brand-logo-card img {

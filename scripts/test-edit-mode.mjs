@@ -2,7 +2,7 @@ import { chromium } from 'playwright';
 
 const browser = await chromium.launch();
 const page = await browser.newPage({ viewport: { width: 1280, height: 720 } });
-await page.goto('http://localhost:5173/', { waitUntil: 'networkidle' });
+await page.goto('http://localhost:5174/', { waitUntil: 'networkidle' });
 
 const mapsIcon = page.getByText('Google Maps', { exact: true });
 const box = await mapsIcon.boundingBox();

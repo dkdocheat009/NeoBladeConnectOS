@@ -7,6 +7,9 @@ const MOCK_BADGE_CYCLE = [0, 1, 2, 5];
 interface UseHomeMockStateOptions {
   onOpenMusic: () => void;
   onOpenRadio: () => void;
+  onOpenVeiculo: () => void;
+  onOpenTrabalho: () => void;
+  onOpenEsportes: () => void;
 }
 
 /**
@@ -14,7 +17,13 @@ interface UseHomeMockStateOptions {
  * veículo). Lives above HomeScreen (in Shell) so it survives switching to
  * the Dashboard and back — only the edit-mode UI itself resets per visit.
  */
-export function useHomeMockState({ onOpenMusic, onOpenRadio }: UseHomeMockStateOptions) {
+export function useHomeMockState({
+  onOpenMusic,
+  onOpenRadio,
+  onOpenVeiculo,
+  onOpenTrabalho,
+  onOpenEsportes,
+}: UseHomeMockStateOptions) {
   const [badgeCounts, setBadgeCounts] = useState<Record<string, number>>({
     mitteilungen: 0,
     nachrichten: 2,
@@ -30,6 +39,10 @@ export function useHomeMockState({ onOpenMusic, onOpenRadio }: UseHomeMockStateO
     });
   };
 
+  const cycleTruckBrand = () => {
+    setTruckBrandIndex((index) => (index + 1) % truckBrands.length);
+  };
+
   const handleOpenApp = (app: AppDefinition) => {
     if (app.id === 'spotify') {
       onOpenMusic();
@@ -40,7 +53,15 @@ export function useHomeMockState({ onOpenMusic, onOpenRadio }: UseHomeMockStateO
       return;
     }
     if (app.id === 'fahrzeug') {
-      setTruckBrandIndex((index) => (index + 1) % truckBrands.length);
+      onOpenVeiculo();
+      return;
+    }
+    if (app.id === 'auftrag') {
+      onOpenTrabalho();
+      return;
+    }
+    if (app.id === 'esportes') {
+      onOpenEsportes();
       return;
     }
     if (app.id === 'mitteilungen' || app.id === 'nachrichten') {
@@ -55,6 +76,7 @@ export function useHomeMockState({ onOpenMusic, onOpenRadio }: UseHomeMockStateO
   return {
     badgeCounts,
     currentTruckBrand: truckBrands[truckBrandIndex],
+    cycleTruckBrand,
     handleOpenApp,
   };
 }

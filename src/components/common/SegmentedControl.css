@@ -1,0 +1,24 @@
+.segmented {
+  display: inline-flex;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 18px;
+  padding: 3px;
+  gap: 2px;
+}
+
+.segmented__option {
+  border: none;
+  background: none;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 14px;
+  font-weight: 700;
+  padding: 7px 16px;
+  border-radius: 15px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.segmented__option.is-active {
+  background: rgba(255, 255, 255, 0.92);
+  color: #1c1c1e;
+}

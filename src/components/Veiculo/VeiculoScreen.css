@@ -1,0 +1,201 @@
+.veiculo-screen {
+  position: absolute;
+  inset: 0;
+}
+
+.veiculo-screen__panel {
+  position: absolute;
+  top: 12px;
+  bottom: 12px;
+  border-radius: 24px;
+  background: linear-gradient(160deg, #142033 0%, #0c1626 60%, #0a1322 100%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.4);
+  box-sizing: border-box;
+  padding: 28px 32px;
+  overflow: hidden;
+}
+
+.veiculo-screen__overview {
+  left: 128px;
+  width: 564px;
+  display: flex;
+  flex-direction: column;
+}
+
+.veiculo-screen__right {
+  left: 705px;
+  right: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+.veiculo-screen__speed {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-top: 36px;
+}
+
+.veiculo-screen__speed-value {
+  font-size: 90px;
+  font-weight: 800;
+  color: #fff;
+  line-height: 1;
+}
+
+.veiculo-screen__speed-unit {
+  font-size: 22px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.veiculo-screen__meta-row {
+  display: flex;
+  gap: 48px;
+  margin-top: 26px;
+}
+
+.veiculo-screen__meta-row > div {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.veiculo-screen__meta-label {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.4px;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.veiculo-screen__meta-value {
+  font-size: 22px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.veiculo-screen__gauges {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 40px;
+}
+
+.veiculo-screen__badges {
+  display: flex;
+  gap: 10px;
+  margin-top: 24px;
+  flex-wrap: wrap;
+}
+
+.veiculo-screen__pill {
+  padding: 6px 12px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.veiculo-screen__pill.is-on {
+  background: rgba(52, 199, 89, 0.22);
+  color: #34c759;
+}
+
+.veiculo-screen__footer-row {
+  margin-top: auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.veiculo-screen__model {
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.veiculo-screen__right-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.veiculo-screen__right-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.veiculo-screen__bars {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.veiculo-screen__cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.veiculo-screen__brand {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.veiculo-screen__brand-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.veiculo-screen__brand-name {
+  font-size: 22px;
+  font-weight: 800;
+  color: #fff;
+}
+
+.veiculo-screen__brand-model {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.veiculo-screen__brand .veiculo-screen__cards {
+  width: 100%;
+}
+
+.veiculo-screen__trailer-name {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.veiculo-screen__empty {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 16px;
+}
+
+.veiculo-screen__action {
+  align-self: center;
+  border: none;
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 700;
+  padding: 10px 18px;
+  border-radius: 16px;
+  cursor: pointer;
+}

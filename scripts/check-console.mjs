@@ -8,7 +8,7 @@ page.on('console', (msg) => {
   if (msg.type() === 'error') errors.push(msg.text());
 });
 
-await page.goto('http://localhost:5173/', { waitUntil: 'networkidle' });
+await page.goto('http://localhost:5174/', { waitUntil: 'networkidle' });
 await page.locator('.dock__home').click();
 await page.waitForTimeout(400);
 await page.locator('.music-card__play').click();

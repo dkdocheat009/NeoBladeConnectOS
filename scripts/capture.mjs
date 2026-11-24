@@ -1,7 +1,7 @@
 import { chromium } from 'playwright';
 import { mkdirSync } from 'node:fs';
 
-const url = process.argv[2] ?? 'http://localhost:5173/';
+const url = process.argv[2] ?? 'http://localhost:5174/';
 const outPath = process.argv[3] ?? 'comparacoes/atual.png';
 
 mkdirSync('comparacoes', { recursive: true });
