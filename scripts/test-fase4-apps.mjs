@@ -63,9 +63,14 @@ await page.locator('.back-button').click();
 await page.waitForTimeout(300);
 
 // --- ESPORTES ---
+// Fase 5: Brasileirão/Champions (dados reais) carregam por padrão; o modo
+// "Demonstração" (ligas fictícias, inalteradas desde a Fase 4) é selecionado
+// explicitamente para testar jogos/tabela/detalhe sem depender de API key.
 await page.getByText('Esportes', { exact: true }).click();
 await page.waitForTimeout(500);
 console.log('[esportes] screen open:', await page.locator('.esportes-screen').count());
+await page.locator('.esportes-screen__league', { hasText: 'Liga Nacional' }).first().click();
+await page.waitForTimeout(300);
 await page.getByText('Tabela', { exact: true }).click();
 await page.waitForTimeout(300);
 console.log('[esportes] standings rows:', await page.locator('.esportes-screen__table-row').count());

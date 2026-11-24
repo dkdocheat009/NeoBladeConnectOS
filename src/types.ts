@@ -6,5 +6,7 @@ export type Screen =
   | 'veiculo'
   | 'trabalho'
   | 'clima'
-  | 'esportes';
+  | 'esportes'
+  | 'navegacao'
+  | 'radar';
 export type MainScreen = 'home' | 'dashboard';

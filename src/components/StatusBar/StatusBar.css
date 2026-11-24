@@ -1,17 +1,21 @@
+/*
+ * Coordenadas baseadas em medição pixel a pixel de home.png (Fase 5):
+ * relógio e sinal/5G compartilham a mesma borda esquerda (~15px a partir
+ * do limite interno do dock); a bateria fica CENTRALIZADA horizontalmente
+ * no dock (não alinhada à mesma borda esquerda). Ver README para a
+ * evidência (scripts/check-statusbar.mjs).
+ */
 .status-bar {
-  display: grid;
-  grid-auto-flow: row;
-  justify-items: start;
-  align-items: start;
-  row-gap: 7px;
-  padding: 5px 0 0 2px;
-  width: 103px;
-  box-sizing: border-box;
+  position: absolute;
+  inset: 0;
 }
 
 .status-bar__clock {
+  position: absolute;
+  left: 15px;
+  top: 6px;
   font-variant-numeric: tabular-nums;
-  font-size: 25px;
+  font-size: 27px;
   font-weight: 700;
   color: #fff;
   letter-spacing: 0.2px;
@@ -19,15 +23,24 @@
 }
 
 .status-bar__signal {
+  position: absolute;
+  left: 15px;
+  top: 53px;
   display: flex;
-  align-items: center;
-  gap: 5px;
-  line-height: 1;
+  align-items: flex-end;
+  gap: 7px;
 }
 
 .status-bar__network {
-  font-size: 15px;
+  font-size: 21px;
   font-weight: 600;
   color: #fff;
+  line-height: 18px;
 }
 
+.status-bar__battery {
+  position: absolute;
+  left: 50%;
+  top: 87px;
+  transform: translateX(-50%);
+}

@@ -16,12 +16,21 @@ Notificações/Mensagens reconstruídos em SVG sem o retângulo branco; as 7
 marcas de veículo passam a ter logo real; alinhamento do `StatusBar`
 reestruturado) + novas telas **Música** e **Rádio**.
 
-**Fase 4 (atual):** correção definitiva do bug de alinhamento do dock (a
+**Fase 4:** correção definitiva do bug de alinhamento do dock (a
 causa raiz era a forma do próprio dock, não só o `padding` do `StatusBar` —
 ver detalhes abaixo), dock com slot contextual (mostra o app aberto, como
 nas referências), e quatro novos apps completos em modo demonstração:
 **Veículo**, **Trabalho**, **Clima** e **Esportes**, cada um com 4–5
-visões/estados navegáveis. Veja limitações e evidências abaixo.
+visões/estados navegáveis.
+
+**Fase 5 (atual):** segunda correção do dock (o raio já estava certo, mas o
+`StatusBar` ainda não separava corretamente o alinhamento do relógio/sinal
+do alinhamento — centralizado — da bateria), quatro módulos novos
+(**Navegação**, **Chamadas**, **Radar** e um **Assistente de Voz** estilo
+Siri funcional, com reconhecimento e síntese de fala reais), e reforma do
+app **Esportes** para usar dados reais do Campeonato Brasileiro e da
+Champions League via football-data.org. Veja a seção "Fase 5" abaixo para
+detalhes, evidências e limitações.
 
 ## Como executar
 
@@ -39,6 +48,27 @@ janela/viewport em **1280×720** para comparação fiel com a referência.
 npm run build
 npm run preview
 ```
+
+## Configuração opcional: dados reais do Esportes (football-data.org)
+
+O app Esportes funciona sem nenhuma configuração — sem chave, ele mostra o
+estado honesto "Conecte a fonte de resultados" para Brasileirão/Champions
+League e o modo "Demonstração" (ligas fictícias) continua disponível
+normalmente. Para ver jogos/tabelas reais:
+
+1. Crie uma conta gratuita em https://www.football-data.org/ (plano grátis:
+   10 requisições/minuto) e copie seu token.
+2. Copie `.env.example` para `.env` (já ignorado pelo git) e preencha
+   `FOOTBALL_DATA_API_KEY=seu_token`.
+3. Rode `npm run dev` (ou `npm run build && npm run preview`) normalmente.
+
+A chave **nunca** chega ao navegador: ela só é lida pelo processo Node do
+Vite (`vite.config.ts`), que expõe `/api/football/...` como um pequeno
+repasse para `https://api.football-data.org/v4/...` adicionando o header
+`X-Auth-Token` no servidor. O frontend só conhece a URL relativa — nunca o
+token, nunca em `localStorage`, nunca no bundle publicado. Isso não é um
+backend: é só esse repasse de poucas linhas, exigido porque um token de API
+nunca deve ficar em código que roda no navegador do usuário.
 
 ## Comparação visual e testes de interação
 
@@ -59,6 +89,8 @@ node scripts/test-brands.mjs        # cicla e captura as 7 marcas (dentro do app
 node scripts/test-music-radio.mjs   # navegação Home/Dashboard/Música/Rádio
 node scripts/test-fase4-apps.mjs    # abre os 4 apps, testa controles e volta
 node scripts/check-console.mjs      # garante ausência de erros de console
+node scripts/check-dock-statusbar.mjs  # Fase 5: prova visual (overlay/diff), não só bounding box
+node scripts/test-fase5.mjs         # Navegação, Chamadas, Radar, Assistente de voz, Esportes, regressão
 ```
 
 **Para testar a troca de marca do veículo:** abra o app "Veículo" (ícone na
@@ -97,6 +129,154 @@ só, sem margens por ícone). Validado com `scripts/check-statusbar.mjs`, que:
 Como o `Dock`/`StatusBar` são compartilhados, a correção vale para Home,
 Dashboard, Música, Rádio e os 4 novos apps — não há CSS duplicado por tela.
 
+## Fase 5
+
+### Segunda correção do dock — evidência visual
+
+Um usuário sinalizou, com uma captura anotada, que o alinhamento ainda
+estava incorreto mesmo após a Fase 4: o relógio e as barras de sinal/5G
+compartilham a borda esquerda, mas a **bateria deveria ficar centralizada
+horizontalmente** no dock, e estava maior/alinhada à mesma borda esquerda
+por engano — além de os três elementos estarem com tamanho menor do que a
+referência real (`home.png`: barras ~37×18px, "5G" com ~18px de altura de
+tinta, bateria ~46×22px). O `border-radius: 26px` do dock (corrigido na
+Fase 4) continuava correto; o problema desta vez era só no `StatusBar`.
+
+Correção: `StatusBar.tsx`/`StatusBar.css` reescritos para posicionamento
+absoluto por elemento (em vez de um único padding compartilhado): relógio e
+sinal/5G mantêm `left: 15px`; a bateria usa `left: 50%; transform:
+translateX(-50%)`, centralizada no dock. Os três SVGs (barras, "5G",
+bateria — com corpo em cápsula completa e raio interno `stroke`) foram
+redimensionados para as medidas reais, não apenas re-escalados.
+
+`scripts/check-dock-statusbar.mjs` gera, para 3 horários (09:09, 12:40,
+17:59) e 3 telas (Home, Dashboard, Veículo), uma imagem lado a lado
+[referência 4× | app atual 4× | diferença pixel a pixel 4×] em
+`comparacoes/dock_check_<tela>_<hora>.png` — prova visual real, não apenas
+`boundingBox()`, conforme exigido nesta fase.
+
+### Navegação (`navi-dunkel.png` / `navi-hell.png` / `karte-3d.png`)
+
+Mock de navegação (SVG/CSS, sem GPS/mapa real/TruckSimMap/ETS2):
+
+1. **Ativa (tema escuro)**: cartão de instrução (manobra, faixas, distância),
+   velocímetro/limite no canto superior direito, marcador de posição, cartão
+   de chegada.
+2. **Tema claro**: mesmo conteúdo, paleta clara (`navi-hell.png`) — alterna
+   pelo botão "⋯" (mais opções).
+3. **Visão geral / sem instrução ativa** (`karte-3d.png`): esconde o cartão
+   de manobra, mostra o nome do destino, velocidade zerada — alterna pelo
+   botão de rota (ícone de dois pontos).
+4. O selo de velocidade/limite (canto superior direito) abre o módulo
+   **Radar** — o mesmo selo aparece ampliado em `blitzer.png`.
+5. Um cartão de **Chamadas** (ver abaixo) pode aparecer sobre esta tela sem
+   travar a navegação por baixo.
+
+O ícone "Google Maps" da Home e o atalho de mapa do dock abrem esta tela; o
+dock mostra um ponto indicador junto ao ícone de mapa enquanto ela está
+aberta (mesmo padrão visto em `navi-dunkel.png`).
+
+### Chamadas (`call.png`)
+
+Cartão de chamada (nome/número 100% fictícios — "Disponente/Transportadora"
+— sem telefonia real, sem contatos, sem microfone):
+
+1. Chamada tocando: avatar, nome/assunto, botões recusar/atender.
+2. Chamada ativa: cronômetro, mudo, encerrar — sobreposta à tela atual sem
+   congelar nada por baixo.
+3. Chamada encerrada: aviso breve, depois some sozinho.
+
+Disparo de teste: botão "Simular chamada (teste)" dentro da tela de
+Navegação (mesmo padrão de botões de teste já usado em Trabalho/Veículo).
+
+### Radar (`blitzer.png`)
+
+Tela cheia de alertas de velocidade/radar (sem nenhum serviço real de
+radar — tudo mock e local a esta demonstração):
+
+1. Estrada livre (estado padrão).
+2. Radar à frente (alerta, com distância e tipo fictícios).
+3. "Reportar radar" — confirmação mock (nada é publicado de verdade),
+   retorna sozinho ao estado anterior.
+4. Botão de voltar retorna para a tela de Navegação de onde veio (não para
+   a Home), preservando o contexto.
+
+Acessível só a partir do selo de velocidade da Navegação (a referência não
+mostra um ícone de Radar na Home, por isso nenhum foi adicionado); o dock
+mostra o ícone de Radar (duplo chevron verde) no 4º slot contextual,
+seguindo o mesmo padrão de Rádio/Veículo/Trabalho/Esportes.
+
+### Assistente de voz (estilo Siri) — funcional, não um mock visual
+
+Atalho único **Ctrl+Alt+V** (uma única tecla ativa e já começa a ouvir;
+`Escape` cancela) abre um brilho colorido nas bordas de todo o stage
+1280×720 (não um orb central) com 5 estados: `ativando` → `escutando` →
+`processando` → `falando` → `encerrando/erro`. Um botão discreto no canto
+inferior direito oferece o mesmo acionamento para acessibilidade/teste.
+
+- Reconhecimento real via `SpeechRecognition`/`webkitSpeechRecognition`
+  (`lang="pt-BR"`), com transcrição visível.
+- Resposta real falada via `SpeechSynthesisUtterance` em pt-BR (tenta
+  escolher automaticamente uma voz feminina natural, quando o navegador
+  oferecer uma).
+- Comandos reconhecidos (conjunto fixo, pequeno e documentado — qualquer
+  outro pedido recebe a resposta falada "Ainda não tenho essa função
+  disponível."): "que horas são?", "que dia é hoje?", "abrir
+  música/rádio/clima/veículo/dashboard", "ir para a tela inicial", "pausar
+  música", "continuar música".
+- Nunca ouve e fala ao mesmo tempo (o reconhecimento é interrompido antes de
+  falar); respeita `prefers-reduced-motion`; não grava nem envia áudio a
+  nenhum servidor; não salva transcrições.
+- Erros tratados com mensagem em português: navegador sem suporte,
+  microfone negado, nenhuma fala detectada, tempo esgotado, falha do
+  serviço de reconhecimento.
+
+**Isto não é a Siri real nem usa SiriKit** — é uma interface própria do
+NeoBladeConnectOS, só visualmente inspirada no efeito do Apple Intelligence/
+Siri. Não há clonagem de voz, não há chave de API no frontend, e o Azure
+Speech **não** é necessário para compilar ou rodar o projeto — o
+`SpeechSynthesis` do navegador já cumpre o requisito de resposta falada
+real.
+
+**Como testar manualmente:** abra o app em um navegador baseado em Chromium
+com microfone disponível, pressione `Ctrl+Alt+V`, permita o microfone
+quando solicitado, e fale um dos comandos acima. `scripts/test-fase5.mjs`
+confirma automaticamente que o atalho abre o overlay e que ele fecha
+corretamente, mas a captura de voz humana real e a qualidade da fala
+sintetizada exigem validação manual — Playwright não tem um microfone real
+para simular.
+
+### Esportes — dados reais (Campeonato Brasileiro e Champions League)
+
+A barra lateral agora tem duas seções: **Competições** (Brasileirão `BSA` e
+Champions League `CL`, dados reais da football-data.org) e **Demonstração
+(ficção)** (as 8 ligas fictícias da Fase 4, inalteradas, sempre claramente
+rotuladas e nunca misturadas com dados reais).
+
+Para as competições reais: jogos, placares, status (`Agendado`/`Ao vivo`/
+`Encerrado`/...), datas, nomes de time e escudos vêm **verbatim** da API
+(ver `src/data/sportsApi.ts`) — nada é reescrito ou inventado. "Ao vivo" só
+aparece quando a própria API reporta uma partida `IN_PLAY`/`PAUSED`; a
+tabela de classificação respeita o formato que a API devolve (fase de
+grupos da Champions não é forçada a virar uma tabela única de liga). Sem
+chave configurada (ou em caso de erro/limite de requisições/sem internet),
+a tela mostra honestamente "Conecte a fonte de resultados" ou "Sem dados
+disponíveis", nunca um placar ou "ao vivo" inventado — com um botão para
+tentar novamente. Ver a seção de configuração acima para a chave de API.
+
+Os escudos reais vêm diretamente da URL fornecida pela football-data.org;
+se uma imagem falhar ao carregar, o app cai discretamente para as iniciais
+do time (nunca afirma que um escudo existe quando a imagem não carregou).
+Os escudos pertencem às respectivas competições/clubes — são exibidos aqui
+apenas para identificação visual, sem fins comerciais; consulte os termos
+de uso da football-data.org (docs.football-data.org) antes de qualquer uso
+além desta demonstração pessoal.
+
+**Fonte de dados:** football-data.org v4 (plano gratuito, 10 requisições/
+minuto). As respostas são mantidas em cache por 90 s no cliente para não
+estourar o limite. Temporada e horário da última atualização aparecem no
+cabeçalho da tela quando há dados reais carregados.
+
 ## Estrutura
 
 ```
@@ -111,8 +291,12 @@ src/
     Veiculo/         # Fase 4 — visão geral + Cavalo Mecânico/Condição/Reboque
     Trabalho/        # Fase 4 — trabalho atual + Progresso/Parada/Detalhes + sem trabalho
     Clima/           # Fase 4 — condição atual + hora a hora + 6 dias + detalhe selecionado
-    Esportes/        # Fase 4 — ligas fictícias, jogos/tabela, detalhe de partida
-    BackButton/      # botão de voltar compartilhado (Música/Rádio/Veículo/Trabalho/Clima/Esportes)
+    Esportes/        # Fase 4 + Fase 5 — BSA/CL reais (football-data.org) + ligas fictícias (demo)
+    Navegacao/       # Fase 5 — mock de navegação (temas escuro/claro + visão geral)
+    Chamadas/        # Fase 5 — cartão de chamada mock sobre a tela atual
+    Radar/           # Fase 5 — alertas de radar/velocidade mock
+    VoiceAssistant/  # Fase 5 — assistente de voz funcional (overlay + botão)
+    BackButton/      # botão de voltar compartilhado por quase todas as telas internas
     common/          # StatBar, StatCard, SegmentedControl — reutilizados pelos 4 apps novos
     Wallpaper/       # papel de parede (SVG, aproximação do original)
     Dock/            # dock lateral (status, atalhos, slot contextual + ponto indicador)
@@ -133,12 +317,20 @@ src/
     vehicleMock.ts        # Fase 4 — visão geral/condição/reboque + modelo por marca
     jobMock.ts            # Fase 4 — trabalho ativo (origem/destino/carga/financeiro/parada)
     weatherMock.ts        # Fase 4 — condição atual/hora a hora/6 dias (determinístico)
-    sportsMock.ts         # Fase 4 — ligas/clubes/partidas fictícios + tabela derivada
+    sportsMock.ts         # Fase 4 — ligas/clubes/partidas fictícios (modo Demonstração) + tabela derivada
+    sportsApi.ts          # Fase 5 — cliente football-data.org (via proxy, cache, estados honestos)
+    sportsFormat.ts        # Fase 5 — tradução de status/datas da API para pt-BR
+    navMock.ts             # Fase 5 — rota/instrução fictícia da Navegação + alerta de radar
+    callMock.ts            # Fase 5 — nome/assunto fictícios da Chamada
+    voiceCommands.ts        # Fase 5 — conjunto fixo de comandos do assistente de voz
   hooks/
     useLongPress.ts        # detecta pressionar-e-segurar sem quebrar o clique curto
     useRemovedApps.ts      # persistência dos atalhos removidos (localStorage)
     useHomeMockState.ts    # estado mock (badges, marca do veículo) + abrir cada app
     useMusicPlayerState.ts # estado do player compartilhado entre Dashboard e tela Música
+    useIncomingCall.ts      # Fase 5 — estado mock da chamada (tocando/ativa/encerrada)
+    useVoiceAssistant.ts    # Fase 5 — pipeline real de reconhecimento/síntese de fala
+    useSportsData.ts        # Fase 5 — busca jogos/tabela reais de uma competição
   assets/
     icons/    # recortes/ativos locais usados pelos ícones (apps, Scania, arte do álbum)
     brands/   # logos de Volvo, Mercedes-Benz, DAF, MAN, Iveco, Renault Trucks (ver origem abaixo)
@@ -230,9 +422,28 @@ para ficar nítido tanto na Home (96px) quanto no slot do dock (61px).
 - **Clima**: dados determinísticos (não vêm de API nem de localização
   real); os rótulos de dia da semana usam a data real do sistema (mesma
   lógica do Calendário) só para exibir a semana correta em português.
-- **Esportes**: ligas, clubes, datas e placares são inventados. Os
-  "escudos" são iniciais em círculo colorido — não reproduzem nenhum
-  escudo oficial de clube real.
+- **Esportes**: o Brasileirão (`BSA`) e a Champions League (`CL`) usam
+  dados e escudos reais da football-data.org quando uma chave é
+  configurada (ver seção "Configuração opcional" acima); sem chave, sem
+  internet ou em caso de erro/limite de requisições, a tela mostra os
+  estados honestos "Conecte a fonte de resultados"/"Sem dados
+  disponíveis" — nunca inventa um placar ou um jogo "ao vivo". O modo
+  "Demonstração" (ligas/clubes/datas/placares 100% inventados, escudos
+  como iniciais em círculo colorido) continua disponível separadamente e
+  nunca é misturado aos dados reais.
+- **Navegação/Radar**: mock em SVG/CSS — sem GPS, mapa real, TruckSimMap
+  ou qualquer integração com o ETS2. Rota, manobras, velocidade e alertas
+  de radar são fictícios e fixos.
+- **Chamadas**: nome, assunto e número são 100% fictícios — sem telefonia
+  real, sem acesso a contatos ou microfone neste módulo (o microfone real
+  é usado apenas pelo Assistente de Voz, módulo separado).
+- **Assistente de voz**: funcional (reconhecimento e síntese de fala
+  reais do navegador), mas não é a Siri oficial, não usa SiriKit e não
+  clona vozes. Reconhece apenas um conjunto fixo e pequeno de comandos
+  (documentado acima); qualquer outro pedido recebe a resposta falada
+  "Ainda não tenho essa função disponível." Exige um navegador com
+  suporte a `SpeechRecognition`/`SpeechSynthesis` (Chromium) e permissão
+  de microfone concedida pelo usuário.
 - **Papel de parede**: aproximação em SVG ajustada a partir de amostras de
   brilho da imagem original — não é um recorte da captura nem pixel-idêntico
   às curvas originais, apenas visualmente próximo.
@@ -253,14 +464,17 @@ para ficar nítido tanto na Home (96px) quanto no slot do dock (61px).
   A remoção de atalhos persiste em `localStorage`; a restauração (individual
   ou "restaurar todos") não usa nenhuma tela/loja de apps adicional.
 - Nenhum aplicativo além de Home, Dashboard, Música, Rádio, Veículo,
-  Trabalho, Clima e Esportes foi implementado: os demais ícones (Google
-  Maps, Configurações, Diário de Bordo, Abastecer e Descansar) continuam
-  apenas dando feedback de toque e registrando um log.
+  Trabalho, Clima, Esportes, Navegação, Chamadas, Radar e o Assistente de
+  Voz foi implementado: os ícones restantes (Configurações, Diário de
+  Bordo, Abastecer e Descansar) continuam apenas dando feedback de toque e
+  registrando um log — um clique neles nunca abre uma tela inventada.
 
 ## Tecnologias
 
 - React 19 + TypeScript + Vite
 - CSS puro (sem frameworks de UI)
 - [Motion](https://motion.dev) para as transições de toque e entre telas
+- Web Speech API do navegador (`SpeechRecognition`/`SpeechSynthesis`) para
+  o Assistente de Voz — nenhuma dependência nova adicionada para isso
 - Playwright (apenas para captura/comparação visual e testes de interação
   em desenvolvimento — não é dependência de produção)

@@ -22,40 +22,44 @@ export function StatusBar() {
       <div className="status-bar__signal">
         <svg
           className="status-bar__bars"
-          viewBox="0 0 18 13"
-          width="18"
-          height="13"
+          viewBox="0 0 37 18"
+          width="37"
+          height="18"
           aria-hidden="true"
         >
-          <rect x="0" y="8" width="3" height="5" rx="0.6" fill="#fff" />
-          <rect x="5" y="5.5" width="3" height="7.5" rx="0.6" fill="#fff" />
-          <rect x="10" y="3" width="3" height="10" rx="0.6" fill="#fff" />
-          <rect x="15" y="0" width="3" height="13" rx="0.6" fill="#fff" />
+          <rect x="0" y="12" width="7" height="6" rx="1.2" fill="#fff" />
+          <rect x="10" y="8" width="7" height="10" rx="1.2" fill="#fff" />
+          <rect x="20" y="4" width="7" height="14" rx="1.2" fill="#fff" />
+          <rect x="30" y="0" width="7" height="18" rx="1.2" fill="#fff" />
         </svg>
         <span className="status-bar__network">5G</span>
       </div>
 
+      {/* Bateria: centralizada horizontalmente no dock (ver README/CLAUDE.md
+          — Fase 5, correção do dock), não alinhada à mesma borda do
+          relógio/sinal. Tamanho medido em home.png (~46×22px reais). */}
       <svg
         className="status-bar__battery"
-        viewBox="0 0 25 13"
-        width="25"
-        height="13"
+        viewBox="0 0 46 22"
+        width="46"
+        height="22"
         aria-hidden="true"
       >
-        <rect
-          x="0.75"
-          y="0.75"
-          width="20.5"
-          height="11.5"
-          rx="3"
-          fill="none"
-          stroke="#ffffff"
-          strokeOpacity="0.5"
-          strokeWidth="1"
+        <defs>
+          <clipPath id="battery-body-clip">
+            <rect x="0" y="1" width="40" height="20" rx="10" />
+          </clipPath>
+        </defs>
+        <rect x="0" y="1" width="40" height="20" rx="10" fill="#67707d" />
+        <rect x="0" y="1" width="34" height="20" fill="#34c759" clipPath="url(#battery-body-clip)" />
+        <rect x="42" y="7" width="4" height="8" rx="2" fill="#67707d" />
+        <path
+          d="M21.7 4.8 L14 13.4 l5 0 l-1.8 5.7 l7.9 -9 h-5 Z"
+          fill="#ffffff"
+          stroke="#2a3b2e"
+          strokeWidth="0.8"
+          strokeLinejoin="round"
         />
-        <rect x="2.25" y="2.25" width="16.3" height="8.5" rx="1.8" fill="#34c759" />
-        <rect x="22.5" y="4" width="1.8" height="5" rx="0.9" fill="#ffffff" fillOpacity="0.5" />
-        <path d="M11.8 2.6 7.6 7.3h2.7l-1 3.1 4.3-4.9h-2.7z" fill="#0b3d0f" />
       </svg>
     </div>
   );

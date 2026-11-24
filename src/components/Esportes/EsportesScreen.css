@@ -17,6 +17,24 @@
   overflow-y: auto;
 }
 
+.esportes-screen__section-label {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.4);
+  padding: 10px 4px 2px;
+}
+
+.esportes-screen__section-label:first-child {
+  padding-top: 0;
+}
+
+.esportes-screen__demo-tag {
+  color: #ffb84d;
+  font-weight: 700;
+}
+
 .esportes-screen__league {
   display: flex;
   align-items: center;
@@ -140,6 +158,56 @@
   font-size: 11px;
   color: rgba(255, 255, 255, 0.45);
   white-space: nowrap;
+}
+
+.esportes-screen__status.is-live {
+  color: #ff5a5f;
+  font-weight: 700;
+}
+
+.esportes-screen__empty {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+  max-width: 460px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 16px;
+  padding: 20px 24px;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.esportes-screen__empty strong {
+  color: #fff;
+  font-size: 17px;
+}
+
+.esportes-screen__empty code {
+  background: rgba(255, 255, 255, 0.12);
+  padding: 1px 5px;
+  border-radius: 4px;
+}
+
+.esportes-screen__reload {
+  border: none;
+  background: rgba(255, 255, 255, 0.14);
+  color: #fff;
+  font-weight: 700;
+  font-size: 13px;
+  padding: 8px 16px;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.esportes-screen__standings-scroll {
+  overflow-y: auto;
+}
+
+.esportes-screen__table-group {
+  padding: 10px 18px 0;
+  font-size: 12px;
+  font-weight: 800;
+  color: rgba(255, 255, 255, 0.5);
 }
 
 .esportes-screen__table {

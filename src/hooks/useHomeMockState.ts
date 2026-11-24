@@ -10,6 +10,7 @@ interface UseHomeMockStateOptions {
   onOpenVeiculo: () => void;
   onOpenTrabalho: () => void;
   onOpenEsportes: () => void;
+  onOpenNavegacao: () => void;
 }
 
 /**
@@ -23,6 +24,7 @@ export function useHomeMockState({
   onOpenVeiculo,
   onOpenTrabalho,
   onOpenEsportes,
+  onOpenNavegacao,
 }: UseHomeMockStateOptions) {
   const [badgeCounts, setBadgeCounts] = useState<Record<string, number>>({
     mitteilungen: 0,
@@ -44,6 +46,10 @@ export function useHomeMockState({
   };
 
   const handleOpenApp = (app: AppDefinition) => {
+    if (app.id === 'google-maps') {
+      onOpenNavegacao();
+      return;
+    }
     if (app.id === 'spotify') {
       onOpenMusic();
       return;

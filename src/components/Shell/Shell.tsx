@@ -10,8 +10,15 @@ import { VeiculoScreen } from '../Veiculo/VeiculoScreen';
 import { TrabalhoScreen } from '../Trabalho/TrabalhoScreen';
 import { ClimaScreen } from '../Clima/ClimaScreen';
 import { EsportesScreen } from '../Esportes/EsportesScreen';
+import { NavegacaoScreen } from '../Navegacao/NavegacaoScreen';
+import { ChamadasOverlay } from '../Chamadas/ChamadasOverlay';
+import { RadarScreen } from '../Radar/RadarScreen';
+import { VoiceAssistantOverlay } from '../VoiceAssistant/VoiceAssistantOverlay';
+import { VoiceAssistantButton } from '../VoiceAssistant/VoiceAssistantButton';
 import { useHomeMockState } from '../../hooks/useHomeMockState';
 import { useMusicPlayerState } from '../../hooks/useMusicPlayerState';
+import { useVoiceAssistant } from '../../hooks/useVoiceAssistant';
+import { useIncomingCall } from '../../hooks/useIncomingCall';
 import type { MainScreen, Screen } from '../../types';
 import './Shell.css';
 
@@ -23,25 +30,55 @@ const slideVariants = {
 
 // Telas "overlay": abrem por cima de Home/Dashboard e voltam para a tela
 // principal de onde o usuário veio (ver backToMain / mainScreen).
-const OVERLAY_SCREENS: Screen[] = ['music', 'radio', 'veiculo', 'trabalho', 'clima', 'esportes'];
+const OVERLAY_SCREENS: Screen[] = [
+  'music',
+  'radio',
+  'veiculo',
+  'trabalho',
+  'clima',
+  'esportes',
+  'navegacao',
+  'radar',
+];
 
 export function Shell() {
   const [screen, setScreen] = useState<Screen>('home');
   const [mainScreen, setMainScreen] = useState<MainScreen>('home');
   const [direction, setDirection] = useState(1);
   const player = useMusicPlayerState();
+  const call = useIncomingCall();
 
-  const openScreen = (next: Screen) => {
+  const navigateTo = (next: Screen) => {
     setDirection(1);
+    if (next === 'home' || next === 'dashboard') setMainScreen(next);
     setScreen(next);
   };
 
+  const goHome = () => {
+    setDirection(-1);
+    setMainScreen('home');
+    setScreen('home');
+  };
+
   const { badgeCounts, currentTruckBrand, cycleTruckBrand, handleOpenApp } = useHomeMockState({
-    onOpenMusic: () => openScreen('music'),
-    onOpenRadio: () => openScreen('radio'),
-    onOpenVeiculo: () => openScreen('veiculo'),
-    onOpenTrabalho: () => openScreen('trabalho'),
-    onOpenEsportes: () => openScreen('esportes'),
+    onOpenMusic: () => navigateTo('music'),
+    onOpenRadio: () => navigateTo('radio'),
+    onOpenVeiculo: () => navigateTo('veiculo'),
+    onOpenTrabalho: () => navigateTo('trabalho'),
+    onOpenEsportes: () => navigateTo('esportes'),
+    onOpenNavegacao: () => navigateTo('navegacao'),
+  });
+
+  const backToNavegacao = () => {
+    setDirection(-1);
+    setScreen('navegacao');
+  };
+
+  const voiceAssistant = useVoiceAssistant({
+    onOpenScreen: navigateTo,
+    onGoHome: goHome,
+    musicPlay: player.play,
+    musicPause: player.pause,
   });
 
   const backToMain = () => {
@@ -54,9 +91,7 @@ export function Shell() {
   // a Home.
   const handleDockButton = () => {
     if (OVERLAY_SCREENS.includes(screen)) {
-      setDirection(-1);
-      setMainScreen('home');
-      setScreen('home');
+      goHome();
       return;
     }
     const next: MainScreen = screen === 'home' ? 'dashboard' : 'home';
@@ -69,11 +104,15 @@ export function Shell() {
   // 4, que abre Clima por padrão ou o app atualmente aberto).
   const handleOpenScreen = (next: Screen) => {
     if (OVERLAY_SCREENS.includes(next)) {
-      openScreen(next);
+      navigateTo(next);
     }
   };
 
   const handleActivateShortcut = (id: string) => {
+    if (id === 'dock-maps') {
+      navigateTo('navegacao');
+      return;
+    }
     console.info(`[NeoBladeConnectOS] atalho "${id}" ainda não implementado.`);
   };
 
@@ -99,7 +138,7 @@ export function Shell() {
               onActivateApp={handleOpenApp}
             />
           )}
-          {screen === 'dashboard' && <DashboardScreen player={player} onOpenMusic={() => openScreen('music')} />}
+          {screen === 'dashboard' && <DashboardScreen player={player} onOpenMusic={() => navigateTo('music')} />}
           {screen === 'music' && <MusicScreen player={player} onBack={backToMain} />}
           {screen === 'radio' && <RadioScreen onBack={backToMain} />}
           {screen === 'veiculo' && (
@@ -112,6 +151,10 @@ export function Shell() {
           {screen === 'trabalho' && <TrabalhoScreen onBack={backToMain} />}
           {screen === 'clima' && <ClimaScreen onBack={backToMain} />}
           {screen === 'esportes' && <EsportesScreen onBack={backToMain} />}
+          {screen === 'navegacao' && (
+            <NavegacaoScreen onBack={backToMain} onOpenRadar={() => navigateTo('radar')} call={call} />
+          )}
+          {screen === 'radar' && <RadarScreen onBack={backToNavegacao} />}
         </motion.div>
       </AnimatePresence>
 
@@ -122,6 +165,10 @@ export function Shell() {
         onActivateShortcut={handleActivateShortcut}
         onToggleScreen={handleDockButton}
       />
+
+      <ChamadasOverlay call={call} />
+      <VoiceAssistantOverlay assistant={voiceAssistant} />
+      <VoiceAssistantButton onClick={voiceAssistant.activate} active={voiceAssistant.isActive} />
     </div>
   );
 }

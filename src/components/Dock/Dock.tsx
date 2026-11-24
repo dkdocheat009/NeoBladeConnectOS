@@ -3,6 +3,7 @@ import { motion } from 'motion/react';
 import { StatusBar } from '../StatusBar/StatusBar';
 import { BrandLogoGlyph } from '../AppIcon/BrandLogoGlyph';
 import { EsportesGlyph } from '../AppIcon/EsportesGlyph';
+import { RadarGlyph } from '../AppIcon/RadarGlyph';
 import dockMaps from '../../assets/icons/dock-maps.png';
 import dockSpotify from '../../assets/icons/dock-spotify.png';
 import dockSettings from '../../assets/icons/dock-settings.png';
@@ -19,7 +20,7 @@ const SHORTCUT_TOPS = [231, 303, 375, 447];
 // do Clima padrão — reproduz o comportamento visto nas referências
 // (fahrzeug.png, de/job.png, de/sports.png): o dock sempre mostra 4
 // ícones, e o 4º reflete o app atualmente aberto, com um ponto indicador.
-const CONTEXTUAL_SCREENS: Screen[] = ['radio', 'veiculo', 'trabalho', 'esportes'];
+const CONTEXTUAL_SCREENS: Screen[] = ['radio', 'veiculo', 'trabalho', 'esportes', 'radar'];
 
 interface DockProps {
   screen: Screen;
@@ -39,6 +40,7 @@ export function Dock({
   const isContextual = CONTEXTUAL_SCREENS.includes(screen);
   const slot4Target: Screen = isContextual ? screen : 'clima';
   const slot4Active = isContextual || screen === 'clima';
+  const slot1Active = screen === 'navegacao';
   const slot2Active = screen === 'music';
 
   let slot4Content: ReactNode;
@@ -55,6 +57,9 @@ export function Dock({
   } else if (screen === 'esportes') {
     slot4Content = <EsportesGlyph size={61} />;
     slot4Label = 'Esportes';
+  } else if (screen === 'radar') {
+    slot4Content = <RadarGlyph size={61} />;
+    slot4Label = 'Radar';
   } else {
     slot4Content = <img src={dockWeather} alt="" draggable={false} />;
   }
@@ -74,6 +79,7 @@ export function Dock({
       >
         <img src={dockMaps} alt="" draggable={false} />
       </motion.button>
+      {slot1Active && <span className="dock__dot" style={{ top: SHORTCUT_TOPS[0] + 30 }} />}
 
       <motion.button
         type="button"

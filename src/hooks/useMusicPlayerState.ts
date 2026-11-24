@@ -59,6 +59,8 @@ export function useMusicPlayerState() {
     elapsedLabel: formatTime(progress * track.durationSec),
     remainingLabel: `-${formatTime((1 - progress) * track.durationSec)}`,
     togglePlay: () => setIsPlaying((p) => !p),
+    play: () => setIsPlaying(true),
+    pause: () => setIsPlaying(false),
     toggleShuffle: () => setShuffle((s) => !s),
     toggleRepeat: () => setRepeat((r) => !r),
     seek: (ratio: number) => setProgress(Math.min(1, Math.max(0, ratio))),
