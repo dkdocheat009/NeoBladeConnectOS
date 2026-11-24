@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { BackButton } from '../BackButton/BackButton';
 import { SegmentedControl } from '../common/SegmentedControl';
 import { ClubBadge } from './ClubBadge';
-import { leagues, buildStandings, clubById, type Match } from '../../data/sportsMock';
 import { SPORTS_COMPETITIONS, type ApiMatch, type ApiStandingRow } from '../../data/sportsApi';
 import { useSportsData } from '../../hooks/useSportsData';
 import { translateStatus, isLiveStatus, formatMatchDate } from '../../data/sportsFormat';
@@ -12,24 +11,19 @@ interface EsportesScreenProps {
   onBack: () => void;
 }
 
-type Source = { kind: 'real'; code: string } | { kind: 'demo'; leagueId: string };
-
 /**
- * Reproduz sport.png / de/sports.png (também en/sports.png). Fase 5:
- * Brasileirão (BSA) e Champions League (CL) usam dados reais da
- * football-data.org (ver src/data/sportsApi.ts) com escudos e placares
- * verbatim do provedor, incluindo estados honestos de "sem chave"/"sem
- * dados"/erro. As demais ligas seguem 100% fictícias, isoladas sob
- * "Demonstração" e nunca misturadas com dados reais.
+ * Reproduz sport.png / de/sports.png (também en/sports.png). Fase 6: só
+ * competições REAIS (Campeonato Brasileiro Série A e UEFA Champions
+ * League, via football-data.org — ver src/data/sportsApi.ts). A seção de
+ * ligas fictícias da Fase 4/5 foi removida por completo: nenhum dado
+ * simulado é exibido ou misturado aos resultados reais. Sem chave de API
+ * configurada, ou em caso de erro/indisponibilidade, a tela mostra um
+ * estado honesto de configuração — nunca um placar ou tabela inventados.
  */
 export function EsportesScreen({ onBack }: EsportesScreenProps) {
-  const [source, setSource] = useState<Source>({ kind: 'real', code: SPORTS_COMPETITIONS[0].code });
+  const [code, setCode] = useState(SPORTS_COMPETITIONS[0].code);
   const [view, setView] = useState<'jogos' | 'tabela'>('jogos');
-  const [selectedMatch, setSelectedMatch] = useState<Match | null>(null);
-  const [selectedApiMatch, setSelectedApiMatch] = useState<ApiMatch | null>(null);
-
-  const demoLeague = source.kind === 'demo' ? leagues.find((l) => l.id === source.leagueId) ?? leagues[0] : null;
-  const demoStandings = demoLeague && view === 'tabela' ? buildStandings(demoLeague) : [];
+  const [selectedMatch, setSelectedMatch] = useState<ApiMatch | null>(null);
 
   return (
     <div className="esportes-screen">
@@ -41,11 +35,10 @@ export function EsportesScreen({ onBack }: EsportesScreenProps) {
           <button
             key={c.code}
             type="button"
-            className={`esportes-screen__league${source.kind === 'real' && source.code === c.code ? ' is-active' : ''}`}
+            className={`esportes-screen__league${code === c.code ? ' is-active' : ''}`}
             onClick={() => {
-              setSource({ kind: 'real', code: c.code });
+              setCode(c.code);
               setSelectedMatch(null);
-              setSelectedApiMatch(null);
             }}
           >
             <span className="esportes-screen__league-code" style={{ background: '#1f6feb' }}>
@@ -54,113 +47,9 @@ export function EsportesScreen({ onBack }: EsportesScreenProps) {
             {c.name}
           </button>
         ))}
-
-        <span className="esportes-screen__section-label">Demonstração (ficção)</span>
-        {leagues.map((l) => (
-          <button
-            key={l.id}
-            type="button"
-            className={`esportes-screen__league${source.kind === 'demo' && source.leagueId === l.id ? ' is-active' : ''}`}
-            onClick={() => {
-              setSource({ kind: 'demo', leagueId: l.id });
-              setSelectedMatch(null);
-              setSelectedApiMatch(null);
-            }}
-          >
-            <span className="esportes-screen__league-code" style={{ background: l.color }}>
-              {l.code}
-            </span>
-            {l.name}
-          </button>
-        ))}
       </nav>
 
-      {source.kind === 'real' && (
-        <RealCompetitionPanel
-          code={source.code}
-          view={view}
-          onChangeView={setView}
-          onSelectMatch={setSelectedApiMatch}
-        />
-      )}
-
-      {demoLeague && (
-        <section className="esportes-screen__main">
-          <div className="esportes-screen__header">
-            <div>
-              <h1 className="esportes-screen__title">{demoLeague.name}</h1>
-              <span className="esportes-screen__matchday">
-                {demoLeague.matchday} · <span className="esportes-screen__demo-tag">Demonstração</span>
-              </span>
-            </div>
-            <SegmentedControl
-              options={[
-                { id: 'jogos', label: 'Jogos' },
-                { id: 'tabela', label: 'Tabela' },
-              ]}
-              value={view}
-              onChange={(id) => setView(id as 'jogos' | 'tabela')}
-            />
-          </div>
-
-          {view === 'jogos' && (
-            <div className="esportes-screen__grid">
-              {demoLeague.matches.map((m) => {
-                const home = clubById(m.home);
-                const away = clubById(m.away);
-                const played = m.homeScore !== null;
-                return (
-                  <button type="button" key={m.id} className="esportes-screen__match" onClick={() => setSelectedMatch(m)}>
-                    <div className="esportes-screen__team">
-                      <ClubBadge name={home.name} code={home.code} color={home.color} />
-                      <span>{home.name}</span>
-                    </div>
-                    <div className="esportes-screen__score-block">
-                      <span className="esportes-screen__score">
-                        {played ? `${m.homeScore} – ${m.awayScore}` : '—'}
-                      </span>
-                      <span className="esportes-screen__status">{m.status}</span>
-                    </div>
-                    <div className="esportes-screen__team esportes-screen__team--away">
-                      <span>{away.name}</span>
-                      <ClubBadge name={away.name} code={away.code} color={away.color} />
-                    </div>
-                  </button>
-                );
-              })}
-            </div>
-          )}
-
-          {view === 'tabela' && (
-            <div className="esportes-screen__table">
-              <div className="esportes-screen__table-head">
-                <span className="esportes-screen__table-club">Clube</span>
-                <span>J</span>
-                <span>V</span>
-                <span>E</span>
-                <span>D</span>
-                <span>SG</span>
-                <span>Pts</span>
-              </div>
-              {demoStandings.map((row, index) => (
-                <div key={row.club.id} className="esportes-screen__table-row">
-                  <span className="esportes-screen__table-pos">{index + 1}</span>
-                  <span className="esportes-screen__table-club">
-                    <ClubBadge name={row.club.name} code={row.club.code} color={row.club.color} size={26} />
-                    {row.club.name}
-                  </span>
-                  <span>{row.played}</span>
-                  <span>{row.wins}</span>
-                  <span>{row.draws}</span>
-                  <span>{row.losses}</span>
-                  <span>{row.goalsFor - row.goalsAgainst}</span>
-                  <span className="esportes-screen__table-pts">{row.points}</span>
-                </div>
-              ))}
-            </div>
-          )}
-        </section>
-      )}
+      <CompetitionPanel code={code} view={view} onChangeView={setView} onSelectMatch={setSelectedMatch} />
 
       {selectedMatch && (
         <div className="esportes-screen__overlay" onClick={() => setSelectedMatch(null)}>
@@ -168,80 +57,35 @@ export function EsportesScreen({ onBack }: EsportesScreenProps) {
             <div className="esportes-screen__detail-teams">
               <div className="esportes-screen__detail-team">
                 <ClubBadge
-                  name={clubById(selectedMatch.home).name}
-                  code={clubById(selectedMatch.home).code}
-                  color={clubById(selectedMatch.home).color}
+                  name={selectedMatch.homeTeam.name}
+                  code={selectedMatch.homeTeam.tla ?? '?'}
+                  crestUrl={selectedMatch.homeTeam.crest}
                   size={56}
                 />
-                <span>{clubById(selectedMatch.home).name}</span>
+                <span>{selectedMatch.homeTeam.shortName ?? selectedMatch.homeTeam.name}</span>
               </div>
               <span className="esportes-screen__detail-score">
-                {selectedMatch.homeScore !== null
-                  ? `${selectedMatch.homeScore} – ${selectedMatch.awayScore}`
+                {selectedMatch.score.fullTime.home !== null
+                  ? `${selectedMatch.score.fullTime.home} – ${selectedMatch.score.fullTime.away}`
                   : 'a definir'}
               </span>
               <div className="esportes-screen__detail-team">
                 <ClubBadge
-                  name={clubById(selectedMatch.away).name}
-                  code={clubById(selectedMatch.away).code}
-                  color={clubById(selectedMatch.away).color}
+                  name={selectedMatch.awayTeam.name}
+                  code={selectedMatch.awayTeam.tla ?? '?'}
+                  crestUrl={selectedMatch.awayTeam.crest}
                   size={56}
                 />
-                <span>{clubById(selectedMatch.away).name}</span>
-              </div>
-            </div>
-            <p className="esportes-screen__detail-status">{selectedMatch.status}</p>
-            {selectedMatch.scorers.length > 0 && (
-              <ul className="esportes-screen__detail-scorers">
-                {selectedMatch.scorers.map((s, i) => (
-                  <li key={i}>
-                    ⚽ {s.player} ({clubById(s.clubId).code}) {s.minute}'
-                  </li>
-                ))}
-              </ul>
-            )}
-            <button type="button" className="esportes-screen__detail-close" onClick={() => setSelectedMatch(null)}>
-              Fechar
-            </button>
-          </div>
-        </div>
-      )}
-
-      {selectedApiMatch && (
-        <div className="esportes-screen__overlay" onClick={() => setSelectedApiMatch(null)}>
-          <div className="esportes-screen__detail" onClick={(e) => e.stopPropagation()}>
-            <div className="esportes-screen__detail-teams">
-              <div className="esportes-screen__detail-team">
-                <ClubBadge
-                  name={selectedApiMatch.homeTeam.name}
-                  code={selectedApiMatch.homeTeam.tla ?? '?'}
-                  crestUrl={selectedApiMatch.homeTeam.crest}
-                  size={56}
-                />
-                <span>{selectedApiMatch.homeTeam.shortName ?? selectedApiMatch.homeTeam.name}</span>
-              </div>
-              <span className="esportes-screen__detail-score">
-                {selectedApiMatch.score.fullTime.home !== null
-                  ? `${selectedApiMatch.score.fullTime.home} – ${selectedApiMatch.score.fullTime.away}`
-                  : 'a definir'}
-              </span>
-              <div className="esportes-screen__detail-team">
-                <ClubBadge
-                  name={selectedApiMatch.awayTeam.name}
-                  code={selectedApiMatch.awayTeam.tla ?? '?'}
-                  crestUrl={selectedApiMatch.awayTeam.crest}
-                  size={56}
-                />
-                <span>{selectedApiMatch.awayTeam.shortName ?? selectedApiMatch.awayTeam.name}</span>
+                <span>{selectedMatch.awayTeam.shortName ?? selectedMatch.awayTeam.name}</span>
               </div>
             </div>
             <p className="esportes-screen__detail-status">
-              {translateStatus(selectedApiMatch.status)}
-              {selectedApiMatch.stage ? ` · ${selectedApiMatch.stage}` : ''}
+              {translateStatus(selectedMatch.status)}
+              {selectedMatch.stage ? ` · ${selectedMatch.stage}` : ''}
               {' · '}
-              {formatMatchDate(selectedApiMatch.utcDate)}
+              {formatMatchDate(selectedMatch.utcDate)}
             </p>
-            <button type="button" className="esportes-screen__detail-close" onClick={() => setSelectedApiMatch(null)}>
+            <button type="button" className="esportes-screen__detail-close" onClick={() => setSelectedMatch(null)}>
               Fechar
             </button>
           </div>
@@ -251,14 +95,14 @@ export function EsportesScreen({ onBack }: EsportesScreenProps) {
   );
 }
 
-interface RealCompetitionPanelProps {
+interface CompetitionPanelProps {
   code: string;
   view: 'jogos' | 'tabela';
   onChangeView: (v: 'jogos' | 'tabela') => void;
   onSelectMatch: (m: ApiMatch) => void;
 }
 
-function RealCompetitionPanel({ code, view, onChangeView, onSelectMatch }: RealCompetitionPanelProps) {
+function CompetitionPanel({ code, view, onChangeView, onSelectMatch }: CompetitionPanelProps) {
   const { matches, standings, loading, reload } = useSportsData(code);
   const competition = SPORTS_COMPETITIONS.find((c) => c.code === code);
 
@@ -270,7 +114,7 @@ function RealCompetitionPanel({ code, view, onChangeView, onSelectMatch }: RealC
         <div>
           <h1 className="esportes-screen__title">{competition?.name}</h1>
           <span className="esportes-screen__matchday">
-            {result?.status === 'ok' && result.meta.season ? `Temporada ${result.meta.season}` : 'Dados reais'}
+            {result?.status === 'ok' && result.meta.season ? `Temporada ${result.meta.season}` : 'football-data.org'}
           </span>
         </div>
         <SegmentedControl
@@ -289,8 +133,12 @@ function RealCompetitionPanel({ code, view, onChangeView, onSelectMatch }: RealC
         <div className="esportes-screen__empty">
           <strong>Conecte a fonte de resultados</strong>
           <p>
-            Configure <code>FOOTBALL_DATA_API_KEY</code> em um arquivo <code>.env</code> (veja{' '}
-            <code>.env.example</code> e o README) para ver jogos e tabelas reais desta competição.
+            Registre uma chave gratuita em{' '}
+            <a href="https://www.football-data.org/client/register" target="_blank" rel="noreferrer">
+              football-data.org/client/register
+            </a>
+            , copie <code>.env.example</code> para <code>.env</code>, preencha{' '}
+            <code>FOOTBALL_DATA_API_KEY</code> e reinicie <code>npm run dev</code>.
           </p>
           <button type="button" className="esportes-screen__reload" onClick={reload}>
             Tentar novamente
@@ -339,9 +187,7 @@ function RealCompetitionPanel({ code, view, onChangeView, onSelectMatch }: RealC
         </div>
       )}
 
-      {!loading && view === 'tabela' && standings?.status === 'ok' && (
-        <StandingsTable groups={standings.data} />
-      )}
+      {!loading && view === 'tabela' && standings?.status === 'ok' && <StandingsTable groups={standings.data} />}
     </section>
   );
 }

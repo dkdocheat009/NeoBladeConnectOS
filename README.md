@@ -23,7 +23,7 @@ nas referências), e quatro novos apps completos em modo demonstração:
 **Veículo**, **Trabalho**, **Clima** e **Esportes**, cada um com 4–5
 visões/estados navegáveis.
 
-**Fase 5 (atual):** segunda correção do dock (o raio já estava certo, mas o
+**Fase 5:** segunda correção do dock (o raio já estava certo, mas o
 `StatusBar` ainda não separava corretamente o alinhamento do relógio/sinal
 do alinhamento — centralizado — da bateria), quatro módulos novos
 (**Navegação**, **Chamadas**, **Radar** e um **Assistente de Voz** estilo
@@ -31,6 +31,17 @@ Siri funcional, com reconhecimento e síntese de fala reais), e reforma do
 app **Esportes** para usar dados reais do Campeonato Brasileiro e da
 Champions League via football-data.org. Veja a seção "Fase 5" abaixo para
 detalhes, evidências e limitações.
+
+**Fase 6 (atual):** correção do Esportes (a seção "Demonstração" com ligas
+fictícias foi **removida por completo** — só Brasileirão/Champions reais
+ficam na tela — e o proxy da football-data.org ganhou uma lista de
+endpoints permitidos); o cartão do Assistente de Voz foi redesenhado como
+uma notificação flutuante estilo Siri (ícone multicolorido, transcrição
+"Você:"/"Assistente:" em tempo real, fade de saída); e quatro novos apps:
+**Mensagens**, **Notificações** (com banner transitório), **Calendário** e
+**Configurações** (persistidas em `localStorage`), cada um com 4–5 estados
+navegáveis reais. Veja a seção "Fase 6" abaixo para detalhes, evidências e
+limitações.
 
 ## Como executar
 
@@ -53,22 +64,37 @@ npm run preview
 
 O app Esportes funciona sem nenhuma configuração — sem chave, ele mostra o
 estado honesto "Conecte a fonte de resultados" para Brasileirão/Champions
-League e o modo "Demonstração" (ligas fictícias) continua disponível
-normalmente. Para ver jogos/tabelas reais:
+League (as únicas competições listadas; não há mais um modo de
+demonstração com ligas fictícias — ver seção "Fase 6"). Para ver
+jogos/tabelas reais:
 
-1. Crie uma conta gratuita em https://www.football-data.org/ (plano grátis:
-   10 requisições/minuto) e copie seu token.
+1. Crie uma conta gratuita em https://www.football-data.org/client/register
+   (plano grátis: 10 requisições/minuto) e copie seu token.
 2. Copie `.env.example` para `.env` (já ignorado pelo git) e preencha
    `FOOTBALL_DATA_API_KEY=seu_token`.
-3. Rode `npm run dev` (ou `npm run build && npm run preview`) normalmente.
+3. Reinicie `npm run dev` (ou `npm run build && npm run preview`) — o
+   proxy só lê a variável de ambiente ao subir.
+4. Abra o app Esportes: se a chave estiver correta, Brasileirão/Champions
+   mostram jogos/tabela reais em vez do aviso de configuração.
 
 A chave **nunca** chega ao navegador: ela só é lida pelo processo Node do
 Vite (`vite.config.ts`), que expõe `/api/football/...` como um pequeno
 repasse para `https://api.football-data.org/v4/...` adicionando o header
-`X-Auth-Token` no servidor. O frontend só conhece a URL relativa — nunca o
-token, nunca em `localStorage`, nunca no bundle publicado. Isso não é um
-backend: é só esse repasse de poucas linhas, exigido porque um token de API
-nunca deve ficar em código que roda no navegador do usuário.
+`X-Auth-Token` no servidor — restrito a uma lista de caminhos permitidos
+(`/competitions/BSA|CL/matches|standings|teams`; qualquer outro caminho
+recebe 403) e com um pequeno cache de 30 s para não estourar o limite de
+requisições. O frontend só conhece a URL relativa — nunca o token, nunca em
+`localStorage`, nunca no bundle publicado. Isso não é um backend: é só esse
+repasse de poucas linhas, exigido porque um token de API nunca deve ficar
+em código que roda no navegador do usuário.
+
+**Nota sobre esta validação:** neste ambiente de desenvolvimento não havia
+uma `FOOTBALL_DATA_API_KEY` configurada, então as chamadas reais à API
+não puderam ser testadas ponta a ponta — o que foi verificado é que, sem
+chave, o proxy responde `503` corretamente e a tela mostra o aviso de
+configuração (nunca um placar inventado). Ao configurar uma chave válida,
+teste você mesmo os quatro endpoints usados pelo app antes de considerar a
+integração validada.
 
 ## Comparação visual e testes de interação
 
@@ -84,13 +110,14 @@ node scripts/capture-music-radio.mjs http://localhost:5173/   # salva music_scre
 node scripts/capture-apps.mjs http://localhost:5173/          # salva fase4_veiculo/trabalho/esportes/clima.png
 node scripts/check-statusbar.mjs http://localhost:5173/       # comprova o alinhamento do dock em 09:09 e 17:59
 node scripts/test-edit-mode.mjs     # long-press, remover, restaurar, persistência
-node scripts/test-mocks.mjs         # badges + navegação Home/Dashboard/Música
+node scripts/test-mocks.mjs         # badges reais + navegação Home/Notificações/Dashboard/Música
 node scripts/test-brands.mjs        # cicla e captura as 7 marcas (dentro do app Veículo)
 node scripts/test-music-radio.mjs   # navegação Home/Dashboard/Música/Rádio
 node scripts/test-fase4-apps.mjs    # abre os 4 apps, testa controles e volta
 node scripts/check-console.mjs      # garante ausência de erros de console
 node scripts/check-dock-statusbar.mjs  # Fase 5: prova visual (overlay/diff), não só bounding box
 node scripts/test-fase5.mjs         # Navegação, Chamadas, Radar, Assistente de voz, Esportes, regressão
+node scripts/test-fase6.mjs         # Esportes só-real, cartão do Siri, Mensagens/Notificações/Calendário/Configurações
 ```
 
 **Para testar a troca de marca do veículo:** abra o app "Veículo" (ícone na
@@ -277,6 +304,172 @@ minuto). As respostas são mantidas em cache por 90 s no cliente para não
 estourar o limite. Temporada e horário da última atualização aparecem no
 cabeçalho da tela quando há dados reais carregados.
 
+## Fase 6
+
+### Esportes — correção obrigatória: remoção total do modo Demonstração
+
+A Fase 5 deixava as ligas fictícias ("Demonstração (ficção)") visíveis ao
+lado de Brasileirão/Champions, o que não atendia ao pedido de dados
+exclusivamente reais. Nesta fase:
+
+- A seção "Demonstração (ficção)" e as 8 ligas fictícias foram **removidas
+  por completo** da UI — `src/data/sportsMock.ts` foi apagado, e
+  `EsportesScreen.tsx` só conhece `SPORTS_COMPETITIONS` (Brasileirão `BSA`
+  e Champions League `CL`). Não há mais nenhum dado simulado misturado aos
+  reais.
+- O proxy (`vite.config.ts`) passou a **restringir os caminhos
+  permitidos** a `/competitions/(BSA|CL)/(matches|standings|teams)` —
+  qualquer outra rota recebe `403 path_not_allowed` — e ganhou um cache de
+  30 s por caminho no próprio servidor (além do cache de 90 s já existente
+  no cliente), para não estourar o limite de 10 requisições/minuto do
+  plano gratuito.
+- Investigamos uma alternativa gratuita sem conta própria (TheSportsDB,
+  chave pública `123`, documentada para uso livre) como exigido pela
+  tarefa: consultando `all_leagues.php`/`search_all_leagues.php` da sua
+  API v1, confirmamos que o catálogo gratuito **não inclui** o Campeonato
+  Brasileiro Série A (principal) nem a UEFA Champions League — só grandes
+  ligas europeias de clube (Premier League, Bundesliga, La Liga etc.) — e
+  que `eventspastleague.php` respondeu `403` nos testes. Por não cobrir as
+  duas competições exigidas, **não foi integrada**: manter apenas
+  football-data.org, com o estado honesto de configuração, foi a escolha
+  correta em vez de forçar uma fonte incompleta.
+- Escudos continuam vindo da URL real da football-data.org, com fallback
+  discreto só em caso de falha de carregamento (nunca como padrão quando
+  há escudo válido).
+- **Não foi possível testar as chamadas reais ponta a ponta nesta sessão**
+  por não haver uma `FOOTBALL_DATA_API_KEY` configurada no ambiente — ver
+  nota na seção de configuração acima.
+
+### Assistente de voz — cartão de notificação estilo Siri
+
+A animação do brilho nas bordas do stage e o atalho `Ctrl+Alt+V` foram
+**preservados exatamente como estavam** (nenhuma linha de
+`VoiceAssistantOverlay.css` referente ao anel/halo foi alterada). O que
+mudou foi a apresentação do texto, antes solta no rodapé:
+
+- Um **cartão flutuante** dentro do stage (nunca fora dele), com um ícone
+  multicolorido original (`SiriIconGlyph.tsx`, desenhado em SVG — não é
+  uma cópia do glifo oficial da Siri nem de nenhuma captura da Apple) e
+  fundo translúcido com desfoque, legível sobre qualquer app por baixo.
+- Durante a escuta: **"Você: <transcrição>"** atualizado em tempo real a
+  cada resultado parcial do reconhecimento.
+- Durante a fala: **"Assistente: <resposta>"** visível do início ao fim da
+  síntese de voz e por mais ~2 s depois, com um **fade de saída suave**
+  (não desaparece no instante exato em que a fala termina).
+- 4 estados visuais rotulados: Ouvindo / Processando / Respondendo / Erro
+  — erros de permissão/suporte aparecem no mesmo cartão.
+- Continua nunca ouvindo e falando ao mesmo tempo, nunca registrando a
+  fala completa no console, nunca persistindo transcrições, e respeitando
+  `prefers-reduced-motion`.
+- Em Configurações > Voz/Siri, "Mostrar transcrição em tempo real" pode
+  desligar as linhas "Você:"/"Assistente:" (mensagens de erro continuam
+  visíveis); "Ativar assistente de voz" desliga o atalho e esconde o
+  botão de acionamento por completo.
+
+### Mensagens (atalho existente na Home)
+
+Estado compartilhado com a Home (`useMessagesState`, em memória — não
+persiste ao recarregar, assim como os demais apps mock da Home). 100%
+local: nenhuma mensagem é enviada a uma pessoa real, sem integração com
+SMS/WhatsApp/contatos.
+
+1. **Recentes** (visão minimalista orientada a voz): as 3 mensagens mais
+   recentes + um botão "Perguntar por voz", que abre o Assistente de Voz.
+2. **Não lidas**: lista filtrada.
+3. **Leitura de uma mensagem**: abre o detalhe, marca como lida (reflete
+   no badge da Home) e oferece "🔊 Ouvir mensagem" — fala o texto em voz
+   alta de verdade via `SpeechSynthesisUtterance`.
+4. **Ditar resposta**: "🎙️ Ditar resposta" usa `SpeechRecognition` real
+   para capturar a fala, mostra uma etapa de revisão (texto editável) e só
+   então "Confirmar envio (simulado)" — nunca envia a lugar nenhum de
+   verdade, só marca a resposta simulada na própria mensagem.
+5. **Caixa vazia**: ao apagar todas as mensagens, com botão de teste para
+   repor o conteúdo de exemplo.
+
+### Notificações (ícone existente na Home)
+
+Store comum (`useNotificationsState`) compartilhada entre a Home (badge),
+o banner transitório e a própria tela — nenhuma notificação fica embutida
+permanentemente nos ícones.
+
+1. **Lista agrupada** por origem (Veículo, Trabalho, Esportes, Sistema).
+2. **Banner não intrusivo**: "Simular notificação (teste)" adiciona um
+   item novo e mostra um cartão no topo do stage, sobre qualquer app, por
+   ~4 s, sem bloquear a tela por baixo; inclui um aviso sonoro curto (Web
+   Audio, sem asset) que respeita o volume/interruptor de Configurações.
+3. **Marcar como lida**: toque no corpo do item; reflete no badge da Home
+   na hora.
+4. **Apagar/limpar**: remoção individual (✕) ou "Limpar tudo".
+5. **Estado vazio**: com botão de teste para repor o conteúdo de exemplo.
+
+O cartão da Siri é um componente totalmente separado
+(`VoiceAssistantOverlay`) e não aparece nesta lista.
+
+### Calendário (ícone existente na Home)
+
+Agenda 100% mock (`src/data/calendarMock.ts`), com o dia 0 sempre sendo
+"hoje" pela data real do sistema (o ícone da Home continua mostrando
+dia/mês reais via `CalendarGlyph`, sem nenhuma alteração). Sem integração
+com calendário real.
+
+1. **Agenda de hoje**: compromissos do dia, por horário.
+2. **Próximos dias**: lista de 5 dias com contagem de compromissos cada.
+3. **Detalhe de evento**: horário, local, notas.
+4. **Ação de navegação/destino DEMO**: quando o evento tem um destino,
+   "🧭 Navegar até o destino (demo)" abre o módulo Navegação (mock já
+   existente da Fase 5) — não define uma rota real nem usa GPS.
+5. **Nenhum compromisso**: um dos próximos dias é deliberadamente vazio
+   para demonstrar esse estado (determinístico, sempre o mesmo dia
+   relativo a "hoje").
+
+### Configurações (engrenagem do dock)
+
+Preferências reais, persistidas em `localStorage` (`useSettingsState`),
+cada uma com um efeito restrito ao que já existe — nenhuma liga um recurso
+futuro fictício:
+
+1. **Aparência**: Escuro/Claro. Só a tela de **Navegação** tem referência
+   visual clara/escura (`navi-hell.png`); por isso é o único lugar que
+   muda de verdade — as demais telas aprovadas permanecem no visual escuro
+   original, documentado explicitamente na própria tela de Configurações
+   (sem fingir um tema claro completo que quebraria telas já aprovadas).
+2. **Áudio**: volume mestre (0–100%) e interruptor de "sons de
+   notificação" — controlam o bipe do banner de Notificações.
+3. **Voz/Siri**: ativar/desativar o assistente por completo (esconde o
+   atalho e o botão), mostrar/ocultar a transcrição em tempo real, e um
+   campo informativo de idioma (só Português (Brasil) é suportado — não
+   há seletor fictício de idiomas que não funcionam).
+4. **Aplicativos**: lista os atalhos removidos da Home (reaproveitando
+   `useRemovedApps`, o mesmo hook do modo de edição) com restauração
+   individual ou total.
+5. **Informações do sistema**: versão/fase, resolução do stage, navegador
+   detectado e modo (desenvolvimento/produção) — dados reais do ambiente,
+   somente leitura.
+
+### Regressão
+
+`scripts/test-fase6.mjs` cobre as quatro telas novas, a remoção do modo
+Demonstração do Esportes e o novo cartão do Assistente de Voz;
+`scripts/test-fase5.mjs` e os scripts de fases anteriores continuam
+passando sem alteração de comportamento em Home, Dashboard, Música, Rádio,
+Veículo, Trabalho, Clima, Navegação, Chamadas e Radar (dois scripts mais
+antigos — `test-mocks.mjs` e `test-fase4-apps.mjs` — foram atualizados
+para refletir mudanças de comportamento **intencionais** desta fase:
+clicar em Notificações agora abre o app em vez de ciclar um contador, e o
+Esportes lista só 2 competições).
+
+### Limitação visual conhecida (não introduzida nesta fase)
+
+Ao revisar as telas com layout de barra lateral (`Esportes`, e a nova
+`Configurações`, que segue o mesmo padrão), notamos que o `BackButton`
+fica visualmente coberto pelo texto do primeiro item da barra lateral
+(ambos ocupam a mesma região, canto superior esquerdo) — o botão continua
+funcionando ao toque, só não fica visível com clareza. Esse posicionamento
+já existia desde a Fase 4 (Esportes) e não foi alterado nesta fase; registra-se
+aqui para transparência, já que apareceu também na tela nova. Corrigi-lo
+exigiria reposicionar a barra lateral do Esportes (tela já aprovada), o
+que preferimos não fazer sem um pedido explícito.
+
 ## Estrutura
 
 ```
@@ -291,11 +484,15 @@ src/
     Veiculo/         # Fase 4 — visão geral + Cavalo Mecânico/Condição/Reboque
     Trabalho/        # Fase 4 — trabalho atual + Progresso/Parada/Detalhes + sem trabalho
     Clima/           # Fase 4 — condição atual + hora a hora + 6 dias + detalhe selecionado
-    Esportes/        # Fase 4 + Fase 5 — BSA/CL reais (football-data.org) + ligas fictícias (demo)
+    Esportes/        # Fase 4-6 — só Brasileirão/Champions reais (football-data.org); sem modo demo
     Navegacao/       # Fase 5 — mock de navegação (temas escuro/claro + visão geral)
     Chamadas/        # Fase 5 — cartão de chamada mock sobre a tela atual
     Radar/           # Fase 5 — alertas de radar/velocidade mock
-    VoiceAssistant/  # Fase 5 — assistente de voz funcional (overlay + botão)
+    VoiceAssistant/  # Fase 5 (pipeline) + Fase 6 (cartão de notificação estilo Siri)
+    Mensagens/       # Fase 6 — recentes/não lidas/detalhe/ditar resposta/vazio
+    Notificacoes/    # Fase 6 — lista agrupada + banner transitório
+    Calendario/      # Fase 6 — agenda mock (hoje/próximos dias/detalhe/nav demo/vazio)
+    Configuracoes/   # Fase 6 — preferências persistidas (aparência/áudio/voz/apps/sistema)
     BackButton/      # botão de voltar compartilhado por quase todas as telas internas
     common/          # StatBar, StatCard, SegmentedControl — reutilizados pelos 4 apps novos
     Wallpaper/       # papel de parede (SVG, aproximação do original)
@@ -317,20 +514,27 @@ src/
     vehicleMock.ts        # Fase 4 — visão geral/condição/reboque + modelo por marca
     jobMock.ts            # Fase 4 — trabalho ativo (origem/destino/carga/financeiro/parada)
     weatherMock.ts        # Fase 4 — condição atual/hora a hora/6 dias (determinístico)
-    sportsMock.ts         # Fase 4 — ligas/clubes/partidas fictícios (modo Demonstração) + tabela derivada
-    sportsApi.ts          # Fase 5 — cliente football-data.org (via proxy, cache, estados honestos)
+    sportsApi.ts          # Fase 5-6 — cliente football-data.org (proxy allowlisted, cache, estados honestos)
     sportsFormat.ts        # Fase 5 — tradução de status/datas da API para pt-BR
     navMock.ts             # Fase 5 — rota/instrução fictícia da Navegação + alerta de radar
     callMock.ts            # Fase 5 — nome/assunto fictícios da Chamada
-    voiceCommands.ts        # Fase 5 — conjunto fixo de comandos do assistente de voz
+    voiceCommands.ts        # Fase 5-6 — conjunto fixo de comandos do assistente de voz
+    messagesMock.ts         # Fase 6 — mensagens fictícias iniciais
+    notificationsMock.ts    # Fase 6 — notificações fictícias iniciais + item simulado
+    calendarMock.ts         # Fase 6 — agenda fictícia determinística (dia 0 = hoje)
+    beep.ts                 # Fase 6 — bipe curto via Web Audio (aviso de notificação)
   hooks/
     useLongPress.ts        # detecta pressionar-e-segurar sem quebrar o clique curto
     useRemovedApps.ts      # persistência dos atalhos removidos (localStorage)
-    useHomeMockState.ts    # estado mock (badges, marca do veículo) + abrir cada app
+    useHomeMockState.ts    # abre cada app da Home + marca do veículo (badges vêm de outros hooks, Fase 6)
     useMusicPlayerState.ts # estado do player compartilhado entre Dashboard e tela Música
     useIncomingCall.ts      # Fase 5 — estado mock da chamada (tocando/ativa/encerrada)
-    useVoiceAssistant.ts    # Fase 5 — pipeline real de reconhecimento/síntese de fala
+    useVoiceAssistant.ts    # Fase 5-6 — pipeline real de reconhecimento/síntese de fala
     useSportsData.ts        # Fase 5 — busca jogos/tabela reais de uma competição
+    useMessagesState.ts     # Fase 6 — store de Mensagens (badge real, ler/ditar/apagar)
+    useNotificationsState.ts # Fase 6 — store de Notificações + banner transitório
+    useOneShotDictation.ts  # Fase 6 — captura de fala avulsa (ditar resposta de mensagem)
+    useSettingsState.ts     # Fase 6 — preferências persistidas em localStorage
   assets/
     icons/    # recortes/ativos locais usados pelos ícones (apps, Scania, arte do álbum)
     brands/   # logos de Volvo, Mercedes-Benz, DAF, MAN, Iveco, Renault Trucks (ver origem abaixo)
@@ -422,15 +626,14 @@ para ficar nítido tanto na Home (96px) quanto no slot do dock (61px).
 - **Clima**: dados determinísticos (não vêm de API nem de localização
   real); os rótulos de dia da semana usam a data real do sistema (mesma
   lógica do Calendário) só para exibir a semana correta em português.
-- **Esportes**: o Brasileirão (`BSA`) e a Champions League (`CL`) usam
-  dados e escudos reais da football-data.org quando uma chave é
+- **Esportes**: só lista Brasileirão (`BSA`) e Champions League (`CL`),
+  usando dados e escudos reais da football-data.org quando uma chave é
   configurada (ver seção "Configuração opcional" acima); sem chave, sem
   internet ou em caso de erro/limite de requisições, a tela mostra os
   estados honestos "Conecte a fonte de resultados"/"Sem dados
-  disponíveis" — nunca inventa um placar ou um jogo "ao vivo". O modo
-  "Demonstração" (ligas/clubes/datas/placares 100% inventados, escudos
-  como iniciais em círculo colorido) continua disponível separadamente e
-  nunca é misturado aos dados reais.
+  disponíveis" — nunca inventa um placar, uma tabela ou um jogo "ao vivo".
+  Não há mais nenhum modo de demonstração com ligas fictícias (removido na
+  Fase 6).
 - **Navegação/Radar**: mock em SVG/CSS — sem GPS, mapa real, TruckSimMap
   ou qualquer integração com o ETS2. Rota, manobras, velocidade e alertas
   de radar são fictícios e fixos.
@@ -455,8 +658,19 @@ para ficar nítido tanto na Home (96px) quanto no slot do dock (61px).
   próxima, seek, shuffle e repeat são estados de demonstração reais,
   compartilhados entre o cartão do Dashboard e a tela cheia.
 - **Rádio**: estações e categorias são 100% fictícias — sem emissoras reais.
-- Badges de Notificações/Mensagens são mock: clicar no ícone cicla a
-  contagem (0, 1, 2, 5); 0 = badge oculto, 1–99 = número, acima de 99 = "99+".
+- **Mensagens/Notificações**: conteúdo 100% fictício, em memória (não
+  persiste ao recarregar a página). Os badges da Home refletem a contagem
+  real de não lidos de cada store (0 = badge oculto, 1–99 = número, acima
+  de 99 = "99+") — clicar no ícone abre o app correspondente, não cicla
+  mais um contador de teste (comportamento da Fase 2–5, substituído nesta
+  fase pelos apps reais).
+- **Calendário**: agenda 100% fictícia e determinística; "hoje" usa a data
+  real do sistema (mesma lógica do ícone da Home), mas os compromissos em
+  si são fixos, não vindos de um calendário real.
+- **Configurações**: preferências persistem em `localStorage` e têm efeito
+  real, mas restrito ao que já existe — ver a seção "Fase 6" acima para o
+  escopo exato de cada uma (em especial o tema claro, que só se aplica à
+  tela de Navegação).
 - Relógio e calendário usam data/hora real do sistema (sem backend); sinal
   5G e bateria continuam sendo indicadores estáticos (sem telemetria).
 - Modo de edição: toque curto continua abrindo os apps/mocks normalmente;
@@ -464,10 +678,11 @@ para ficar nítido tanto na Home (96px) quanto no slot do dock (61px).
   A remoção de atalhos persiste em `localStorage`; a restauração (individual
   ou "restaurar todos") não usa nenhuma tela/loja de apps adicional.
 - Nenhum aplicativo além de Home, Dashboard, Música, Rádio, Veículo,
-  Trabalho, Clima, Esportes, Navegação, Chamadas, Radar e o Assistente de
-  Voz foi implementado: os ícones restantes (Configurações, Diário de
-  Bordo, Abastecer e Descansar) continuam apenas dando feedback de toque e
-  registrando um log — um clique neles nunca abre uma tela inventada.
+  Trabalho, Clima, Esportes, Navegação, Chamadas, Radar, Assistente de Voz,
+  Mensagens, Notificações, Calendário e Configurações foi implementado: os
+  ícones restantes (Diário de Bordo, Abastecer e Descansar) continuam
+  apenas dando feedback de toque e registrando um log — um clique neles
+  nunca abre uma tela inventada.
 
 ## Tecnologias
 
@@ -475,6 +690,9 @@ para ficar nítido tanto na Home (96px) quanto no slot do dock (61px).
 - CSS puro (sem frameworks de UI)
 - [Motion](https://motion.dev) para as transições de toque e entre telas
 - Web Speech API do navegador (`SpeechRecognition`/`SpeechSynthesis`) para
-  o Assistente de Voz — nenhuma dependência nova adicionada para isso
+  o Assistente de Voz e para "Ouvir"/"Ditar resposta" em Mensagens —
+  nenhuma dependência nova adicionada para isso
+- Web Audio API para o bipe curtíssimo do banner de Notificações (sem
+  arquivo de áudio)
 - Playwright (apenas para captura/comparação visual e testes de interação
   em desenvolvimento — não é dependência de produção)

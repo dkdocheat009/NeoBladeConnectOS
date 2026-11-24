@@ -30,11 +30,6 @@
   padding-top: 0;
 }
 
-.esportes-screen__demo-tag {
-  color: #ffb84d;
-  font-weight: 700;
-}
-
 .esportes-screen__league {
   display: flex;
   align-items: center;
@@ -186,6 +181,11 @@
   background: rgba(255, 255, 255, 0.12);
   padding: 1px 5px;
   border-radius: 4px;
+}
+
+.esportes-screen__empty a {
+  color: #5fb0ff;
+  font-weight: 700;
 }
 
 .esportes-screen__reload {

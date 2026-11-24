@@ -42,6 +42,7 @@ export function Dock({
   const slot4Active = isContextual || screen === 'clima';
   const slot1Active = screen === 'navegacao';
   const slot2Active = screen === 'music';
+  const slot3Active = screen === 'configuracoes';
 
   let slot4Content: ReactNode;
   let slot4Label = 'Clima';
@@ -105,6 +106,7 @@ export function Dock({
       >
         <img src={dockSettings} alt="" draggable={false} />
       </motion.button>
+      {slot3Active && <span className="dock__dot" style={{ top: SHORTCUT_TOPS[2] + 30 }} />}
 
       <motion.button
         type="button"

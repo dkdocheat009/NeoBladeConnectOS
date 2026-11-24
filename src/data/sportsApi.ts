@@ -98,8 +98,8 @@ async function fetchWithCache<T>(path: string): Promise<SportsResult<T>> {
       return { status: 'error', message: `Falha ao consultar resultados (HTTP ${response.status}).` };
     }
 
-    const body = await response.json();
-    const result: SportsResult<T> = { status: 'ok', data: body as T, meta: extractMeta(body) };
+    const body = (await response.json()) as T & Parameters<typeof extractMeta>[0];
+    const result: SportsResult<T> = { status: 'ok', data: body, meta: extractMeta(body) };
     cache.set(path, { at: Date.now(), value: result });
     return result;
   })();

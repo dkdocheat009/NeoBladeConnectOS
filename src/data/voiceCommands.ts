@@ -105,6 +105,26 @@ export function resolveVoiceCommand(rawTranscript: string, ctx: VoiceCommandCont
     return { spokenText: 'Abrindo o Dashboard.', handled: true };
   }
 
+  if (t.includes('abrir mensagens') || t.includes('abrir mensagem')) {
+    ctx.onOpenScreen('mensagens');
+    return { spokenText: 'Abrindo Mensagens.', handled: true };
+  }
+
+  if (t.includes('abrir notificac')) {
+    ctx.onOpenScreen('notificacoes');
+    return { spokenText: 'Abrindo Notificações.', handled: true };
+  }
+
+  if (t.includes('abrir calendario') || t.includes('abrir agenda')) {
+    ctx.onOpenScreen('calendario');
+    return { spokenText: 'Abrindo o Calendário.', handled: true };
+  }
+
+  if (t.includes('abrir configuracoes') || t.includes('abrir ajustes')) {
+    ctx.onOpenScreen('configuracoes');
+    return { spokenText: 'Abrindo Configurações.', handled: true };
+  }
+
   if (t.includes('tela inicial') || t.includes('ir para home') || t.includes('ir para a home') || t === 'home') {
     ctx.onGoHome();
     return { spokenText: 'Voltando para a tela inicial.', handled: true };

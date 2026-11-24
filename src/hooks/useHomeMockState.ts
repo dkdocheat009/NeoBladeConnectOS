@@ -2,8 +2,6 @@ import { useState } from 'react';
 import type { AppDefinition } from '../data/apps';
 import { truckBrands } from '../data/truckBrands';
 
-const MOCK_BADGE_CYCLE = [0, 1, 2, 5];
-
 interface UseHomeMockStateOptions {
   onOpenMusic: () => void;
   onOpenRadio: () => void;
@@ -11,12 +9,17 @@ interface UseHomeMockStateOptions {
   onOpenTrabalho: () => void;
   onOpenEsportes: () => void;
   onOpenNavegacao: () => void;
+  onOpenMensagens: () => void;
+  onOpenNotificacoes: () => void;
+  onOpenCalendario: () => void;
 }
 
 /**
- * Mock/demo state for the Home shortcuts that need it (badges, marca do
- * veículo). Lives above HomeScreen (in Shell) so it survives switching to
- * the Dashboard and back — only the edit-mode UI itself resets per visit.
+ * Mock/demo state for the Home shortcuts that need it (marca do veículo).
+ * Lives above HomeScreen (in Shell) so it survives switching to the
+ * Dashboard and back. Badges de Mensagens/Notificações agora vêm dos
+ * stores reais (useMessagesState/useNotificationsState, lifted no Shell) —
+ * não há mais um ciclo de contagem mock aqui (Fase 6).
  */
 export function useHomeMockState({
   onOpenMusic,
@@ -25,21 +28,11 @@ export function useHomeMockState({
   onOpenTrabalho,
   onOpenEsportes,
   onOpenNavegacao,
+  onOpenMensagens,
+  onOpenNotificacoes,
+  onOpenCalendario,
 }: UseHomeMockStateOptions) {
-  const [badgeCounts, setBadgeCounts] = useState<Record<string, number>>({
-    mitteilungen: 0,
-    nachrichten: 2,
-  });
   const [truckBrandIndex, setTruckBrandIndex] = useState(0);
-
-  const cycleBadge = (id: string) => {
-    setBadgeCounts((prev) => {
-      const current = prev[id] ?? 0;
-      const idx = MOCK_BADGE_CYCLE.indexOf(current);
-      const next = MOCK_BADGE_CYCLE[(idx + 1) % MOCK_BADGE_CYCLE.length];
-      return { ...prev, [id]: next };
-    });
-  };
 
   const cycleTruckBrand = () => {
     setTruckBrandIndex((index) => (index + 1) % truckBrands.length);
@@ -70,8 +63,16 @@ export function useHomeMockState({
       onOpenEsportes();
       return;
     }
-    if (app.id === 'mitteilungen' || app.id === 'nachrichten') {
-      cycleBadge(app.id);
+    if (app.id === 'nachrichten') {
+      onOpenMensagens();
+      return;
+    }
+    if (app.id === 'mitteilungen') {
+      onOpenNotificacoes();
+      return;
+    }
+    if (app.id === 'kalender') {
+      onOpenCalendario();
       return;
     }
     // Nenhuma outra tela/app foi implementada ainda — apenas o feedback de
@@ -80,7 +81,6 @@ export function useHomeMockState({
   };
 
   return {
-    badgeCounts,
     currentTruckBrand: truckBrands[truckBrandIndex],
     cycleTruckBrand,
     handleOpenApp,

@@ -63,28 +63,23 @@ await page.locator('.back-button').click();
 await page.waitForTimeout(300);
 
 // --- ESPORTES ---
-// Fase 5: Brasileirão/Champions (dados reais) carregam por padrão; o modo
-// "Demonstração" (ligas fictícias, inalteradas desde a Fase 4) é selecionado
-// explicitamente para testar jogos/tabela/detalhe sem depender de API key.
+// Fase 6: só competições reais (BSA/CL, football-data.org) — a seção
+// "Demonstração" e as ligas fictícias foram removidas por completo. Sem
+// FOOTBALL_DATA_API_KEY neste ambiente, valida-se o estado honesto de
+// configuração e a troca de competição/aba, não dados reais.
 await page.getByText('Esportes', { exact: true }).click();
 await page.waitForTimeout(500);
 console.log('[esportes] screen open:', await page.locator('.esportes-screen').count());
-await page.locator('.esportes-screen__league', { hasText: 'Liga Nacional' }).first().click();
-await page.waitForTimeout(300);
+console.log('[esportes] leagues in sidebar (deve ser 2 — só BSA/CL):', await page.locator('.esportes-screen__league').count());
+console.log('[esportes] estado honesto sem chave visivel:', await page.getByText('Conecte a fonte de resultados').isVisible());
 await page.getByText('Tabela', { exact: true }).click();
 await page.waitForTimeout(300);
-console.log('[esportes] standings rows:', await page.locator('.esportes-screen__table-row').count());
+console.log('[esportes] estado honesto na aba Tabela:', await page.getByText('Conecte a fonte de resultados').isVisible());
 await page.getByText('Jogos', { exact: true }).click();
 await page.waitForTimeout(300);
-await page.locator('.esportes-screen__match').first().click();
+await page.locator('.esportes-screen__league', { hasText: 'Champions' }).click();
 await page.waitForTimeout(300);
-console.log('[esportes] match detail open:', await page.locator('.esportes-screen__detail').count());
-await page.locator('.esportes-screen__detail-close').click();
-await page.waitForTimeout(300);
-console.log('[esportes] match detail closed:', (await page.locator('.esportes-screen__detail').count()) === 0);
-await page.locator('.esportes-screen__league', { hasText: 'Copa dos Campeões' }).click();
-await page.waitForTimeout(300);
-console.log('[esportes] league switched title:', await page.locator('.esportes-screen__title').innerText());
+console.log('[esportes] competição trocada para:', await page.locator('.esportes-screen__title').innerText());
 await page.locator('.back-button').click();
 await page.waitForTimeout(300);
 console.log('[esportes] back to home:', await page.getByText('Google Maps', { exact: true }).count());

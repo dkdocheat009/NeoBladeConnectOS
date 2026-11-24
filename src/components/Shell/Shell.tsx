@@ -13,12 +13,20 @@ import { EsportesScreen } from '../Esportes/EsportesScreen';
 import { NavegacaoScreen } from '../Navegacao/NavegacaoScreen';
 import { ChamadasOverlay } from '../Chamadas/ChamadasOverlay';
 import { RadarScreen } from '../Radar/RadarScreen';
+import { MensagensScreen } from '../Mensagens/MensagensScreen';
+import { NotificacoesScreen } from '../Notificacoes/NotificacoesScreen';
+import { NotificationBanner } from '../Notificacoes/NotificationBanner';
+import { CalendarioScreen } from '../Calendario/CalendarioScreen';
+import { ConfiguracoesScreen } from '../Configuracoes/ConfiguracoesScreen';
 import { VoiceAssistantOverlay } from '../VoiceAssistant/VoiceAssistantOverlay';
 import { VoiceAssistantButton } from '../VoiceAssistant/VoiceAssistantButton';
 import { useHomeMockState } from '../../hooks/useHomeMockState';
 import { useMusicPlayerState } from '../../hooks/useMusicPlayerState';
 import { useVoiceAssistant } from '../../hooks/useVoiceAssistant';
 import { useIncomingCall } from '../../hooks/useIncomingCall';
+import { useMessagesState } from '../../hooks/useMessagesState';
+import { useNotificationsState } from '../../hooks/useNotificationsState';
+import { useSettingsState } from '../../hooks/useSettingsState';
 import type { MainScreen, Screen } from '../../types';
 import './Shell.css';
 
@@ -39,6 +47,10 @@ const OVERLAY_SCREENS: Screen[] = [
   'esportes',
   'navegacao',
   'radar',
+  'mensagens',
+  'notificacoes',
+  'calendario',
+  'configuracoes',
 ];
 
 export function Shell() {
@@ -47,6 +59,12 @@ export function Shell() {
   const [direction, setDirection] = useState(1);
   const player = useMusicPlayerState();
   const call = useIncomingCall();
+  const messages = useMessagesState();
+  const settings = useSettingsState();
+  const notifications = useNotificationsState({
+    soundEnabled: settings.settings.notificationSound,
+    volume: settings.settings.masterVolume,
+  });
 
   const navigateTo = (next: Screen) => {
     setDirection(1);
@@ -60,26 +78,37 @@ export function Shell() {
     setScreen('home');
   };
 
-  const { badgeCounts, currentTruckBrand, cycleTruckBrand, handleOpenApp } = useHomeMockState({
+  const { currentTruckBrand, cycleTruckBrand, handleOpenApp } = useHomeMockState({
     onOpenMusic: () => navigateTo('music'),
     onOpenRadio: () => navigateTo('radio'),
     onOpenVeiculo: () => navigateTo('veiculo'),
     onOpenTrabalho: () => navigateTo('trabalho'),
     onOpenEsportes: () => navigateTo('esportes'),
     onOpenNavegacao: () => navigateTo('navegacao'),
+    onOpenMensagens: () => navigateTo('mensagens'),
+    onOpenNotificacoes: () => navigateTo('notificacoes'),
+    onOpenCalendario: () => navigateTo('calendario'),
   });
+
+  const badgeCounts: Record<string, number> = {
+    nachrichten: messages.unreadCount,
+    mitteilungen: notifications.unreadCount,
+  };
 
   const backToNavegacao = () => {
     setDirection(-1);
     setScreen('navegacao');
   };
 
-  const voiceAssistant = useVoiceAssistant({
-    onOpenScreen: navigateTo,
-    onGoHome: goHome,
-    musicPlay: player.play,
-    musicPause: player.pause,
-  });
+  const voiceAssistant = useVoiceAssistant(
+    {
+      onOpenScreen: navigateTo,
+      onGoHome: goHome,
+      musicPlay: player.play,
+      musicPause: player.pause,
+    },
+    { enabled: settings.settings.assistantEnabled },
+  );
 
   const backToMain = () => {
     setDirection(-1);
@@ -111,6 +140,10 @@ export function Shell() {
   const handleActivateShortcut = (id: string) => {
     if (id === 'dock-maps') {
       navigateTo('navegacao');
+      return;
+    }
+    if (id === 'dock-settings') {
+      navigateTo('configuracoes');
       return;
     }
     console.info(`[NeoBladeConnectOS] atalho "${id}" ainda não implementado.`);
@@ -152,9 +185,22 @@ export function Shell() {
           {screen === 'clima' && <ClimaScreen onBack={backToMain} />}
           {screen === 'esportes' && <EsportesScreen onBack={backToMain} />}
           {screen === 'navegacao' && (
-            <NavegacaoScreen onBack={backToMain} onOpenRadar={() => navigateTo('radar')} call={call} />
+            <NavegacaoScreen
+              onBack={backToMain}
+              onOpenRadar={() => navigateTo('radar')}
+              call={call}
+              initialTheme={settings.settings.theme}
+            />
           )}
           {screen === 'radar' && <RadarScreen onBack={backToNavegacao} />}
+          {screen === 'mensagens' && (
+            <MensagensScreen onBack={backToMain} messages={messages} onActivateVoice={voiceAssistant.activate} />
+          )}
+          {screen === 'notificacoes' && <NotificacoesScreen onBack={backToMain} notifications={notifications} />}
+          {screen === 'calendario' && (
+            <CalendarioScreen onBack={backToMain} onDemoNavigate={() => navigateTo('navegacao')} />
+          )}
+          {screen === 'configuracoes' && <ConfiguracoesScreen onBack={backToMain} settings={settings} />}
         </motion.div>
       </AnimatePresence>
 
@@ -167,8 +213,11 @@ export function Shell() {
       />
 
       <ChamadasOverlay call={call} />
-      <VoiceAssistantOverlay assistant={voiceAssistant} />
-      <VoiceAssistantButton onClick={voiceAssistant.activate} active={voiceAssistant.isActive} />
+      <NotificationBanner notifications={notifications} onOpen={() => navigateTo('notificacoes')} />
+      <VoiceAssistantOverlay assistant={voiceAssistant} showTranscript={settings.settings.assistantShowTranscript} />
+      {settings.settings.assistantEnabled && (
+        <VoiceAssistantButton onClick={voiceAssistant.activate} active={voiceAssistant.isActive} />
+      )}
     </div>
   );
 }

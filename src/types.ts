@@ -8,5 +8,9 @@ export type Screen =
   | 'clima'
   | 'esportes'
   | 'navegacao'
-  | 'radar';
+  | 'radar'
+  | 'mensagens'
+  | 'notificacoes'
+  | 'calendario'
+  | 'configuracoes';
 export type MainScreen = 'home' | 'dashboard';

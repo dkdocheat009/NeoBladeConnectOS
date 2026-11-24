@@ -20,14 +20,17 @@ function pickBestPtBrVoice(voices: SpeechSynthesisVoice[]): SpeechSynthesisVoice
  * Interface própria do NeoBladeConnectOS, inspirada visualmente no Apple
  * Intelligence/Siri — não é a Siri oficial nem usa SiriKit.
  */
-export function useVoiceAssistant(ctx: VoiceCommandContext) {
+export function useVoiceAssistant(ctx: VoiceCommandContext, options: { enabled?: boolean } = {}) {
+  const enabled = options.enabled ?? true;
   const [state, setState] = useState<AssistantState>('idle');
   const [transcript, setTranscript] = useState('');
   const [responseText, setResponseText] = useState('');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [audioLevel, setAudioLevel] = useState(0);
+  const [fadingOut, setFadingOut] = useState(false);
 
   const activeRef = useRef(false);
+  const closeTimerRef = useRef<number | null>(null);
   const recognitionRef = useRef<InstanceType<NonNullable<typeof window.SpeechRecognition>> | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const audioCtxRef = useRef<AudioContext | null>(null);
@@ -90,15 +93,26 @@ export function useVoiceAssistant(ctx: VoiceCommandContext) {
     }
   }, []);
 
+  // Mantém o cartão legível por mais um instante após o fim da fala (ou de
+  // um erro), com um fade suave de saída, em vez de sumir no instante exato
+  // em que o evento dispara.
+  const scheduleClose = useCallback((delayMs: number, fadeMs = 450) => {
+    if (closeTimerRef.current !== null) window.clearTimeout(closeTimerRef.current);
+    window.setTimeout(() => setFadingOut(true), Math.max(0, delayMs - fadeMs));
+    closeTimerRef.current = window.setTimeout(() => {
+      activeRef.current = false;
+      setState('idle');
+      setFadingOut(false);
+      closeTimerRef.current = null;
+    }, delayMs);
+  }, []);
+
   const speak = useCallback(
     (text: string) => {
       setResponseText(text);
       setState('falando');
       if (!ttsSupported) {
-        window.setTimeout(() => {
-          activeRef.current = false;
-          setState('idle');
-        }, 1800);
+        scheduleClose(2600, 700);
         return;
       }
       window.speechSynthesis.cancel();
@@ -107,16 +121,14 @@ export function useVoiceAssistant(ctx: VoiceCommandContext) {
       const voice = pickBestPtBrVoice(voicesRef.current.length ? voicesRef.current : window.speechSynthesis.getVoices());
       if (voice) utter.voice = voice;
       utter.onend = () => {
-        activeRef.current = false;
-        setState('idle');
+        scheduleClose(2600, 700);
       };
       utter.onerror = () => {
-        activeRef.current = false;
-        setState('idle');
+        scheduleClose(2600, 700);
       };
       window.speechSynthesis.speak(utter);
     },
-    [ttsSupported],
+    [scheduleClose, ttsSupported],
   );
 
   const processTranscript = useCallback(
@@ -135,10 +147,7 @@ export function useVoiceAssistant(ctx: VoiceCommandContext) {
     if (!speechRecognitionSupported) {
       setErrorMessage('Reconhecimento de voz não é suportado neste navegador. Use Chrome ou Edge.');
       setState('erro');
-      window.setTimeout(() => {
-        activeRef.current = false;
-        setState('idle');
-      }, 2600);
+      scheduleClose(2600);
       return;
     }
     const SR = window.SpeechRecognition ?? window.webkitSpeechRecognition!;
@@ -171,10 +180,7 @@ export function useVoiceAssistant(ctx: VoiceCommandContext) {
       recognitionRef.current = null;
       stopAudioAnalysis();
       setState('erro');
-      window.setTimeout(() => {
-        activeRef.current = false;
-        setState('idle');
-      }, 2400);
+      scheduleClose(2400);
     };
     recognition.onend = () => {
       recognitionRef.current = null;
@@ -184,10 +190,7 @@ export function useVoiceAssistant(ctx: VoiceCommandContext) {
       if (!text) {
         setErrorMessage('Não ouvi nenhuma fala.');
         setState('erro');
-        window.setTimeout(() => {
-          activeRef.current = false;
-          setState('idle');
-        }, 2200);
+        scheduleClose(2200);
         return;
       }
       processTranscript(text);
@@ -203,12 +206,9 @@ export function useVoiceAssistant(ctx: VoiceCommandContext) {
     } catch {
       setState('erro');
       setErrorMessage('Não foi possível iniciar o microfone.');
-      window.setTimeout(() => {
-        activeRef.current = false;
-        setState('idle');
-      }, 2200);
+      scheduleClose(2200);
     }
-  }, [speechRecognitionSupported, processTranscript, startAudioAnalysis, stopAudioAnalysis]);
+  }, [speechRecognitionSupported, processTranscript, startAudioAnalysis, stopAudioAnalysis, scheduleClose]);
 
   const cancel = useCallback(() => {
     activeRef.current = false;
@@ -220,10 +220,15 @@ export function useVoiceAssistant(ctx: VoiceCommandContext) {
     }
     recognitionRef.current = null;
     stopAudioAnalysis();
+    if (closeTimerRef.current !== null) {
+      window.clearTimeout(closeTimerRef.current);
+      closeTimerRef.current = null;
+    }
     setState('idle');
     setTranscript('');
     setResponseText('');
     setErrorMessage(null);
+    setFadingOut(false);
   }, [stopAudioAnalysis]);
 
   const activate = useCallback(async () => {
@@ -231,10 +236,12 @@ export function useVoiceAssistant(ctx: VoiceCommandContext) {
       cancel();
       return;
     }
+    if (!enabled) return;
     activeRef.current = true;
     setErrorMessage(null);
     setTranscript('');
     setResponseText('');
+    setFadingOut(false);
     setState('ativando');
 
     if (navigator.mediaDevices?.getUserMedia) {
@@ -243,8 +250,7 @@ export function useVoiceAssistant(ctx: VoiceCommandContext) {
       } catch {
         setErrorMessage('Permissão de microfone negada.');
         setState('erro');
-        activeRef.current = false;
-        window.setTimeout(() => setState('idle'), 2400);
+        scheduleClose(2400);
         return;
       }
     }
@@ -252,7 +258,7 @@ export function useVoiceAssistant(ctx: VoiceCommandContext) {
     window.setTimeout(() => {
       if (activeRef.current) startListening();
     }, 200);
-  }, [cancel, startListening]);
+  }, [cancel, enabled, scheduleClose, startListening]);
 
   // Atalho único Ctrl+Alt+V: abre e já começa a escutar; ignora
   // event.repeat; Escape cancela com segurança.
@@ -277,6 +283,7 @@ export function useVoiceAssistant(ctx: VoiceCommandContext) {
     return () => {
       activeRef.current = false;
       stopAudioAnalysis();
+      if (closeTimerRef.current !== null) window.clearTimeout(closeTimerRef.current);
       try {
         recognitionRef.current?.abort();
       } catch {
@@ -293,6 +300,7 @@ export function useVoiceAssistant(ctx: VoiceCommandContext) {
     responseText,
     errorMessage,
     audioLevel,
+    fadingOut,
     activate,
     cancel,
     speechRecognitionSupported,

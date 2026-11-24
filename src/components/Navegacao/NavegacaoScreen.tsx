@@ -11,6 +11,7 @@ interface NavegacaoScreenProps {
   onBack: () => void;
   onOpenRadar: () => void;
   call: IncomingCall;
+  initialTheme?: Theme;
 }
 
 /**
@@ -18,10 +19,12 @@ interface NavegacaoScreenProps {
  * geral, sem instrução de manobra ativa). Mapa é um mock em SVG/CSS — sem
  * GPS, TruckSimMap ou telemetria real. Botão "…" alterna tema; botão de
  * rota alterna visão geral; o selo de limite/velocidade abre o módulo de
- * Radar (ver blitzer.png, onde o mesmo selo aparece ampliado).
+ * Radar (ver blitzer.png, onde o mesmo selo aparece ampliado). `initialTheme`
+ * vem de Configurações > Aparência (Fase 6); a alternância "…" continua
+ * funcionando normalmente por cima dessa preferência.
  */
-export function NavegacaoScreen({ onBack, onOpenRadar, call }: NavegacaoScreenProps) {
-  const [theme, setTheme] = useState<Theme>('escuro');
+export function NavegacaoScreen({ onBack, onOpenRadar, call, initialTheme = 'escuro' }: NavegacaoScreenProps) {
+  const [theme, setTheme] = useState<Theme>(initialTheme);
   const [view, setView] = useState<View>('ativa');
 
   const isOverview = view === 'geral';

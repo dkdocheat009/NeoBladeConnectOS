@@ -100,7 +100,7 @@ await shot('10_assistente_voz');
 if (!(await page.locator('.voice-overlay').isVisible())) {
   throw new Error('Assistente de voz: overlay não apareceu após Ctrl+Alt+V.');
 }
-await page.locator('.voice-overlay__dismiss').click();
+await page.locator('.voice-card__dismiss').click();
 await page.waitForTimeout(150);
 if (await page.locator('.voice-overlay').isVisible()) {
   throw new Error('Assistente de voz: overlay não fechou ao clicar em dismiss.');
@@ -132,19 +132,23 @@ await shot('14_regressao_trabalho');
 await page.locator('.back-button').click();
 await page.waitForTimeout(350);
 
-// --- Esportes reformado ---------------------------------------------------
+// --- Esportes (Fase 6: só competições reais, sem seção de demonstração) ---
 await page.getByText('Esportes', { exact: true }).click();
 await page.waitForTimeout(400);
 await shot('15_esportes_real_sem_chave');
 if (!(await page.getByText('Conecte a fonte de resultados').isVisible())) {
   throw new Error('Esportes: estado honesto "Conecte a fonte de resultados" não apareceu sem chave.');
 }
-await page.locator('.esportes-screen__league', { hasText: 'Liga Nacional' }).first().click();
-await page.waitForTimeout(200);
-await shot('16_esportes_demo');
-if (!(await page.getByText('Demonstração', { exact: true }).first().isVisible())) {
-  throw new Error('Esportes: rótulo "Demonstração" não apareceu no modo ficção.');
+const leagueCount = await page.locator('.esportes-screen__league').count();
+if (leagueCount !== 2) {
+  throw new Error(`Esportes: esperado exatamente 2 competições (BSA/CL), encontrado ${leagueCount}.`);
 }
+if (await page.getByText('Demonstração').count()) {
+  throw new Error('Esportes: rótulo/seção "Demonstração" ainda presente — deveria ter sido removida na Fase 6.');
+}
+await page.locator('.esportes-screen__league', { hasText: 'Champions' }).click();
+await page.waitForTimeout(200);
+await shot('16_esportes_champions');
 await page.locator('.back-button').click();
 await page.waitForTimeout(350);
 

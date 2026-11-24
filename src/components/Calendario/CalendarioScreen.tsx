@@ -1,0 +1,123 @@
+import { useMemo, useState } from 'react';
+import { BackButton } from '../BackButton/BackButton';
+import { buildAgenda, type CalendarEvent } from '../../data/calendarMock';
+import './CalendarioScreen.css';
+
+interface CalendarioScreenProps {
+  onBack: () => void;
+  onDemoNavigate: () => void;
+}
+
+type View = 'hoje' | 'proximos';
+
+/**
+ * App Calendário (ícone existente na Home). Estados: 1) agenda de hoje; 2)
+ * próximos dias (seleção); 3) detalhe de evento; 4) ação de
+ * navegação/destino DEMO (abre o módulo Navegação, sem GPS real); 5)
+ * nenhum compromisso. Agenda 100% mock — sem integração com calendário
+ * real; o ícone da Home usa a data real do sistema (CalendarGlyph),
+ * preservado sem alterações.
+ */
+export function CalendarioScreen({ onBack, onDemoNavigate }: CalendarioScreenProps) {
+  const agenda = useMemo(() => buildAgenda(new Date()), []);
+  const [view, setView] = useState<View>('hoje');
+  const [selectedOffset, setSelectedOffset] = useState(0);
+  const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(null);
+  const [navToast, setNavToast] = useState(false);
+
+  const day = agenda[selectedOffset] ?? agenda[0];
+
+  const openDay = (offset: number) => {
+    setSelectedOffset(offset);
+    setView('hoje');
+  };
+
+  const demoNavigate = () => {
+    setNavToast(true);
+    window.setTimeout(() => setNavToast(false), 1800);
+    onDemoNavigate();
+  };
+
+  return (
+    <div className="calendario-screen">
+      <BackButton onClick={onBack} />
+
+      <header className="calendario-screen__header">
+        <h1 className="calendario-screen__title">Calendário</h1>
+        <div className="calendario-screen__tabs">
+          <button
+            type="button"
+            className={view === 'hoje' ? 'is-active' : ''}
+            onClick={() => {
+              setSelectedOffset(0);
+              setView('hoje');
+            }}
+          >
+            Hoje
+          </button>
+          <button type="button" className={view === 'proximos' ? 'is-active' : ''} onClick={() => setView('proximos')}>
+            Próximos dias
+          </button>
+        </div>
+      </header>
+
+      {view === 'proximos' && (
+        <div className="calendario-screen__days">
+          {agenda.map((d) => (
+            <button type="button" key={d.dayOffset} className="calendario-screen__day" onClick={() => openDay(d.dayOffset)}>
+              <span className="calendario-screen__day-label">{d.label}</span>
+              <span className="calendario-screen__day-count">
+                {d.events.length === 0 ? 'Nenhum compromisso' : `${d.events.length} compromisso(s)`}
+              </span>
+            </button>
+          ))}
+        </div>
+      )}
+
+      {view === 'hoje' && (
+        <>
+          <span className="calendario-screen__day-heading">{day.label}</span>
+          {day.events.length === 0 ? (
+            <div className="calendario-screen__empty">
+              <span className="calendario-screen__empty-icon">📅</span>
+              <p>Nenhum compromisso neste dia.</p>
+            </div>
+          ) : (
+            <div className="calendario-screen__list">
+              {day.events.map((e) => (
+                <button type="button" key={e.id} className="calendario-screen__event" onClick={() => setSelectedEvent(e)}>
+                  <span className="calendario-screen__event-time">{e.time}</span>
+                  <div className="calendario-screen__event-body">
+                    <span className="calendario-screen__event-title">{e.title}</span>
+                    {e.location && <span className="calendario-screen__event-location">{e.location}</span>}
+                  </div>
+                </button>
+              ))}
+            </div>
+          )}
+        </>
+      )}
+
+      {selectedEvent && (
+        <div className="calendario-screen__overlay" onClick={() => setSelectedEvent(null)}>
+          <div className="calendario-screen__detail" onClick={(e) => e.stopPropagation()}>
+            <span className="calendario-screen__detail-time">{selectedEvent.time}</span>
+            <h2 className="calendario-screen__detail-title">{selectedEvent.title}</h2>
+            {selectedEvent.location && <p className="calendario-screen__detail-location">📍 {selectedEvent.location}</p>}
+            {selectedEvent.notes && <p className="calendario-screen__detail-notes">{selectedEvent.notes}</p>}
+            {selectedEvent.hasDemoNav && (
+              <button type="button" className="calendario-screen__nav-action" onClick={demoNavigate}>
+                🧭 Navegar até o destino (demo)
+              </button>
+            )}
+            <button type="button" className="calendario-screen__detail-close" onClick={() => setSelectedEvent(null)}>
+              Fechar
+            </button>
+          </div>
+        </div>
+      )}
+
+      {navToast && <div className="calendario-screen__toast">Destino demo definido na Navegação</div>}
+    </div>
+  );
+}

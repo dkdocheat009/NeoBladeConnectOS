@@ -1,0 +1,218 @@
+.calendario-screen {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(130% 130% at 10% 0%, #1c2550 0%, #0e1230 55%, #07081c 100%);
+  box-sizing: border-box;
+  padding: 24px 40px 24px 200px;
+  overflow: hidden;
+}
+
+.calendario-screen__header {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+.calendario-screen__title {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 800;
+  color: #fff;
+}
+
+.calendario-screen__tabs {
+  display: flex;
+  gap: 8px;
+}
+
+.calendario-screen__tabs button {
+  border: none;
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 13px;
+  font-weight: 700;
+  padding: 8px 14px;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.calendario-screen__tabs button.is-active {
+  background: rgba(255, 255, 255, 0.2);
+  color: #fff;
+}
+
+.calendario-screen__day-heading {
+  display: block;
+  margin-top: 18px;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 14px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.calendario-screen__list {
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-height: 480px;
+  overflow-y: auto;
+}
+
+.calendario-screen__event {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  border: none;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 16px;
+  padding: 16px 18px;
+  cursor: pointer;
+  text-align: left;
+}
+
+.calendario-screen__event-time {
+  font-size: 18px;
+  font-weight: 800;
+  color: #5fb0ff;
+  flex: none;
+}
+
+.calendario-screen__event-body {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.calendario-screen__event-title {
+  color: #fff;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.calendario-screen__event-location {
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 13px;
+}
+
+.calendario-screen__days {
+  margin-top: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.calendario-screen__day {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border: none;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 14px;
+  padding: 14px 18px;
+  cursor: pointer;
+  text-align: left;
+}
+
+.calendario-screen__day-label {
+  color: #fff;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.calendario-screen__day-count {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 13px;
+}
+
+.calendario-screen__empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 80px;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.calendario-screen__empty-icon {
+  font-size: 36px;
+}
+
+.calendario-screen__overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.calendario-screen__detail {
+  width: 440px;
+  background: #171b33;
+  border-radius: 22px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  padding: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.calendario-screen__detail-time {
+  color: #5fb0ff;
+  font-size: 15px;
+  font-weight: 800;
+}
+
+.calendario-screen__detail-title {
+  margin: 0;
+  color: #fff;
+  font-size: 20px;
+  font-weight: 800;
+}
+
+.calendario-screen__detail-location,
+.calendario-screen__detail-notes {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 14px;
+}
+
+.calendario-screen__nav-action {
+  border: none;
+  background: rgba(52, 199, 89, 0.3);
+  color: #fff;
+  font-weight: 700;
+  font-size: 14px;
+  padding: 12px;
+  border-radius: 14px;
+  cursor: pointer;
+  margin-top: 6px;
+}
+
+.calendario-screen__detail-close {
+  align-self: center;
+  border: none;
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 700;
+  padding: 10px 24px;
+  border-radius: 16px;
+  cursor: pointer;
+  margin-top: 6px;
+}
+
+.calendario-screen__toast {
+  position: absolute;
+  left: 50%;
+  bottom: 40px;
+  transform: translateX(-50%);
+  background: rgba(52, 199, 89, 0.9);
+  color: #06230f;
+  font-weight: 700;
+  padding: 10px 20px;
+  border-radius: 14px;
+}
