@@ -99,7 +99,7 @@ export function Dock({
         type="button"
         className="dock__shortcut"
         style={{ top: SHORTCUT_TOPS[2] }}
-        aria-label="Configurações"
+        aria-label="Ajustes"
         whileTap={{ scale: 0.88 }}
         transition={{ type: 'spring', stiffness: 500, damping: 20 }}
         onClick={() => onActivateShortcut('dock-settings')}

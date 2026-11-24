@@ -41,7 +41,7 @@ if (!(await page.locator('.mensagens-screen').isVisible())) throw new Error('Men
 await page.getByText('Não lidas', { exact: true }).click();
 await page.waitForTimeout(200);
 await shot('04_mensagens_nao_lidas');
-await page.locator('.mensagens-screen__item').first().click();
+await page.locator('.mensagens-screen .ios-list-row').first().click();
 await page.waitForTimeout(200);
 await shot('05_mensagens_detalhe');
 if (!(await page.locator('.mensagens-screen__detail').isVisible())) {
@@ -84,7 +84,7 @@ if (!(await page.locator('.calendario-screen').isVisible())) throw new Error('Ca
 await page.getByText('Próximos dias', { exact: true }).click();
 await page.waitForTimeout(200);
 await shot('10_calendario_proximos');
-await page.locator('.calendario-screen__day').nth(2).click();
+await page.locator('.calendario-screen .ios-list-row').nth(2).click();
 await page.waitForTimeout(200);
 await shot('11_calendario_dia_vazio');
 if (!(await page.getByText('Nenhum compromisso neste dia.').isVisible())) {
@@ -93,27 +93,37 @@ if (!(await page.getByText('Nenhum compromisso neste dia.').isVisible())) {
 await page.locator('.back-button').click();
 await page.waitForTimeout(500);
 
-// --- Configurações -------------------------------------------------------------
-await page.locator('.dock__shortcut[aria-label="Configurações"]').click();
+// --- Ajustes (antes "Configurações") ----------------------------------------
+await page.locator('.dock__shortcut[aria-label="Ajustes"]').click();
 await page.waitForTimeout(500);
-await shot('12_configuracoes_aparencia');
-if (!(await page.locator('.config-screen').isVisible())) throw new Error('Configurações: tela não abriu.');
-await page.getByText('Voz/Siri', { exact: true }).click();
+await shot('12_ajustes_aparencia');
+if (!(await page.locator('.ajustes-screen').isVisible())) throw new Error('Ajustes: tela não abriu.');
+if (!(await page.getByText('Ajustes', { exact: true }).isVisible())) {
+  throw new Error('Ajustes: título "Ajustes" não apareceu (renomeação de Configurações pendente).');
+}
+await page.getByText('Siri e Voz', { exact: true }).click();
 await page.waitForTimeout(200);
-const assistantToggle = page.locator('.config-toggle').first();
+const assistantToggle = page.locator('.ios-toggle').first();
 await assistantToggle.click();
 await page.waitForTimeout(150);
 if (await page.locator('.voice-button').count()) {
-  throw new Error('Configurações: desativar o assistente deveria esconder o botão de voz.');
+  throw new Error('Ajustes: desativar o assistente deveria esconder o botão de voz.');
 }
 await assistantToggle.click();
 await page.waitForTimeout(150);
 if (!(await page.locator('.voice-button').count())) {
-  throw new Error('Configurações: reativar o assistente deveria mostrar o botão de voz de novo.');
+  throw new Error('Ajustes: reativar o assistente deveria mostrar o botão de voz de novo.');
 }
 await page.getByText('Aplicativos', { exact: true }).click();
 await page.waitForTimeout(150);
-await shot('13_configuracoes_apps');
+await shot('13_ajustes_apps');
+// Busca funcional: filtra a lista de seções.
+await page.locator('.ios-search__input').fill('aparência');
+await page.waitForTimeout(150);
+if ((await page.locator('.ajustes-screen__nav-list .ios-list-row').count()) !== 1) {
+  throw new Error('Ajustes: busca não filtrou a lista de seções corretamente.');
+}
+await page.locator('.ios-search__input').fill('');
 await page.locator('.back-button').click();
 await page.waitForTimeout(500);
 

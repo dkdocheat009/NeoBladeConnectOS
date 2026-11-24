@@ -12,5 +12,7 @@ export type Screen =
   | 'mensagens'
   | 'notificacoes'
   | 'calendario'
-  | 'configuracoes';
+  | 'configuracoes'
+  | 'paradas'
+  | 'diario';
 export type MainScreen = 'home' | 'dashboard';

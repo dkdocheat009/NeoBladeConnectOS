@@ -1,4 +1,5 @@
 import { BackButton } from '../BackButton/BackButton';
+import { IosListGroup, IosListRow } from '../ios/IosListGroup';
 import type { NotificationsState } from '../../hooks/useNotificationsState';
 import type { NotificationItem } from '../../data/notificationsMock';
 import './NotificacoesScreen.css';
@@ -7,6 +8,13 @@ interface NotificacoesScreenProps {
   onBack: () => void;
   notifications: NotificationsState;
 }
+
+const GROUP_ICON: Record<string, { icon: string; color: string }> = {
+  Veículo: { icon: '🚛', color: 'var(--ios-blue)' },
+  Trabalho: { icon: '📦', color: 'var(--ios-orange)' },
+  Esportes: { icon: '⚽', color: 'var(--ios-green)' },
+  Sistema: { icon: '⚙️', color: 'var(--ios-gray)' },
+};
 
 /**
  * App Notificações (dock/Home). Estados: 1) lista agrupada por app; 2)
@@ -26,7 +34,7 @@ export function NotificacoesScreen({ onBack, notifications }: NotificacoesScreen
       <BackButton onClick={onBack} />
 
       <header className="notificacoes-screen__header">
-        <h1 className="notificacoes-screen__title">Notificações</h1>
+        <h1 className="ios-large-title">Notificações</h1>
         <div className="notificacoes-screen__actions">
           <button type="button" onClick={simulateIncoming}>
             Simular notificação (teste)
@@ -43,36 +51,47 @@ export function NotificacoesScreen({ onBack, notifications }: NotificacoesScreen
       {items.length === 0 ? (
         <div className="notificacoes-screen__empty">
           <span className="notificacoes-screen__empty-icon">🔔</span>
-          <p>Nenhuma notificação.</p>
+          <p className="ios-body">Nenhuma notificação.</p>
           <button type="button" className="notificacoes-screen__action" onClick={restoreDemo}>
             Repor notificações de exemplo (teste)
           </button>
         </div>
       ) : (
         <div className="notificacoes-screen__list">
-          {Object.entries(groups).map(([group, groupItems]) => (
-            <section key={group} className="notificacoes-screen__group">
-              <h2 className="notificacoes-screen__group-title">{group}</h2>
-              {groupItems.map((n) => (
-                <div key={n.id} className={`notificacoes-screen__item${n.read ? '' : ' is-unread'}`}>
-                  {!n.read && <span className="notificacoes-screen__dot" aria-hidden="true" />}
-                  <div className="notificacoes-screen__item-body" onClick={() => markRead(n.id)}>
-                    <span className="notificacoes-screen__item-title">{n.title}</span>
-                    <span className="notificacoes-screen__item-text">{n.body}</span>
-                    <span className="notificacoes-screen__item-time">{n.time}</span>
-                  </div>
-                  <button
-                    type="button"
-                    className="notificacoes-screen__remove"
-                    aria-label="Remover notificação"
-                    onClick={() => clearOne(n.id)}
-                  >
-                    ✕
-                  </button>
-                </div>
-              ))}
-            </section>
-          ))}
+          {Object.entries(groups).map(([group, groupItems]) => {
+            const style = GROUP_ICON[group] ?? { icon: '🔔', color: 'var(--ios-gray)' };
+            return (
+              <IosListGroup key={group} header={group}>
+                {groupItems.map((n) => (
+                  <IosListRow
+                    key={n.id}
+                    icon={style.icon}
+                    iconBg={style.color}
+                    label={n.title}
+                    sublabel={n.body}
+                    value={n.time}
+                    trailing={
+                      <span className="notificacoes-screen__row-trailing">
+                        {!n.read && <span className="notificacoes-screen__dot" aria-hidden="true" />}
+                        <button
+                          type="button"
+                          className="notificacoes-screen__remove"
+                          aria-label="Remover notificação"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            clearOne(n.id);
+                          }}
+                        >
+                          ✕
+                        </button>
+                      </span>
+                    }
+                    onClick={() => markRead(n.id)}
+                  />
+                ))}
+              </IosListGroup>
+            );
+          })}
         </div>
       )}
     </div>

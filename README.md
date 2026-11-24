@@ -32,7 +32,7 @@ app **Esportes** para usar dados reais do Campeonato Brasileiro e da
 Champions League via football-data.org. Veja a seção "Fase 5" abaixo para
 detalhes, evidências e limitações.
 
-**Fase 6 (atual):** correção do Esportes (a seção "Demonstração" com ligas
+**Fase 6:** correção do Esportes (a seção "Demonstração" com ligas
 fictícias foi **removida por completo** — só Brasileirão/Champions reais
 ficam na tela — e o proxy da football-data.org ganhou uma lista de
 endpoints permitidos); o cartão do Assistente de Voz foi redesenhado como
@@ -42,6 +42,18 @@ uma notificação flutuante estilo Siri (ícone multicolorido, transcrição
 **Configurações** (persistidas em `localStorage`), cada um com 4–5 estados
 navegáveis reais. Veja a seção "Fase 6" abaixo para detalhes, evidências e
 limitações.
+
+**Fase 7 (atual):** conclusão visual de toda a interface no vocabulário do
+iOS/CarPlay ("iOS 27"). **Configurações virou Ajustes** — navegação
+mestre-detalhe (lista agrupada à esquerda com busca funcional, detalhe à
+direita), substituindo o painel de 5 abas pequenas. Criado um pequeno
+sistema de tokens/componentes reutilizáveis (`src/styles/ios-tokens.css`,
+`src/components/ios/`) e aplicado em Ajustes, Mensagens, Notificações e
+Calendário. Dois atalhos que antes só registravam um log foram concluídos:
+**Abastecer e Descansar** (busca/filtro de postos e áreas de descanso) e
+**Diário de Bordo** (histórico de viagens + resumo de estatísticas) — agora
+**todo ícone da Home abre uma tela real**. Veja a seção "Fase 7" abaixo
+para detalhes, reaproveitamento, testes e limitações.
 
 ## Como executar
 
@@ -118,6 +130,7 @@ node scripts/check-console.mjs      # garante ausência de erros de console
 node scripts/check-dock-statusbar.mjs  # Fase 5: prova visual (overlay/diff), não só bounding box
 node scripts/test-fase5.mjs         # Navegação, Chamadas, Radar, Assistente de voz, Esportes, regressão
 node scripts/test-fase6.mjs         # Esportes só-real, cartão do Siri, Mensagens/Notificações/Calendário/Configurações
+node scripts/test-fase7.mjs         # Ajustes (busca/Liquid Glass), Abastecer e Descansar, Diário de Bordo, smoke test de todos os atalhos da Home
 ```
 
 **Para testar a troca de marca do veículo:** abra o app "Veículo" (ícone na
@@ -470,6 +483,116 @@ aqui para transparência, já que apareceu também na tela nova. Corrigi-lo
 exigiria reposicionar a barra lateral do Esportes (tela já aprovada), o
 que preferimos não fazer sem um pedido explícito.
 
+## Fase 7
+
+Conclusão visual de todos os aplicativos/telas no vocabulário do iOS/CarPlay
+("iOS 27" + Liquid Glass), sem reiniciar o projeto, sem desfazer nenhuma
+funcionalidade aprovada e sem copiar ativos proprietários da Apple — só o
+vocabulário visual (cores de sistema, grupos arredondados, tipografia,
+transparência com parcimônia). Referências consultadas: as capturas locais
+do projeto (prioridade para a geometria do CarPlay já aprovada), as HIG/
+documentação pública da Apple e a skill de frontend design; nenhum pacote
+de terceiros foi importado — os "componentes iOS 27" mencionados na tarefa
+foram reconstruídos como React próprio (ver `src/components/ios/`), não
+copiados de um repositório comunitário.
+
+### Sistema de tokens reutilizável
+
+- `src/styles/ios-tokens.css`: cores de sistema (azul/verde/vermelho/
+  laranja/amarelo/roxo/rosa/teal/índigo/cinza), cores de superfície e texto
+  (claro/escuro), raios, espaçamento e classes de tipografia
+  (`.ios-large-title`, `.ios-title1/2`, `.ios-body`, `.ios-footnote` etc.).
+  `.theme-light` escopa o subconjunto de telas com referência clara (hoje
+  só a Navegação); o resto do app permanece no visual escuro original.
+- `src/components/ios/`: `IosListGroup`/`IosListRow` (grupo arredondado com
+  ícone colorido, chevron, segunda linha opcional, divisores sutis —
+  substituindo cartões soltos), `IosToggle` (switch), `IosSearchField`
+  (busca com lupa). Reaproveitados por Ajustes, Mensagens, Notificações,
+  Calendário, Abastecer e Descansar e Diário de Bordo — nenhuma tela nova
+  inventa seu próprio componente de lista.
+- "Liquid Glass" é usado só em overlays transitórios (cartão do Assistente
+  de Voz, banner de Notificações) via a classe `.ios-glass`, nunca como
+  fundo de tela inteira — e tem intensidade ajustável de verdade em
+  Ajustes > Aparência (ver abaixo).
+
+### Prioridade absoluta: Configurações → **Ajustes**
+
+O painel de 5 abas pequenas com a maior parte da tela vazia foi substituído
+pela navegação mestre-detalhe do app Ajustes do iPhone, adaptada ao
+formato horizontal: lista agrupada à esquerda (ícones coloridos, chevrons)
+com **busca funcional** (filtra a lista por texto em tempo real) e o
+detalhe da seção selecionada à direita. O id de tela (`configuracoes`) e
+todo o estado existente (`useSettingsState`) foram preservados — só a
+apresentação mudou. Seções: Aparência (tema + intensidade do Liquid Glass,
+com efeito real sobre o blur/opacidade dos cartões flutuantes), Sons e
+Áudio, Siri e Voz, Notificações (atalho para a tela real), Aplicativos
+(restaurar atalhos removidos), Idioma e Região (informativo — só PT-BR é
+suportado, sem seletor fictício) e Sobre. Nenhum controle Wi-Fi/Bluetooth/
+hardware falso foi adicionado.
+
+### Dois atalhos concluídos (antes só registravam um log)
+
+- **Abastecer e Descansar** (`src/components/Paradas`): lista de postos e
+  áreas de descanso fictícios com busca, filtro Todos/Postos/Descanso,
+  favoritos (persistidos em `localStorage`), detalhe de uma parada e
+  estado vazio (busca sem resultado / favoritos vazios). Sem GPS real, sem
+  preços reais de combustível (tudo rotulado "(demo)").
+- **Diário de Bordo** (`src/components/DiarioDeBordo`): histórico de
+  viagens (dados locais de exemplo), detalhe de viagem, aba Resumo com
+  estatísticas agregadas (distância/tempo/combustível/consumo médio),
+  filtro por período e busca por origem/destino. Sem GPS real, sem leitura
+  de telemetria do ETS2.
+
+Com os dois, **todo ícone visível da Home agora abre uma tela real** —
+`scripts/test-fase7.mjs` inclui um smoke test que clica em cada atalho e
+falha se algum ainda só desse feedback de toque sem navegar.
+
+### Uniformização transversal (sem apagar as composições aprovadas)
+
+- Mensagens, Notificações e Calendário foram reconstruídos para usar
+  `IosListGroup`/`IosListRow` no lugar dos cartões genéricos da Fase 6 —
+  mesma funcionalidade, apresentação iOS consistente.
+- `BackButton` ganhou feedback de toque (leve encolhimento + realce) e
+  fundo em vidro translúcido, usado por quase todas as telas internas.
+- Home, Dashboard, Dock, StatusBar, Navegação, Radar, Chamadas, Veículo,
+  Trabalho, Clima, Esportes, Música e Rádio **não foram redesenhados** —
+  são composições específicas do CarPlay já medidas/aprovadas contra as
+  capturas de referência nas fases anteriores, e a tarefa pediu
+  explicitamente para preservá-las. Eles foram revalidados (regressão),
+  não reconstruídos.
+
+### Validação
+
+`scripts/test-fase7.mjs` cobre Abastecer e Descansar, Diário de Bordo, a
+navegação mestre-detalhe e a busca de Ajustes, o efeito real da
+intensidade do Liquid Glass (lido via `getComputedStyle` da variável CSS),
+e o smoke test de todos os atalhos da Home. `scripts/test-fase5.mjs` e
+`scripts/test-fase6.mjs` continuam passando sem alteração de comportamento
+(dois pequenos ajustes de seletor foram feitos neles para acompanhar a
+troca de nome/estrutura do DOM em Ajustes/Mensagens, não mudanças de
+comportamento). Long-press/jiggle foi reconfirmado manualmente no
+navegador (`scripts/test-edit-mode.mjs` continua com a mesma limitação de
+timing do Playwright já registrada nas fases anteriores, não relacionada a
+esta fase). `npm run build` e `npm run lint` passam sem erros/avisos novos.
+
+### Limitações desta fase
+
+- Não há capturas de referência (`foto.zip`/`referencias/`) para Abastecer
+  e Descansar, Diário de Bordo, nem para a tela de Ajustes no estilo iOS —
+  essas três foram construídas a partir das HIG da Apple e do mesmo
+  vocabulário visual do restante do app, não de uma captura pixel a pixel.
+  Isso está registrado aqui conforme pedido pela tarefa.
+- O tema claro continua restrito à tela de Navegação (única com referência
+  visual para os dois temas); Ajustes documenta essa limitação na própria
+  UI, sem prometer um tema claro completo.
+- Não foi possível testar a integração real da football-data.org nesta
+  sessão (sem `FOOTBALL_DATA_API_KEY` configurada) — ver seção de
+  configuração do Esportes acima.
+- Nenhuma captura lado a lado "pixel perfect" é alegada para as telas
+  tocadas nesta fase; a validação foi funcional (Playwright) e visual por
+  inspeção manual no navegador, não um diff automatizado contra um
+  mockup do iOS 27 oficial.
+
 ## Estrutura
 
 ```
@@ -489,12 +612,15 @@ src/
     Chamadas/        # Fase 5 — cartão de chamada mock sobre a tela atual
     Radar/           # Fase 5 — alertas de radar/velocidade mock
     VoiceAssistant/  # Fase 5 (pipeline) + Fase 6 (cartão de notificação estilo Siri)
-    Mensagens/       # Fase 6 — recentes/não lidas/detalhe/ditar resposta/vazio
-    Notificacoes/    # Fase 6 — lista agrupada + banner transitório
-    Calendario/      # Fase 6 — agenda mock (hoje/próximos dias/detalhe/nav demo/vazio)
-    Configuracoes/   # Fase 6 — preferências persistidas (aparência/áudio/voz/apps/sistema)
+    Mensagens/       # Fase 6-7 — recentes/não lidas/detalhe/ditar resposta/vazio (visual IosListRow)
+    Notificacoes/    # Fase 6-7 — lista agrupada + banner transitório (visual IosListRow)
+    Calendario/      # Fase 6-7 — agenda mock (hoje/próximos dias/detalhe/nav demo/vazio)
+    Configuracoes/   # Fase 6-7 — app "Ajustes": navegação mestre-detalhe, busca, preferências
+    Paradas/         # Fase 7 — Abastecer e Descansar: busca/filtro/favoritos/detalhe/vazio
+    DiarioDeBordo/   # Fase 7 — viagens/detalhe/resumo/filtro por período/busca vazia
+    ios/             # Fase 7 — IosListGroup/IosListRow, IosToggle, IosSearchField (tokens reutilizáveis)
     BackButton/      # botão de voltar compartilhado por quase todas as telas internas
-    common/          # StatBar, StatCard, SegmentedControl — reutilizados pelos 4 apps novos
+    common/          # StatBar, StatCard, SegmentedControl — reutilizados pelos apps novos
     Wallpaper/       # papel de parede (SVG, aproximação do original)
     Dock/            # dock lateral (status, atalhos, slot contextual + ponto indicador)
     StatusBar/       # relógio, sinal e bateria (ver seção do bug do dock acima)
@@ -523,6 +649,8 @@ src/
     notificationsMock.ts    # Fase 6 — notificações fictícias iniciais + item simulado
     calendarMock.ts         # Fase 6 — agenda fictícia determinística (dia 0 = hoje)
     beep.ts                 # Fase 6 — bipe curto via Web Audio (aviso de notificação)
+    stopsMock.ts            # Fase 7 — postos/áreas de descanso fictícios
+    logbookMock.ts          # Fase 7 — viagens fictícias do Diário de Bordo
   hooks/
     useLongPress.ts        # detecta pressionar-e-segurar sem quebrar o clique curto
     useRemovedApps.ts      # persistência dos atalhos removidos (localStorage)
@@ -534,7 +662,9 @@ src/
     useMessagesState.ts     # Fase 6 — store de Mensagens (badge real, ler/ditar/apagar)
     useNotificationsState.ts # Fase 6 — store de Notificações + banner transitório
     useOneShotDictation.ts  # Fase 6 — captura de fala avulsa (ditar resposta de mensagem)
-    useSettingsState.ts     # Fase 6 — preferências persistidas em localStorage
+    useSettingsState.ts     # Fase 6-7 — preferências persistidas (+ intensidade do Liquid Glass)
+  styles/
+    ios-tokens.css           # Fase 7 — cores de sistema, tipografia, raios, Liquid Glass
   assets/
     icons/    # recortes/ativos locais usados pelos ícones (apps, Scania, arte do álbum)
     brands/   # logos de Volvo, Mercedes-Benz, DAF, MAN, Iveco, Renault Trucks (ver origem abaixo)
@@ -677,12 +807,11 @@ para ficar nítido tanto na Home (96px) quanto no slot do dock (61px).
   apenas pressionar e segurar (~600 ms) ativa a edição (jiggle + botão "−").
   A remoção de atalhos persiste em `localStorage`; a restauração (individual
   ou "restaurar todos") não usa nenhuma tela/loja de apps adicional.
-- Nenhum aplicativo além de Home, Dashboard, Música, Rádio, Veículo,
-  Trabalho, Clima, Esportes, Navegação, Chamadas, Radar, Assistente de Voz,
-  Mensagens, Notificações, Calendário e Configurações foi implementado: os
-  ícones restantes (Diário de Bordo, Abastecer e Descansar) continuam
-  apenas dando feedback de toque e registrando um log — um clique neles
-  nunca abre uma tela inventada.
+- Desde a Fase 7, **todos** os 11 ícones da Home abrem uma tela real: Home,
+  Dashboard, Música, Rádio, Veículo, Trabalho, Clima, Esportes, Navegação,
+  Chamadas, Radar, Assistente de Voz, Mensagens, Notificações, Calendário,
+  Ajustes (antes "Configurações"), Abastecer e Descansar e Diário de Bordo.
+  Nenhum ícone restante só registra um log sem navegar.
 
 ## Tecnologias
 

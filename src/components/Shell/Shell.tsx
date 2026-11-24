@@ -18,6 +18,8 @@ import { NotificacoesScreen } from '../Notificacoes/NotificacoesScreen';
 import { NotificationBanner } from '../Notificacoes/NotificationBanner';
 import { CalendarioScreen } from '../Calendario/CalendarioScreen';
 import { ConfiguracoesScreen } from '../Configuracoes/ConfiguracoesScreen';
+import { ParadasScreen } from '../Paradas/ParadasScreen';
+import { DiarioDeBordoScreen } from '../DiarioDeBordo/DiarioDeBordoScreen';
 import { VoiceAssistantOverlay } from '../VoiceAssistant/VoiceAssistantOverlay';
 import { VoiceAssistantButton } from '../VoiceAssistant/VoiceAssistantButton';
 import { useHomeMockState } from '../../hooks/useHomeMockState';
@@ -51,6 +53,8 @@ const OVERLAY_SCREENS: Screen[] = [
   'notificacoes',
   'calendario',
   'configuracoes',
+  'paradas',
+  'diario',
 ];
 
 export function Shell() {
@@ -88,6 +92,8 @@ export function Shell() {
     onOpenMensagens: () => navigateTo('mensagens'),
     onOpenNotificacoes: () => navigateTo('notificacoes'),
     onOpenCalendario: () => navigateTo('calendario'),
+    onOpenParadas: () => navigateTo('paradas'),
+    onOpenDiario: () => navigateTo('diario'),
   });
 
   const badgeCounts: Record<string, number> = {
@@ -200,7 +206,15 @@ export function Shell() {
           {screen === 'calendario' && (
             <CalendarioScreen onBack={backToMain} onDemoNavigate={() => navigateTo('navegacao')} />
           )}
-          {screen === 'configuracoes' && <ConfiguracoesScreen onBack={backToMain} settings={settings} />}
+          {screen === 'configuracoes' && (
+            <ConfiguracoesScreen
+              onBack={backToMain}
+              settings={settings}
+              onOpenNotificacoes={() => navigateTo('notificacoes')}
+            />
+          )}
+          {screen === 'paradas' && <ParadasScreen onBack={backToMain} />}
+          {screen === 'diario' && <DiarioDeBordoScreen onBack={backToMain} />}
         </motion.div>
       </AnimatePresence>
 

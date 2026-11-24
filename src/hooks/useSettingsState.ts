@@ -6,6 +6,7 @@ export interface AppSettings {
   notificationSound: boolean;
   assistantEnabled: boolean;
   assistantShowTranscript: boolean;
+  glassIntensity: number;
 }
 
 const STORAGE_KEY = 'neoblade:settings';
@@ -16,6 +17,7 @@ const DEFAULT_SETTINGS: AppSettings = {
   notificationSound: true,
   assistantEnabled: true,
   assistantShowTranscript: true,
+  glassIntensity: 70,
 };
 
 function loadSettings(): AppSettings {
@@ -48,6 +50,16 @@ export function useSettingsState() {
       // localStorage indisponível — segue só em memória.
     }
   }, [settings]);
+
+  // "Intensidade/transparência" do material Liquid Glass (Fase 7) — efeito
+  // real sobre o blur/opacidade usados pelo cartão do Assistente de Voz e
+  // pelo banner de Notificações (ver src/styles/ios-tokens.css), não um
+  // controle decorativo.
+  useEffect(() => {
+    const pct = Math.max(0, Math.min(100, settings.glassIntensity)) / 100;
+    document.documentElement.style.setProperty('--ios-glass-blur', `${(6 + pct * 24).toFixed(0)}px`);
+    document.documentElement.style.setProperty('--ios-glass-bg', `rgba(28, 28, 30, ${(0.35 + pct * 0.45).toFixed(2)})`);
+  }, [settings.glassIntensity]);
 
   const update = <K extends keyof AppSettings>(key: K, value: AppSettings[K]) => {
     setSettings((prev) => ({ ...prev, [key]: value }));

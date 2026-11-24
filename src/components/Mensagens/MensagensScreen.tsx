@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { BackButton } from '../BackButton/BackButton';
 import { SegmentedControl } from '../common/SegmentedControl';
+import { IosListGroup, IosListRow } from '../ios/IosListGroup';
 import { useOneShotDictation } from '../../hooks/useOneShotDictation';
 import type { MessagesState } from '../../hooks/useMessagesState';
 import type { MessageItem } from '../../data/messagesMock';
@@ -97,7 +98,7 @@ export function MensagensScreen({ onBack, messages, onActivateVoice }: Mensagens
       <BackButton onClick={onBack} />
 
       <header className="mensagens-screen__header">
-        <h1 className="mensagens-screen__title">Mensagens</h1>
+        <h1 className="ios-large-title">Mensagens</h1>
         <SegmentedControl
           options={[
             { id: 'recentes', label: 'Recentes' },
@@ -120,18 +121,25 @@ export function MensagensScreen({ onBack, messages, onActivateVoice }: Mensagens
 
       <div className="mensagens-screen__list">
         {list.length === 0 && view === 'naoLidas' && (
-          <p className="mensagens-screen__list-empty">Nenhuma mensagem não lida.</p>
+          <p className="mensagens-screen__list-empty ios-subheadline">Nenhuma mensagem não lida.</p>
         )}
-        {list.map((m) => (
-          <button type="button" key={m.id} className="mensagens-screen__item" onClick={() => openMessage(m)}>
-            {!m.read && <span className="mensagens-screen__dot" aria-hidden="true" />}
-            <div className="mensagens-screen__item-body">
-              <span className="mensagens-screen__item-sender">{m.sender}</span>
-              <span className="mensagens-screen__item-preview">{m.preview}</span>
-            </div>
-            <span className="mensagens-screen__item-time">{m.time}</span>
-          </button>
-        ))}
+        {list.length > 0 && (
+          <IosListGroup>
+            {list.map((m) => (
+              <IosListRow
+                key={m.id}
+                icon={m.sender.charAt(0)}
+                iconBg="var(--ios-blue)"
+                label={m.sender}
+                sublabel={m.preview}
+                value={m.time}
+                trailing={!m.read && <span className="mensagens-screen__dot" aria-hidden="true" />}
+                chevron
+                onClick={() => openMessage(m)}
+              />
+            ))}
+          </IosListGroup>
+        )}
       </div>
 
       {selected && (

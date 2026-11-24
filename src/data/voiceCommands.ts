@@ -122,7 +122,7 @@ export function resolveVoiceCommand(rawTranscript: string, ctx: VoiceCommandCont
 
   if (t.includes('abrir configuracoes') || t.includes('abrir ajustes')) {
     ctx.onOpenScreen('configuracoes');
-    return { spokenText: 'Abrindo Configurações.', handled: true };
+    return { spokenText: 'Abrindo Ajustes.', handled: true };
   }
 
   if (t.includes('tela inicial') || t.includes('ir para home') || t.includes('ir para a home') || t === 'home') {

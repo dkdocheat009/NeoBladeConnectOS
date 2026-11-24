@@ -1,0 +1,218 @@
+.paradas-screen {
+  position: absolute;
+  inset: 0;
+  background: var(--ios-bg-grouped);
+  box-sizing: border-box;
+  padding: 24px 40px 24px 200px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.paradas-screen__header {
+  flex: none;
+}
+
+.paradas-screen__header h1 {
+  margin: 0 0 14px;
+}
+
+.paradas-screen__controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+
+.paradas-screen__fav-toggle {
+  border: none;
+  background: var(--ios-fill);
+  color: var(--ios-label-secondary);
+  font-size: 13px;
+  font-weight: 700;
+  padding: 7px 14px;
+  border-radius: var(--ios-radius-pill);
+  cursor: pointer;
+}
+
+.paradas-screen__fav-toggle.is-active {
+  background: var(--ios-yellow);
+  color: #1c1c1e;
+}
+
+.paradas-screen__list {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.paradas-screen__empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 60px 0;
+  color: var(--ios-label-secondary);
+}
+
+.paradas-screen__empty-icon {
+  font-size: 36px;
+}
+
+.paradas-screen__card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  border: none;
+  background: var(--ios-bg-elevated);
+  border-radius: var(--ios-radius-lg);
+  padding: 14px 16px;
+  cursor: pointer;
+  text-align: left;
+}
+
+.paradas-screen__type-badge {
+  flex: none;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--ios-radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 19px;
+}
+
+.paradas-screen__type-badge--posto {
+  background: var(--ios-orange);
+}
+
+.paradas-screen__type-badge--descanso {
+  background: var(--ios-indigo);
+}
+
+.paradas-screen__card-body {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.paradas-screen__card-name {
+  color: var(--ios-label);
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.paradas-screen__card-address {
+  color: var(--ios-label-secondary);
+  font-size: 13px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.paradas-screen__card-meta {
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+}
+
+.paradas-screen__card-distance {
+  color: var(--ios-label);
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.paradas-screen__card-price {
+  color: var(--ios-green);
+  font-size: 12px;
+}
+
+.paradas-screen__star {
+  flex: none;
+  font-size: 20px;
+  color: var(--ios-label-tertiary);
+  padding: 4px;
+}
+
+.paradas-screen__star.is-active {
+  color: var(--ios-yellow);
+}
+
+.paradas-screen__overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.paradas-screen__detail {
+  width: 460px;
+  background: var(--ios-bg-elevated);
+  border-radius: var(--ios-radius-xl);
+  border: 1px solid var(--ios-separator);
+  padding: 28px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  text-align: center;
+}
+
+.paradas-screen__detail h2 {
+  margin: 4px 0 0;
+}
+
+.paradas-screen__detail-price {
+  color: var(--ios-green);
+  font-weight: 700;
+  margin: 0;
+}
+
+.paradas-screen__amenities {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+  margin-top: 6px;
+}
+
+.paradas-screen__amenity {
+  background: var(--ios-fill);
+  color: var(--ios-label-secondary);
+  font-size: 12px;
+  padding: 5px 10px;
+  border-radius: var(--ios-radius-pill);
+}
+
+.paradas-screen__detail-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 12px;
+  width: 100%;
+}
+
+.paradas-screen__detail-actions button {
+  flex: 1;
+  border: none;
+  background: var(--ios-blue);
+  color: #fff;
+  font-weight: 700;
+  font-size: 14px;
+  padding: 12px;
+  border-radius: var(--ios-radius-lg);
+  cursor: pointer;
+}
+
+.paradas-screen__detail-actions button.is-secondary {
+  background: var(--ios-fill);
+  color: var(--ios-label);
+}

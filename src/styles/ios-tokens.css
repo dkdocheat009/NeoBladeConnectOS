@@ -1,0 +1,119 @@
+/*
+ * Fase 7 — pequeno sistema de tokens "iOS 27" reutilizável entre os apps
+ * internos do NeoBladeConnectOS (Ajustes, Mensagens, Notificações,
+ * Calendário, Abastecer e Descansar, Diário de Bordo, e os detalhes
+ * visuais dos demais). Inspirado na linguagem do iOS/HIG (cores de
+ * sistema, grupos arredondados, tipografia, "Liquid Glass" usado com
+ * parcimônia) — não reproduz ativos proprietários da Apple, só o
+ * vocabulário visual (cores, raios, espaçamentos, hierarquia).
+ *
+ * O stage inteiro é escuro por padrão (tema CarPlay da noite, já
+ * aprovado nas fases anteriores); `.theme-light` escopa um subconjunto de
+ * telas que têm referência visual clara (Navegação, e o preview de
+ * Aparência em Ajustes) sem afetar o resto do app.
+ */
+
+:root {
+  /* Cores de sistema (iOS, modo escuro) */
+  --ios-blue: #0a84ff;
+  --ios-green: #30d158;
+  --ios-red: #ff453a;
+  --ios-orange: #ff9f0a;
+  --ios-yellow: #ffd60a;
+  --ios-purple: #bf5af2;
+  --ios-pink: #ff375f;
+  --ios-teal: #40c8e0;
+  --ios-indigo: #5e5ce6;
+  --ios-gray: #8e8e93;
+
+  /* Superfícies e texto (modo escuro = padrão do stage) */
+  --ios-bg-grouped: #000000;
+  --ios-bg-elevated: #1c1c1e;
+  --ios-bg-elevated-2: #2c2c2e;
+  --ios-label: #ffffff;
+  --ios-label-secondary: rgba(235, 235, 245, 0.6);
+  --ios-label-tertiary: rgba(235, 235, 245, 0.3);
+  --ios-separator: rgba(84, 84, 88, 0.48);
+  --ios-fill: rgba(120, 120, 128, 0.24);
+
+  /* Liquid Glass — usar só em overlays/cartões transitórios (Siri, banner,
+     sheets), nunca como fundo de tela inteira */
+  --ios-glass-bg: rgba(28, 28, 30, 0.72);
+  --ios-glass-border: rgba(255, 255, 255, 0.14);
+  --ios-glass-blur: 20px;
+
+  /* Raios */
+  --ios-radius-sm: 10px;
+  --ios-radius-md: 14px;
+  --ios-radius-lg: 20px;
+  --ios-radius-xl: 28px;
+  --ios-radius-pill: 999px;
+
+  /* Espaçamento */
+  --ios-space-1: 4px;
+  --ios-space-2: 8px;
+  --ios-space-3: 12px;
+  --ios-space-4: 16px;
+  --ios-space-5: 24px;
+  --ios-space-6: 32px;
+
+  --ios-font: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+}
+
+.theme-light {
+  --ios-bg-grouped: #f2f2f7;
+  --ios-bg-elevated: #ffffff;
+  --ios-bg-elevated-2: #e5e5ea;
+  --ios-label: #000000;
+  --ios-label-secondary: rgba(60, 60, 67, 0.6);
+  --ios-label-tertiary: rgba(60, 60, 67, 0.3);
+  --ios-separator: rgba(60, 60, 67, 0.29);
+  --ios-fill: rgba(120, 120, 128, 0.2);
+  --ios-glass-bg: rgba(255, 255, 255, 0.72);
+  --ios-glass-border: rgba(0, 0, 0, 0.08);
+}
+
+/* Escala tipográfica (classes utilitárias) */
+.ios-large-title {
+  font: 700 30px/1.15 var(--ios-font);
+  color: var(--ios-label);
+  letter-spacing: -0.3px;
+}
+.ios-title1 {
+  font: 700 24px/1.2 var(--ios-font);
+  color: var(--ios-label);
+}
+.ios-title2 {
+  font: 700 19px/1.25 var(--ios-font);
+  color: var(--ios-label);
+}
+.ios-headline {
+  font: 600 15px/1.3 var(--ios-font);
+  color: var(--ios-label);
+}
+.ios-body {
+  font: 400 15px/1.4 var(--ios-font);
+  color: var(--ios-label);
+}
+.ios-subheadline {
+  font: 400 13px/1.35 var(--ios-font);
+  color: var(--ios-label-secondary);
+}
+.ios-footnote {
+  font: 400 12px/1.3 var(--ios-font);
+  color: var(--ios-label-tertiary);
+}
+.ios-caption-strong {
+  font: 700 11px/1.3 var(--ios-font);
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  color: var(--ios-label-secondary);
+}
+
+/* "Liquid Glass" — material translúcido para cartões/overlays transitórios */
+.ios-glass {
+  background: var(--ios-glass-bg);
+  -webkit-backdrop-filter: blur(var(--ios-glass-blur));
+  backdrop-filter: blur(var(--ios-glass-blur));
+  border: 1px solid var(--ios-glass-border);
+}

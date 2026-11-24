@@ -1,196 +1,90 @@
-.config-screen {
+.ajustes-screen {
   position: absolute;
   inset: 0;
-  background: radial-gradient(130% 130% at 10% 0%, #1c2550 0%, #0e1230 55%, #07081c 100%);
-  overflow: hidden;
-}
-
-.config-screen__sidebar {
-  position: absolute;
-  left: 143px;
-  top: 24px;
-  bottom: 24px;
-  width: 190px;
+  background: var(--ios-bg-grouped);
   display: flex;
-  flex-direction: column;
-  gap: 8px;
 }
 
-.config-screen__tab {
-  text-align: left;
-  border: none;
-  background: rgba(255, 255, 255, 0.05);
-  color: rgba(255, 255, 255, 0.75);
-  font-size: 14px;
-  font-weight: 700;
-  padding: 12px 14px;
-  border-radius: 12px;
-  cursor: pointer;
-}
-
-.config-screen__tab.is-active {
-  background: rgba(255, 255, 255, 0.16);
-  color: #fff;
-}
-
-.config-screen__main {
-  position: absolute;
-  left: 360px;
-  right: 40px;
-  top: 24px;
-  bottom: 24px;
+.ajustes-screen__nav {
+  width: 420px;
+  flex: none;
+  box-sizing: border-box;
+  /* padding-top maior que a altura do BackButton (38px a partir de
+     top:24px) evita a sobreposição visual que o Esportes tinha desde a
+     Fase 4 — aqui o título fica abaixo do botão, não ao lado dele. */
+  padding: 70px 24px 24px 130px;
+  border-right: 1px solid var(--ios-separator);
   overflow-y: auto;
 }
 
-.config-screen__title {
-  margin: 0 0 20px;
-  font-size: 28px;
-  font-weight: 800;
-  color: #fff;
+.ajustes-screen__nav-title {
+  margin: 0 0 16px;
 }
 
-.config-screen__row {
+.ajustes-screen__nav-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.ajustes-screen__no-results {
+  padding: var(--ios-space-4);
+  text-align: center;
+}
+
+.ajustes-screen__detail {
+  flex: 1;
+  box-sizing: border-box;
+  padding: 24px 40px;
+  overflow-y: auto;
+}
+
+.ajustes-screen__detail-title {
+  margin: 0 0 18px;
+}
+
+.ajustes-screen__slider-row {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  background: rgba(255, 255, 255, 0.05);
-  border-radius: 16px;
-  padding: 16px 20px;
-  margin-bottom: 12px;
+  gap: 14px;
+  padding: 12px 16px;
 }
 
-.config-screen__row-label {
-  display: block;
-  color: #fff;
-  font-size: 15px;
-  font-weight: 700;
+.ajustes-screen__slider {
+  flex: 1;
+  accent-color: var(--ios-blue);
 }
 
-.config-screen__row-hint {
-  display: block;
-  color: rgba(255, 255, 255, 0.5);
-  font-size: 12px;
-  margin-top: 4px;
-  max-width: 460px;
-}
-
-.config-screen__segmented {
-  display: flex;
-  gap: 6px;
-}
-
-.config-screen__segmented button {
-  border: none;
-  background: rgba(255, 255, 255, 0.1);
-  color: rgba(255, 255, 255, 0.7);
-  font-size: 13px;
-  font-weight: 700;
-  padding: 8px 16px;
-  border-radius: 10px;
-  cursor: pointer;
-}
-
-.config-screen__segmented button.is-active {
-  background: #fff;
-  color: #111;
-}
-
-.config-screen__value {
-  color: #fff;
-  font-weight: 700;
-  font-size: 14px;
+.ajustes-screen__slider-value {
   width: 44px;
   text-align: right;
 }
 
-.config-toggle {
-  width: 46px;
-  height: 28px;
-  border-radius: 14px;
+.ajustes-screen__restore-btn {
   border: none;
-  background: rgba(255, 255, 255, 0.2);
-  cursor: pointer;
-  position: relative;
-  flex: none;
-}
-
-.config-toggle.is-on {
-  background: #34c759;
-}
-
-.config-toggle__knob {
-  position: absolute;
-  top: 3px;
-  left: 3px;
-  width: 22px;
-  height: 22px;
-  border-radius: 50%;
-  background: #fff;
-  transition: transform 160ms ease;
-}
-
-.config-toggle.is-on .config-toggle__knob {
-  transform: translateX(18px);
-}
-
-.config-screen__app-list {
-  list-style: none;
-  margin: 0 0 14px;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.config-screen__app-list li {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  background: rgba(255, 255, 255, 0.05);
-  border-radius: 12px;
-  padding: 10px 16px;
+  background: var(--ios-blue);
   color: #fff;
-  font-size: 14px;
-}
-
-.config-screen__app-list button {
-  border: none;
-  background: rgba(255, 255, 255, 0.14);
-  color: #fff;
-  font-size: 12px;
-  font-weight: 700;
-  padding: 6px 12px;
-  border-radius: 10px;
-  cursor: pointer;
-}
-
-.config-screen__action {
-  border: none;
-  background: rgba(124, 77, 255, 0.3);
-  color: #fff;
-  font-weight: 700;
-  padding: 12px 18px;
-  border-radius: 14px;
-  cursor: pointer;
-}
-
-.config-screen__info {
-  display: grid;
-  grid-template-columns: 180px 1fr;
-  row-gap: 14px;
-  column-gap: 12px;
-  margin: 0;
-}
-
-.config-screen__info dt {
-  color: rgba(255, 255, 255, 0.5);
   font-size: 13px;
   font-weight: 700;
+  padding: 6px 14px;
+  border-radius: var(--ios-radius-pill);
+  cursor: pointer;
 }
 
-.config-screen__info dd {
-  margin: 0;
-  color: #fff;
-  font-size: 14px;
+.ajustes-screen__restore-all {
+  width: 100%;
+  border: none;
+  background: var(--ios-bg-elevated);
+  color: var(--ios-red);
+  font: 600 15px/1.3 var(--ios-font);
+  padding: 13px;
+  border-radius: var(--ios-radius-lg);
+  cursor: pointer;
+  margin-top: var(--ios-space-2);
+}
+
+/* Reproduz a mesma estrutura de linha/grupo do ios-list-row dentro do
+   slider (para o label ficar alinhado com os demais itens do grupo). */
+.ajustes-screen__slider-row .ios-body {
+  flex: none;
+  min-width: 220px;
 }

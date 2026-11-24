@@ -12,6 +12,8 @@ interface UseHomeMockStateOptions {
   onOpenMensagens: () => void;
   onOpenNotificacoes: () => void;
   onOpenCalendario: () => void;
+  onOpenParadas: () => void;
+  onOpenDiario: () => void;
 }
 
 /**
@@ -31,6 +33,8 @@ export function useHomeMockState({
   onOpenMensagens,
   onOpenNotificacoes,
   onOpenCalendario,
+  onOpenParadas,
+  onOpenDiario,
 }: UseHomeMockStateOptions) {
   const [truckBrandIndex, setTruckBrandIndex] = useState(0);
 
@@ -73,6 +77,14 @@ export function useHomeMockState({
     }
     if (app.id === 'kalender') {
       onOpenCalendario();
+      return;
+    }
+    if (app.id === 'tanken-rasten') {
+      onOpenParadas();
+      return;
+    }
+    if (app.id === 'fahrtenbuch') {
+      onOpenDiario();
       return;
     }
     // Nenhuma outra tela/app foi implementada ainda — apenas o feedback de

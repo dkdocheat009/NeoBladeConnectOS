@@ -1,5 +1,7 @@
 import { useMemo, useState } from 'react';
 import { BackButton } from '../BackButton/BackButton';
+import { SegmentedControl } from '../common/SegmentedControl';
+import { IosListGroup, IosListRow } from '../ios/IosListGroup';
 import { buildAgenda, type CalendarEvent } from '../../data/calendarMock';
 import './CalendarioScreen.css';
 
@@ -43,57 +45,59 @@ export function CalendarioScreen({ onBack, onDemoNavigate }: CalendarioScreenPro
       <BackButton onClick={onBack} />
 
       <header className="calendario-screen__header">
-        <h1 className="calendario-screen__title">Calendário</h1>
-        <div className="calendario-screen__tabs">
-          <button
-            type="button"
-            className={view === 'hoje' ? 'is-active' : ''}
-            onClick={() => {
-              setSelectedOffset(0);
-              setView('hoje');
-            }}
-          >
-            Hoje
-          </button>
-          <button type="button" className={view === 'proximos' ? 'is-active' : ''} onClick={() => setView('proximos')}>
-            Próximos dias
-          </button>
-        </div>
+        <h1 className="ios-large-title">Calendário</h1>
+        <SegmentedControl
+          options={[
+            { id: 'hoje', label: 'Hoje' },
+            { id: 'proximos', label: 'Próximos dias' },
+          ]}
+          value={view}
+          onChange={(id) => {
+            if (id === 'hoje') setSelectedOffset(0);
+            setView(id as View);
+          }}
+        />
       </header>
 
       {view === 'proximos' && (
-        <div className="calendario-screen__days">
+        <IosListGroup>
           {agenda.map((d) => (
-            <button type="button" key={d.dayOffset} className="calendario-screen__day" onClick={() => openDay(d.dayOffset)}>
-              <span className="calendario-screen__day-label">{d.label}</span>
-              <span className="calendario-screen__day-count">
-                {d.events.length === 0 ? 'Nenhum compromisso' : `${d.events.length} compromisso(s)`}
-              </span>
-            </button>
+            <IosListRow
+              key={d.dayOffset}
+              icon="🗓️"
+              iconBg="var(--ios-red)"
+              label={d.label}
+              value={d.events.length === 0 ? 'Nenhum compromisso' : `${d.events.length} compromisso(s)`}
+              chevron
+              onClick={() => openDay(d.dayOffset)}
+            />
           ))}
-        </div>
+        </IosListGroup>
       )}
 
       {view === 'hoje' && (
         <>
-          <span className="calendario-screen__day-heading">{day.label}</span>
+          <span className="calendario-screen__day-heading ios-caption-strong">{day.label}</span>
           {day.events.length === 0 ? (
             <div className="calendario-screen__empty">
               <span className="calendario-screen__empty-icon">📅</span>
-              <p>Nenhum compromisso neste dia.</p>
+              <p className="ios-body">Nenhum compromisso neste dia.</p>
             </div>
           ) : (
-            <div className="calendario-screen__list">
+            <IosListGroup>
               {day.events.map((e) => (
-                <button type="button" key={e.id} className="calendario-screen__event" onClick={() => setSelectedEvent(e)}>
-                  <span className="calendario-screen__event-time">{e.time}</span>
-                  <div className="calendario-screen__event-body">
-                    <span className="calendario-screen__event-title">{e.title}</span>
-                    {e.location && <span className="calendario-screen__event-location">{e.location}</span>}
-                  </div>
-                </button>
+                <IosListRow
+                  key={e.id}
+                  icon="🕐"
+                  iconBg="var(--ios-blue)"
+                  label={e.title}
+                  sublabel={e.location}
+                  value={e.time}
+                  chevron
+                  onClick={() => setSelectedEvent(e)}
+                />
               ))}
-            </div>
+            </IosListGroup>
           )}
         </>
       )}
@@ -102,7 +106,7 @@ export function CalendarioScreen({ onBack, onDemoNavigate }: CalendarioScreenPro
         <div className="calendario-screen__overlay" onClick={() => setSelectedEvent(null)}>
           <div className="calendario-screen__detail" onClick={(e) => e.stopPropagation()}>
             <span className="calendario-screen__detail-time">{selectedEvent.time}</span>
-            <h2 className="calendario-screen__detail-title">{selectedEvent.title}</h2>
+            <h2 className="ios-title1">{selectedEvent.title}</h2>
             {selectedEvent.location && <p className="calendario-screen__detail-location">📍 {selectedEvent.location}</p>}
             {selectedEvent.notes && <p className="calendario-screen__detail-notes">{selectedEvent.notes}</p>}
             {selectedEvent.hasDemoNav && (
