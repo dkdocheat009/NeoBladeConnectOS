@@ -49,9 +49,15 @@ export function useMusicPlayerState() {
     setTrackIndex((i) => (i - 1 + MOCK_PLAYLIST.length) % MOCK_PLAYLIST.length);
     setProgress(0);
   };
+  const playTrackAt = (index: number) => {
+    setTrackIndex(((index % MOCK_PLAYLIST.length) + MOCK_PLAYLIST.length) % MOCK_PLAYLIST.length);
+    setProgress(0);
+    setIsPlaying(true);
+  };
 
   return {
     track,
+    trackIndex,
     isPlaying,
     shuffle,
     repeat,
@@ -66,6 +72,7 @@ export function useMusicPlayerState() {
     seek: (ratio: number) => setProgress(Math.min(1, Math.max(0, ratio))),
     next,
     prev,
+    playTrackAt,
   };
 }
 

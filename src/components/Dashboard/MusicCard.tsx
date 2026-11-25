@@ -43,7 +43,7 @@ export function MusicCard({ player, onOpenMusic }: MusicCardProps) {
           }}
         >
           <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
-            <path d="M6 5h2.4v14H6zM19 5 9 12l10 7z" fill="#fff" />
+            <path d="M6 5h2.4v14H6zM19 5 9 12l10 7z" style={{ fill: 'var(--music-text)' }} />
           </svg>
         </button>
         <button
@@ -57,12 +57,12 @@ export function MusicCard({ player, onOpenMusic }: MusicCardProps) {
         >
           {isPlaying ? (
             <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
-              <rect x="6" y="5" width="4.5" height="14" rx="1" fill="#fff" />
-              <rect x="13.5" y="5" width="4.5" height="14" rx="1" fill="#fff" />
+              <rect x="6" y="5" width="4.5" height="14" rx="1" style={{ fill: 'var(--music-text)' }} />
+              <rect x="13.5" y="5" width="4.5" height="14" rx="1" style={{ fill: 'var(--music-text)' }} />
             </svg>
           ) : (
             <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
-              <path d="M7 5v14l12-7z" fill="#fff" />
+              <path d="M7 5v14l12-7z" style={{ fill: 'var(--music-text)' }} />
             </svg>
           )}
         </button>
@@ -75,7 +75,7 @@ export function MusicCard({ player, onOpenMusic }: MusicCardProps) {
           }}
         >
           <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
-            <path d="M15.6 5H18v14h-2.4zM5 5l10 7-10 7z" fill="#fff" />
+            <path d="M15.6 5H18v14h-2.4zM5 5l10 7-10 7z" style={{ fill: 'var(--music-text)' }} />
           </svg>
         </button>
       </div>

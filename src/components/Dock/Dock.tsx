@@ -12,6 +12,7 @@ import radioIcon from '../../assets/icons/radio.png';
 import auftragIcon from '../../assets/icons/auftrag.png';
 import type { Screen } from '../../types';
 import type { TruckBrand } from '../../data/truckBrands';
+import type { ClockFormat } from '../../hooks/useSettingsState';
 import './Dock.css';
 
 const SHORTCUT_TOPS = [231, 303, 375, 447];
@@ -25,6 +26,7 @@ const CONTEXTUAL_SCREENS: Screen[] = ['radio', 'veiculo', 'trabalho', 'esportes'
 interface DockProps {
   screen: Screen;
   currentTruckBrand: TruckBrand;
+  clockFormat: ClockFormat;
   onOpenScreen: (screen: Screen) => void;
   onActivateShortcut: (id: string) => void;
   onToggleScreen: () => void;
@@ -33,6 +35,7 @@ interface DockProps {
 export function Dock({
   screen,
   currentTruckBrand,
+  clockFormat,
   onOpenScreen,
   onActivateShortcut,
   onToggleScreen,
@@ -67,7 +70,7 @@ export function Dock({
 
   return (
     <div className="dock">
-      <StatusBar />
+      <StatusBar clockFormat={clockFormat} />
 
       <motion.button
         type="button"

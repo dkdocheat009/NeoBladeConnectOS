@@ -1,7 +1,7 @@
 .esportes-screen {
   position: absolute;
   inset: 0;
-  background: radial-gradient(130% 130% at 10% 0%, #1c2550 0%, #0e1230 55%, #07081c 100%);
+  background: radial-gradient(130% 130% at 10% 0%, var(--carplay-surface-2) 0%, var(--carplay-surface-1) 55%, var(--carplay-surface-3) 100%);
   overflow: hidden;
 }
 
@@ -25,7 +25,7 @@
   font-weight: 800;
   letter-spacing: 0.6px;
   text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.4);
+  color: var(--carplay-text-tertiary);
   padding: 10px 4px 2px;
 }
 
@@ -38,8 +38,8 @@
   align-items: center;
   gap: 12px;
   border: none;
-  background: rgba(255, 255, 255, 0.05);
-  color: rgba(255, 255, 255, 0.75);
+  background: var(--carplay-card-bg-weak);
+  color: var(--carplay-text-secondary);
   font-size: 15px;
   font-weight: 700;
   padding: 10px 14px;
@@ -49,8 +49,8 @@
 }
 
 .esportes-screen__league.is-active {
-  background: rgba(255, 255, 255, 0.16);
-  color: #fff;
+  background: var(--carplay-chip-strong);
+  color: var(--carplay-text);
 }
 
 .esportes-screen__league-code {
@@ -62,7 +62,7 @@
   justify-content: center;
   font-size: 11px;
   font-weight: 800;
-  color: #fff;
+  color: var(--carplay-text);
   flex-shrink: 0;
 }
 
@@ -87,13 +87,13 @@
   margin: 0;
   font-size: 30px;
   font-weight: 800;
-  color: #fff;
+  color: var(--carplay-text);
 }
 
 .esportes-screen__matchday {
   font-size: 14px;
   font-weight: 600;
-  color: rgba(255, 255, 255, 0.55);
+  color: var(--carplay-text-tertiary);
 }
 
 .esportes-screen__grid {
@@ -109,7 +109,7 @@
   justify-content: space-between;
   gap: 10px;
   border: none;
-  background: rgba(255, 255, 255, 0.06);
+  background: var(--carplay-card-bg);
   border-radius: 16px;
   padding: 14px 18px;
   cursor: pointer;
@@ -125,7 +125,7 @@
 }
 
 .esportes-screen__team span {
-  color: #fff;
+  color: var(--carplay-text);
   font-size: 14px;
   font-weight: 700;
   overflow: hidden;
@@ -149,12 +149,12 @@
 .esportes-screen__score {
   font-size: 22px;
   font-weight: 800;
-  color: #fff;
+  color: var(--carplay-text);
 }
 
 .esportes-screen__status {
   font-size: 11px;
-  color: rgba(255, 255, 255, 0.45);
+  color: var(--carplay-text-tertiary);
   white-space: nowrap;
 }
 
@@ -169,19 +169,19 @@
   align-items: flex-start;
   gap: 10px;
   max-width: 460px;
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--carplay-card-bg-weak);
   border-radius: 16px;
   padding: 20px 24px;
-  color: rgba(255, 255, 255, 0.7);
+  color: var(--carplay-text-secondary);
 }
 
 .esportes-screen__empty strong {
-  color: #fff;
+  color: var(--carplay-text);
   font-size: 17px;
 }
 
 .esportes-screen__empty code {
-  background: rgba(255, 255, 255, 0.12);
+  background: var(--carplay-chip);
   padding: 1px 5px;
   border-radius: 4px;
 }
@@ -193,8 +193,8 @@
 
 .esportes-screen__reload {
   border: none;
-  background: rgba(255, 255, 255, 0.14);
-  color: #fff;
+  background: var(--carplay-chip-strong);
+  color: var(--carplay-text);
   font-weight: 700;
   font-size: 13px;
   padding: 8px 16px;
@@ -210,14 +210,14 @@
   padding: 10px 18px 0;
   font-size: 12px;
   font-weight: 800;
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--carplay-text-tertiary);
 }
 
 .esportes-screen__table {
   display: flex;
   flex-direction: column;
   border-radius: 16px;
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--carplay-card-bg-weak);
   overflow: hidden;
 }
 
@@ -232,22 +232,22 @@
 }
 
 .esportes-screen__table-head {
-  color: rgba(255, 255, 255, 0.45);
+  color: var(--carplay-text-tertiary);
   font-weight: 700;
   font-size: 12px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  border-bottom: 1px solid var(--carplay-card-border);
 }
 
 .esportes-screen__table-row {
-  color: rgba(255, 255, 255, 0.8);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  color: var(--carplay-text-secondary);
+  border-bottom: 1px solid var(--carplay-card-bg-weak);
 }
 
 .esportes-screen__table-club {
   display: flex;
   align-items: center;
   gap: 10px;
-  color: #fff;
+  color: var(--carplay-text);
   font-weight: 700;
 }
 
@@ -257,7 +257,7 @@
 
 .esportes-screen__table-pts {
   font-weight: 800;
-  color: #fff;
+  color: var(--carplay-text);
 }
 
 .esportes-screen__overlay {
@@ -273,7 +273,7 @@
   width: 460px;
   background: #171b33;
   border-radius: 22px;
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  border: 1px solid var(--carplay-chip);
   padding: 28px;
   display: flex;
   flex-direction: column;
@@ -295,7 +295,7 @@
 }
 
 .esportes-screen__detail-team span {
-  color: #fff;
+  color: var(--carplay-text);
   font-size: 13px;
   font-weight: 700;
   text-align: center;
@@ -304,14 +304,14 @@
 .esportes-screen__detail-score {
   font-size: 28px;
   font-weight: 800;
-  color: #fff;
+  color: var(--carplay-text);
   padding: 0 12px;
 }
 
 .esportes-screen__detail-status {
   margin: 0;
   text-align: center;
-  color: rgba(255, 255, 255, 0.55);
+  color: var(--carplay-text-tertiary);
   font-size: 14px;
 }
 
@@ -322,15 +322,15 @@
   display: flex;
   flex-direction: column;
   gap: 6px;
-  color: rgba(255, 255, 255, 0.8);
+  color: var(--carplay-text-secondary);
   font-size: 14px;
 }
 
 .esportes-screen__detail-close {
   align-self: center;
   border: none;
-  background: rgba(255, 255, 255, 0.1);
-  color: #fff;
+  background: var(--carplay-card-border);
+  color: var(--carplay-text);
   font-size: 14px;
   font-weight: 700;
   padding: 10px 24px;

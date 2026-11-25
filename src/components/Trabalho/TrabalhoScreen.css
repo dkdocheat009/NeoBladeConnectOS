@@ -8,8 +8,8 @@
   top: 12px;
   bottom: 12px;
   border-radius: 24px;
-  background: linear-gradient(170deg, #142033 0%, #0c1626 60%, #0a1322 100%);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: linear-gradient(170deg, var(--panel-bg-1) 0%, var(--panel-bg-2) 60%, var(--panel-bg-3) 100%);
+  border: 1px solid var(--panel-chip);
   box-shadow: 0 10px 28px rgba(0, 0, 0, 0.4);
   box-sizing: border-box;
   padding: 28px 32px;
@@ -41,14 +41,14 @@
 .trabalho-screen__right-title {
   font-size: 15px;
   font-weight: 700;
-  color: rgba(255, 255, 255, 0.6);
+  color: var(--panel-text-secondary);
 }
 
 .trabalho-screen__market {
   padding: 5px 12px;
   border-radius: 12px;
-  background: rgba(255, 255, 255, 0.1);
-  color: rgba(255, 255, 255, 0.75);
+  background: var(--panel-chip-strong);
+  color: var(--panel-text-secondary);
   font-size: 13px;
   font-weight: 600;
 }
@@ -73,12 +73,12 @@
 .trabalho-screen__city {
   font-size: 28px;
   font-weight: 800;
-  color: #fff;
+  color: var(--panel-text);
 }
 
 .trabalho-screen__company {
   font-size: 15px;
-  color: rgba(255, 255, 255, 0.55);
+  color: var(--panel-text-tertiary);
 }
 
 .trabalho-screen__arrow {
@@ -96,12 +96,12 @@
 .trabalho-screen__cargo-name {
   font-size: 18px;
   font-weight: 600;
-  color: rgba(255, 255, 255, 0.85);
+  color: var(--panel-text-secondary);
 }
 
 .trabalho-screen__cargo-weight {
   font-size: 16px;
-  color: rgba(255, 255, 255, 0.55);
+  color: var(--panel-text-tertiary);
 }
 
 .trabalho-screen__financials {
@@ -116,11 +116,11 @@
   align-items: center;
   justify-content: space-between;
   font-size: 16px;
-  color: rgba(255, 255, 255, 0.65);
+  color: var(--panel-text-secondary);
 }
 
 .trabalho-screen__fin-row strong {
-  color: #fff;
+  color: var(--panel-text);
   font-size: 18px;
 }
 
@@ -137,13 +137,13 @@
 .trabalho-screen__remaining {
   font-size: 34px;
   font-weight: 800;
-  color: #fff;
+  color: var(--panel-text);
 }
 
 .trabalho-screen__progress-track {
   height: 8px;
   border-radius: 4px;
-  background: rgba(255, 255, 255, 0.14);
+  background: var(--panel-chip-strong);
 }
 
 .trabalho-screen__progress-fill {
@@ -157,7 +157,7 @@
   align-items: center;
   gap: 10px;
   font-size: 16px;
-  color: #fff;
+  color: var(--panel-text);
 }
 
 .trabalho-screen__badge {
@@ -174,11 +174,11 @@
   align-items: center;
   justify-content: space-between;
   font-size: 15px;
-  color: rgba(255, 255, 255, 0.55);
+  color: var(--panel-text-tertiary);
 }
 
 .trabalho-screen__kv strong {
-  color: #fff;
+  color: var(--panel-text);
   font-weight: 700;
 }
 
@@ -194,7 +194,7 @@
   gap: 14px;
   padding: 16px;
   border-radius: 16px;
-  background: rgba(255, 255, 255, 0.07);
+  background: var(--panel-separator);
 }
 
 .trabalho-screen__stop-icon {
@@ -205,13 +205,13 @@
   display: block;
   font-size: 17px;
   font-weight: 700;
-  color: #fff;
+  color: var(--panel-text);
 }
 
 .trabalho-screen__stop-sub {
   display: block;
   font-size: 14px;
-  color: rgba(255, 255, 255, 0.55);
+  color: var(--panel-text-tertiary);
   margin-top: 2px;
 }
 
@@ -224,8 +224,8 @@
 .trabalho-screen__amenity {
   padding: 6px 12px;
   border-radius: 12px;
-  background: rgba(255, 255, 255, 0.08);
-  color: rgba(255, 255, 255, 0.75);
+  background: var(--panel-chip);
+  color: var(--panel-text-secondary);
   font-size: 13px;
   font-weight: 600;
 }
@@ -240,8 +240,8 @@
   margin-top: 16px;
   align-self: flex-start;
   border: none;
-  background: rgba(255, 255, 255, 0.1);
-  color: #fff;
+  background: var(--panel-chip-strong);
+  color: var(--panel-text);
   font-size: 14px;
   font-weight: 700;
   padding: 10px 18px;
@@ -253,14 +253,14 @@
   position: absolute;
   inset: 12px;
   border-radius: 24px;
-  background: linear-gradient(170deg, #142033 0%, #0c1626 60%, #0a1322 100%);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: linear-gradient(170deg, var(--panel-bg-1) 0%, var(--panel-bg-2) 60%, var(--panel-bg-3) 100%);
+  border: 1px solid var(--panel-chip);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   gap: 16px;
-  color: rgba(255, 255, 255, 0.7);
+  color: var(--panel-text-secondary);
   font-size: 18px;
 }
 

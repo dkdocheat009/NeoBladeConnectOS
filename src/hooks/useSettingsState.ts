@@ -2,31 +2,56 @@ import { useEffect, useState } from 'react';
 
 export type ThemeMode = 'escuro' | 'claro' | 'automatico';
 export type TextSize = 'pequeno' | 'padrao' | 'grande';
+export type ClockFormat = '24h' | '12h';
 
 export interface AppSettings {
+  schemaVersion: number;
   theme: ThemeMode;
   masterVolume: number;
   notificationSound: boolean;
+  notificationBannerDurationMs: number;
   assistantEnabled: boolean;
   assistantShowTranscript: boolean;
+  assistantSpeechRate: number;
+  assistantCardDurationMs: number;
+  assistantGlowIntensity: number;
   glassIntensity: number;
   reduceTransparency: boolean;
   reduceMotion: boolean;
   textSize: TextSize;
+  clockFormat: ClockFormat;
 }
 
 const STORAGE_KEY = 'neoblade:settings';
 
+/**
+ * Versão do esquema de preferências (Fase 9). Incrementar só quando um
+ * campo for removido/renomeado de um jeito que a mesclagem simples de
+ * `loadSettings` não resolveria sozinha; novos campos (como os desta fase:
+ * `clockFormat`, `assistantSpeechRate`, `assistantCardDurationMs`,
+ * `assistantGlowIntensity`, `notificationBannerDurationMs`) não precisam
+ * de migração — `{ ...DEFAULT_SETTINGS, ...parsed }` já preenche o valor
+ * padrão para quem vem de um `localStorage` de fase anterior sem perder as
+ * preferências já salvas (tema, volume, etc.).
+ */
+const SCHEMA_VERSION = 2;
+
 const DEFAULT_SETTINGS: AppSettings = {
+  schemaVersion: SCHEMA_VERSION,
   theme: 'escuro',
   masterVolume: 80,
   notificationSound: true,
+  notificationBannerDurationMs: 4000,
   assistantEnabled: true,
   assistantShowTranscript: true,
+  assistantSpeechRate: 1,
+  assistantCardDurationMs: 2600,
+  assistantGlowIntensity: 100,
   glassIntensity: 70,
   reduceTransparency: false,
   reduceMotion: false,
   textSize: 'padrao',
+  clockFormat: '24h',
 };
 
 function loadSettings(): AppSettings {
@@ -34,7 +59,7 @@ function loadSettings(): AppSettings {
     const raw = window.localStorage.getItem(STORAGE_KEY);
     if (!raw) return DEFAULT_SETTINGS;
     const parsed = JSON.parse(raw);
-    return { ...DEFAULT_SETTINGS, ...parsed };
+    return { ...DEFAULT_SETTINGS, ...parsed, schemaVersion: SCHEMA_VERSION };
   } catch {
     return DEFAULT_SETTINGS;
   }
@@ -116,6 +141,13 @@ export function useSettingsState() {
   useEffect(() => {
     document.documentElement.style.setProperty('--ios-text-scale', String(TEXT_SCALE[settings.textSize]));
   }, [settings.textSize]);
+
+  // "Intensidade do brilho" do Assistente de Voz (Ajustes > Siri e Voz) —
+  // escala real da opacidade do anel/halo em VoiceAssistantOverlay.css.
+  useEffect(() => {
+    const pct = Math.max(0, Math.min(100, settings.assistantGlowIntensity)) / 100;
+    document.documentElement.style.setProperty('--voice-glow-intensity', String(pct));
+  }, [settings.assistantGlowIntensity]);
 
   const update = <K extends keyof AppSettings>(key: K, value: AppSettings[K]) => {
     setSettings((prev) => ({ ...prev, [key]: value }));

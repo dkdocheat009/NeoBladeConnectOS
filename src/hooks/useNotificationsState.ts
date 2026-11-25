@@ -5,6 +5,8 @@ import { playNotificationBeep } from '../data/beep';
 interface NotificationAudioOptions {
   soundEnabled: boolean;
   volume: number;
+  /** Tempo de permanência do banner transitório, em ms (Ajustes > Notificações). */
+  bannerDurationMs?: number;
 }
 
 /**
@@ -14,7 +16,9 @@ interface NotificationAudioOptions {
  * banner, para demonstrar o estado sem depender de eventos reais do
  * sistema. O aviso sonoro respeita as preferências de Configurações.
  */
-export function useNotificationsState(audio: NotificationAudioOptions = { soundEnabled: true, volume: 80 }) {
+export function useNotificationsState(
+  audio: NotificationAudioOptions = { soundEnabled: true, volume: 80, bannerDurationMs: 4200 },
+) {
   const [notifications, setNotifications] = useState<NotificationItem[]>(initialNotifications);
   const [banner, setBanner] = useState<NotificationItem | null>(null);
   const bannerTimer = useRef<number | null>(null);
@@ -33,7 +37,7 @@ export function useNotificationsState(audio: NotificationAudioOptions = { soundE
     setBanner(item);
     if (audio.soundEnabled) playNotificationBeep(audio.volume);
     if (bannerTimer.current !== null) window.clearTimeout(bannerTimer.current);
-    bannerTimer.current = window.setTimeout(() => setBanner(null), 4200);
+    bannerTimer.current = window.setTimeout(() => setBanner(null), audio.bannerDurationMs ?? 4200);
   };
 
   const simulateIncoming = () => {

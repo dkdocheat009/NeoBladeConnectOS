@@ -86,7 +86,7 @@ function PhoneGlyph({ hangup = false }: { hangup?: boolean }) {
     <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
       <path
         d="M4.5 4.5c1.8-1.2 3.3-1.4 4-1 .6.3 1.4 1.9 1.8 3 .3.8.1 1.3-.4 1.8l-1.1 1c-.3.3-.4.7-.2 1.1.8 1.6 2.2 3 3.8 3.8.4.2.8.1 1.1-.2l1-1.1c.5-.5 1-.7 1.8-.4 1.1.4 2.7 1.2 3 1.8.4.7.2 2.2-1 4-.9 1.3-2.7 1.7-4.3 1.1-4.2-1.5-7.9-5.2-9.4-9.4-.6-1.6-.2-3.4 1.1-4.3Z"
-        fill={hangup ? '#fff' : '#fff'}
+        fill="#fff"
         transform={hangup ? 'rotate(135 12 12)' : undefined}
       />
     </svg>
@@ -96,11 +96,11 @@ function PhoneGlyph({ hangup = false }: { hangup?: boolean }) {
 function MuteGlyph({ muted }: { muted: boolean }) {
   return (
     <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
-      <rect x="9" y="3" width="6" height="11" rx="3" fill="#fff" />
+      <rect x="9" y="3" width="6" height="11" rx="3" style={{ fill: 'var(--call-card-text)' }} />
       <path
         d="M6 11a6 6 0 0 0 12 0M12 17v3"
         fill="none"
-        stroke="#fff"
+        style={{ stroke: 'var(--call-card-text)' }}
         strokeWidth="1.6"
         strokeLinecap="round"
       />

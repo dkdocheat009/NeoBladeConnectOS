@@ -78,6 +78,7 @@ export function Shell() {
   const notifications = useNotificationsState({
     soundEnabled: settings.settings.notificationSound,
     volume: settings.settings.masterVolume,
+    bannerDurationMs: settings.settings.notificationBannerDurationMs,
   });
 
   // Fase 8: a Home virou um carrossel real (Dashboard + páginas de
@@ -143,7 +144,11 @@ export function Shell() {
       musicPlay: player.play,
       musicPause: player.pause,
     },
-    { enabled: settings.settings.assistantEnabled },
+    {
+      enabled: settings.settings.assistantEnabled,
+      speechRate: settings.settings.assistantSpeechRate,
+      cardHoldMs: settings.settings.assistantCardDurationMs,
+    },
   );
 
   const backToMain = () => {
@@ -297,6 +302,7 @@ export function Shell() {
       <Dock
         screen={screen}
         currentTruckBrand={currentTruckBrand}
+        clockFormat={settings.settings.clockFormat}
         onOpenScreen={handleOpenScreen}
         onActivateShortcut={handleActivateShortcut}
         onToggleScreen={handleDockButton}

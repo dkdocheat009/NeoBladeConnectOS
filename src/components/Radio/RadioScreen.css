@@ -1,7 +1,7 @@
 .radio-screen {
   position: absolute;
   inset: 0;
-  background: radial-gradient(130% 130% at 15% 10%, #4a3a52 0%, #2c1f33 45%, #1a1420 100%);
+  background: radial-gradient(130% 130% at 15% 10%, var(--radio-bg-1) 0%, var(--radio-bg-2) 45%, var(--radio-bg-3) 100%);
   overflow: hidden;
 }
 
@@ -25,17 +25,17 @@
 .radio-screen__art span {
   font-size: 64px;
   font-weight: 800;
-  color: rgba(255, 255, 255, 0.92);
+  color: var(--radio-text-secondary);
 }
 
 .radio-screen__art--empty {
-  background: rgba(255, 255, 255, 0.08);
+  background: var(--radio-chip);
 }
 
 .radio-screen__art--empty span {
   font-size: 16px;
   font-weight: 600;
-  color: rgba(255, 255, 255, 0.6);
+  color: var(--radio-text-tertiary);
   padding: 0 24px;
   text-align: center;
 }
@@ -57,7 +57,7 @@
 }
 
 .radio-screen__status {
-  color: rgba(255, 255, 255, 0.75);
+  color: var(--radio-text-secondary);
   font-size: 14px;
   font-weight: 600;
 }
@@ -66,13 +66,13 @@
   margin: 8px 0 0;
   font-size: 24px;
   font-weight: 800;
-  color: #fff;
+  color: var(--radio-text);
 }
 
 .radio-screen__hint {
   margin: 4px 0 0;
   font-size: 14px;
-  color: rgba(255, 255, 255, 0.6);
+  color: var(--radio-text-tertiary);
 }
 
 .radio-screen__transport {
@@ -84,7 +84,7 @@
 
 .radio-screen__transport button {
   border: none;
-  background: rgba(255, 255, 255, 0.14);
+  background: var(--radio-chip-strong);
   border-radius: 50%;
   width: 46px;
   height: 46px;
@@ -117,8 +117,8 @@
   height: 30px;
   border-radius: 50%;
   border: none;
-  background: rgba(255, 255, 255, 0.14);
-  color: #fff;
+  background: var(--radio-chip-strong);
+  color: var(--radio-text);
   font-size: 16px;
   font-weight: 700;
   cursor: pointer;
@@ -129,19 +129,19 @@
   flex: 1;
   height: 4px;
   border-radius: 2px;
-  background: rgba(255, 255, 255, 0.25);
+  background: var(--radio-chip-strong);
 }
 
 .radio-screen__volume-fill {
   height: 100%;
   border-radius: 2px;
-  background: #fff;
+  background: var(--radio-text);
 }
 
 .radio-screen__volume-value {
   width: 40px;
   text-align: right;
-  color: rgba(255, 255, 255, 0.75);
+  color: var(--radio-text-secondary);
   font-size: 13px;
   font-weight: 600;
 }
@@ -164,9 +164,9 @@
 }
 
 .radio-screen__tab {
-  border: 1px solid rgba(255, 255, 255, 0.25);
-  background: rgba(255, 255, 255, 0.08);
-  color: rgba(255, 255, 255, 0.8);
+  border: 1px solid var(--radio-chip-border);
+  background: var(--radio-chip);
+  color: var(--radio-text-secondary);
   font-size: 14px;
   font-weight: 700;
   padding: 8px 16px;
@@ -175,20 +175,20 @@
 }
 
 .radio-screen__tab.is-active {
-  background: #fff;
-  color: #2c1f33;
+  background: var(--radio-tab-active-bg);
+  color: var(--radio-tab-active-text);
 }
 
 .radio-screen__list {
   flex: 1;
   overflow-y: auto;
   border-radius: 18px;
-  background: rgba(0, 0, 0, 0.18);
+  background: var(--radio-list-bg);
   padding: 6px;
 }
 
 .radio-screen__empty {
-  color: rgba(255, 255, 255, 0.6);
+  color: var(--radio-text-tertiary);
   font-size: 14px;
   padding: 20px;
   text-align: center;
@@ -208,12 +208,12 @@
 }
 
 .radio-screen__row.is-active {
-  background: rgba(255, 255, 255, 0.14);
+  background: var(--radio-chip-strong);
 }
 
 .radio-screen__row-name {
   flex: 1;
-  color: #fff;
+  color: var(--radio-text);
   font-size: 16px;
   font-weight: 700;
 }

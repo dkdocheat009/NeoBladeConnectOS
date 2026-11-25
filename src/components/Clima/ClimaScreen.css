@@ -1,6 +1,10 @@
 .clima-screen {
   position: absolute;
   inset: 0;
+  /* Não havia fundo algum aqui antes (Fase 9) — caía para o preto do
+     stage. Céu noturno com estrelas, ver imagens/wetter.png; tons claros
+     no tema Claro (sem referência de dia, paleta original). */
+  background: linear-gradient(170deg, var(--clima-bg-1) 0%, var(--clima-bg-2) 55%, var(--clima-bg-3) 100%);
 }
 
 .clima-screen__current {
@@ -18,7 +22,7 @@
 .clima-screen__city {
   font-size: 26px;
   font-weight: 700;
-  color: #fff;
+  color: var(--panel-text);
 }
 
 .clima-screen__big {
@@ -31,25 +35,25 @@
 .clima-screen__temp {
   font-size: 84px;
   font-weight: 200;
-  color: #fff;
+  color: var(--panel-text);
   line-height: 1;
 }
 
 .clima-screen__condition {
   font-size: 20px;
   font-weight: 600;
-  color: rgba(255, 255, 255, 0.85);
+  color: var(--panel-text-secondary);
 }
 
 .clima-screen__footer {
   font-size: 15px;
-  color: rgba(255, 255, 255, 0.6);
+  color: var(--panel-text-secondary);
   margin-top: 4px;
 }
 
 .clima-screen__note {
   font-size: 13px;
-  color: rgba(255, 255, 255, 0.45);
+  color: var(--panel-text-tertiary);
   margin-top: 16px;
   max-width: 300px;
 }
@@ -59,8 +63,8 @@
   left: 605px;
   right: 24px;
   border-radius: 20px;
-  background: rgba(255, 255, 255, 0.07);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--panel-separator);
+  border: 1px solid var(--panel-chip-strong);
   box-sizing: border-box;
   padding: 16px 20px;
 }
@@ -79,9 +83,9 @@
   font-size: 13px;
   font-weight: 700;
   letter-spacing: 0.5px;
-  color: rgba(255, 255, 255, 0.55);
+  color: var(--panel-text-tertiary);
   padding-bottom: 10px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom: 1px solid var(--panel-chip-strong);
   margin-bottom: 10px;
 }
 
@@ -105,19 +109,19 @@
 }
 
 .clima-screen__hour.is-active {
-  background: rgba(255, 255, 255, 0.14);
+  background: var(--panel-chip-strong);
 }
 
 .clima-screen__hour-label {
   font-size: 13px;
   font-weight: 700;
-  color: #fff;
+  color: var(--panel-text);
 }
 
 .clima-screen__hour-temp {
   font-size: 14px;
   font-weight: 600;
-  color: rgba(255, 255, 255, 0.75);
+  color: var(--panel-text-secondary);
 }
 
 .clima-screen__day-list {
@@ -132,7 +136,7 @@
   gap: 12px;
   border: none;
   background: none;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+  border-bottom: 1px solid var(--panel-separator);
   padding: 10px 6px;
   cursor: pointer;
   width: 100%;
@@ -144,14 +148,14 @@
 }
 
 .clima-screen__day.is-active {
-  background: rgba(255, 255, 255, 0.1);
+  background: var(--panel-chip-strong);
   border-radius: 10px;
 }
 
 .clima-screen__day-label {
   font-size: 16px;
   font-weight: 700;
-  color: #fff;
+  color: var(--panel-text);
 }
 
 .clima-screen__day-precip {
@@ -162,21 +166,21 @@
 
 .clima-screen__day-low {
   font-size: 15px;
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--panel-text-tertiary);
   text-align: right;
 }
 
 .clima-screen__day-high {
   font-size: 15px;
   font-weight: 700;
-  color: #fff;
+  color: var(--panel-text);
 }
 
 .clima-screen__day-track {
   position: relative;
   height: 4px;
   border-radius: 2px;
-  background: rgba(255, 255, 255, 0.14);
+  background: var(--panel-chip-strong);
 }
 
 .clima-screen__day-fill {

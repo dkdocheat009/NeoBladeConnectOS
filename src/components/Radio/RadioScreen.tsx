@@ -65,7 +65,7 @@ export function RadioScreen({ onBack }: RadioScreenProps) {
         <div className="radio-screen__transport">
           <button type="button" aria-label="Estação anterior" onClick={() => changeStation(-1)} disabled={!currentStation}>
             <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
-              <path d="M6 5h2.4v14H6zM19 5 9 12l10 7z" fill="#fff" />
+              <path d="M6 5h2.4v14H6zM19 5 9 12l10 7z" style={{ fill: 'var(--radio-text)' }} />
             </svg>
           </button>
           <button
@@ -88,7 +88,7 @@ export function RadioScreen({ onBack }: RadioScreenProps) {
           </button>
           <button type="button" aria-label="Próxima estação" onClick={() => changeStation(1)} disabled={!currentStation}>
             <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
-              <path d="M15.6 5H18v14h-2.4zM5 5l10 7-10 7z" fill="#fff" />
+              <path d="M15.6 5H18v14h-2.4zM5 5l10 7-10 7z" style={{ fill: 'var(--radio-text)' }} />
             </svg>
           </button>
         </div>

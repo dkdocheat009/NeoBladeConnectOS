@@ -1,7 +1,7 @@
 .radar-screen {
   position: absolute;
   inset: 0;
-  background: #0c0d10;
+  background: var(--radar-bg);
   display: flex;
 }
 
@@ -13,7 +13,7 @@
   padding: 24px 32px 28px 150px;
   display: flex;
   flex-direction: column;
-  border-right: 1px solid rgba(255, 255, 255, 0.08);
+  border-right: 1px solid var(--radar-chip);
 }
 
 .radar-screen__header {
@@ -25,7 +25,7 @@
 .radar-screen__title {
   font-size: 24px;
   font-weight: 800;
-  color: #fff;
+  color: var(--radar-text);
 }
 
 .radar-screen__live {
@@ -74,13 +74,13 @@
 .radar-screen__gauge-value {
   font-size: 64px;
   font-weight: 800;
-  color: #fff;
+  color: var(--radar-text);
   line-height: 1;
 }
 
 .radar-screen__gauge-unit {
   font-size: 15px;
-  color: rgba(255, 255, 255, 0.6);
+  color: var(--radar-text-secondary);
   margin-top: 4px;
 }
 
@@ -120,12 +120,12 @@
 
 .radar-screen__status strong {
   display: block;
-  color: #fff;
+  color: var(--radar-text);
   font-size: 16px;
 }
 
 .radar-screen__status span {
-  color: rgba(255, 255, 255, 0.6);
+  color: var(--radar-text-secondary);
   font-size: 13px;
 }
 
@@ -152,7 +152,7 @@
   flex: none;
   border: none;
   border-radius: 16px;
-  background: rgba(255, 255, 255, 0.1);
+  background: var(--radar-chip);
   font-size: 20px;
   cursor: pointer;
 }
@@ -163,9 +163,9 @@
 
 .radar-screen__demo-toggle {
   margin-top: 12px;
-  border: 1px dashed rgba(255, 255, 255, 0.25);
+  border: 1px dashed var(--radar-chip);
   background: none;
-  color: rgba(255, 255, 255, 0.55);
+  color: var(--radar-text-secondary);
   font-size: 12px;
   border-radius: 10px;
   padding: 8px;
@@ -188,16 +188,16 @@
 .radar-screen__right-title {
   font-size: 28px;
   font-weight: 800;
-  color: #fff;
+  color: var(--radar-text);
 }
 
 .radar-screen__right-sub {
   font-size: 13px;
-  color: rgba(255, 255, 255, 0.4);
+  color: var(--radar-text-secondary);
 }
 
 .radar-screen__right-text {
-  color: rgba(255, 255, 255, 0.65);
+  color: var(--radar-text-secondary);
   font-size: 16px;
   line-height: 1.6;
   max-width: 520px;

@@ -26,12 +26,12 @@ export function MapPanel({ nav }: MapPanelProps) {
       >
         <defs>
           <linearGradient id="map-bg" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#07192f" />
-            <stop offset="100%" stopColor="#0a2440" />
+            <stop offset="0%" style={{ stopColor: 'var(--map-bg-1)' }} />
+            <stop offset="100%" style={{ stopColor: 'var(--map-bg-2)' }} />
           </linearGradient>
           <linearGradient id="map-land" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#0f5f66" />
-            <stop offset="100%" stopColor="#0a4750" />
+            <stop offset="0%" style={{ stopColor: 'var(--map-land)' }} />
+            <stop offset="100%" style={{ stopColor: 'var(--map-land-2)' }} />
           </linearGradient>
         </defs>
 
@@ -51,7 +51,7 @@ export function MapPanel({ nav }: MapPanelProps) {
           opacity="0.4"
         />
 
-        <g fill="none" stroke="rgba(150,180,205,0.4)" strokeWidth="3">
+        <g fill="none" style={{ stroke: 'var(--map-road)' }} strokeWidth="3">
           <path d="M -20,150 C 160,70 260,150 340,150 C 420,150 480,90 560,70" />
           <path d="M 420,0 C 440,120 380,140 300,210 C 220,280 260,360 340,420" />
           <path d="M 732,420 C 620,440 540,500 460,560 C 400,604 340,630 260,650" />

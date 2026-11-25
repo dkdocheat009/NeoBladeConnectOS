@@ -1,13 +1,23 @@
 import { useEffect, useState } from 'react';
+import type { ClockFormat } from '../../hooks/useSettingsState';
 import './StatusBar.css';
 
-function formatTime(date: Date) {
-  const hours = date.getHours().toString().padStart(2, '0');
+function formatTime(date: Date, format: ClockFormat) {
   const minutes = date.getMinutes().toString().padStart(2, '0');
+  if (format === '12h') {
+    const hours12 = date.getHours() % 12 || 12;
+    const suffix = date.getHours() < 12 ? 'AM' : 'PM';
+    return `${hours12}:${minutes} ${suffix}`;
+  }
+  const hours = date.getHours().toString().padStart(2, '0');
   return `${hours}:${minutes}`;
 }
 
-export function StatusBar() {
+interface StatusBarProps {
+  clockFormat?: ClockFormat;
+}
+
+export function StatusBar({ clockFormat = '24h' }: StatusBarProps) {
   const [now, setNow] = useState(() => new Date());
 
   useEffect(() => {
@@ -17,7 +27,7 @@ export function StatusBar() {
 
   return (
     <div className="status-bar">
-      <div className="status-bar__clock">{formatTime(now)}</div>
+      <div className="status-bar__clock">{formatTime(now, clockFormat)}</div>
 
       <div className="status-bar__signal">
         <svg

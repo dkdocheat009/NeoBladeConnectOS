@@ -6,8 +6,8 @@
   height: 696px;
   border-radius: 24px;
   overflow: hidden;
-  background: #07192f;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: var(--map-bg-1);
+  border: 1px solid var(--map-chrome-border);
   box-shadow: 0 10px 28px rgba(0, 0, 0, 0.4);
 }
 
@@ -27,12 +27,12 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(7, 25, 47, 0.55);
+  background: color-mix(in srgb, var(--map-bg-1) 55%, transparent);
 }
 
 .map-panel__overlay span {
-  background: rgba(0, 0, 0, 0.5);
-  color: #fff;
+  background: var(--map-chrome-bg);
+  color: var(--map-text);
   font-size: 18px;
   font-weight: 700;
   padding: 10px 20px;
@@ -61,7 +61,7 @@
   display: flex;
   align-items: center;
   gap: 2px;
-  background: rgba(8, 16, 30, 0.55);
+  background: var(--map-chrome-bg);
   border-radius: 20px;
   padding: 6px;
 }
@@ -87,7 +87,7 @@
   min-width: 76px;
   padding: 4px 12px;
   border-radius: 14px;
-  background: rgba(10, 14, 26, 0.65);
+  background: var(--map-chrome-bg);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -97,13 +97,13 @@
 .map-panel__speed-value {
   font-size: 22px;
   font-weight: 800;
-  color: #fff;
+  color: var(--map-text);
 }
 
 .map-panel__speed-unit {
   font-size: 11px;
   font-weight: 600;
-  color: rgba(255, 255, 255, 0.75);
+  color: var(--map-text-secondary);
 }
 
 .map-panel__eta {
@@ -113,8 +113,8 @@
   bottom: 16px;
   height: 56px;
   border-radius: 28px;
-  background: rgba(8, 14, 26, 0.6);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: var(--map-chrome-bg);
+  border: 1px solid var(--map-chrome-border);
   backdrop-filter: blur(6px);
   display: flex;
   align-items: center;
@@ -125,7 +125,7 @@
 .map-panel__eta-time {
   font-size: 18px;
   font-weight: 700;
-  color: #fff;
+  color: var(--map-text);
 }
 
 .map-panel__eta-duration {
@@ -137,5 +137,5 @@
 .map-panel__eta-distance {
   font-size: 17px;
   font-weight: 600;
-  color: rgba(255, 255, 255, 0.85);
+  color: var(--map-text-secondary);
 }

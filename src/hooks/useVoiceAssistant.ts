@@ -20,8 +20,18 @@ function pickBestPtBrVoice(voices: SpeechSynthesisVoice[]): SpeechSynthesisVoice
  * Interface própria do NeoBladeConnectOS, inspirada visualmente no Apple
  * Intelligence/Siri — não é a Siri oficial nem usa SiriKit.
  */
-export function useVoiceAssistant(ctx: VoiceCommandContext, options: { enabled?: boolean } = {}) {
+interface UseVoiceAssistantOptions {
+  enabled?: boolean;
+  /** Velocidade da fala (SpeechSynthesisUtterance.rate) — Ajustes > Siri e Voz. */
+  speechRate?: number;
+  /** Quanto tempo o cartão de resposta falada fica visível, em ms. */
+  cardHoldMs?: number;
+}
+
+export function useVoiceAssistant(ctx: VoiceCommandContext, options: UseVoiceAssistantOptions = {}) {
   const enabled = options.enabled ?? true;
+  const speechRate = options.speechRate ?? 1;
+  const cardHoldMs = options.cardHoldMs ?? 2600;
   const [state, setState] = useState<AssistantState>('idle');
   const [transcript, setTranscript] = useState('');
   const [responseText, setResponseText] = useState('');
@@ -112,23 +122,24 @@ export function useVoiceAssistant(ctx: VoiceCommandContext, options: { enabled?:
       setResponseText(text);
       setState('falando');
       if (!ttsSupported) {
-        scheduleClose(2600, 700);
+        scheduleClose(cardHoldMs, 700);
         return;
       }
       window.speechSynthesis.cancel();
       const utter = new SpeechSynthesisUtterance(text);
       utter.lang = 'pt-BR';
+      utter.rate = speechRate;
       const voice = pickBestPtBrVoice(voicesRef.current.length ? voicesRef.current : window.speechSynthesis.getVoices());
       if (voice) utter.voice = voice;
       utter.onend = () => {
-        scheduleClose(2600, 700);
+        scheduleClose(cardHoldMs, 700);
       };
       utter.onerror = () => {
-        scheduleClose(2600, 700);
+        scheduleClose(cardHoldMs, 700);
       };
       window.speechSynthesis.speak(utter);
     },
-    [scheduleClose, ttsSupported],
+    [scheduleClose, ttsSupported, speechRate, cardHoldMs],
   );
 
   const processTranscript = useCallback(
@@ -147,7 +158,7 @@ export function useVoiceAssistant(ctx: VoiceCommandContext, options: { enabled?:
     if (!speechRecognitionSupported) {
       setErrorMessage('Reconhecimento de voz não é suportado neste navegador. Use Chrome ou Edge.');
       setState('erro');
-      scheduleClose(2600);
+      scheduleClose(cardHoldMs);
       return;
     }
     const SR = window.SpeechRecognition ?? window.webkitSpeechRecognition!;
@@ -180,7 +191,7 @@ export function useVoiceAssistant(ctx: VoiceCommandContext, options: { enabled?:
       recognitionRef.current = null;
       stopAudioAnalysis();
       setState('erro');
-      scheduleClose(2400);
+      scheduleClose(cardHoldMs);
     };
     recognition.onend = () => {
       recognitionRef.current = null;
@@ -190,7 +201,7 @@ export function useVoiceAssistant(ctx: VoiceCommandContext, options: { enabled?:
       if (!text) {
         setErrorMessage('Não ouvi nenhuma fala.');
         setState('erro');
-        scheduleClose(2200);
+        scheduleClose(cardHoldMs);
         return;
       }
       processTranscript(text);
@@ -206,9 +217,9 @@ export function useVoiceAssistant(ctx: VoiceCommandContext, options: { enabled?:
     } catch {
       setState('erro');
       setErrorMessage('Não foi possível iniciar o microfone.');
-      scheduleClose(2200);
+      scheduleClose(cardHoldMs);
     }
-  }, [speechRecognitionSupported, processTranscript, startAudioAnalysis, stopAudioAnalysis, scheduleClose]);
+  }, [speechRecognitionSupported, processTranscript, startAudioAnalysis, stopAudioAnalysis, scheduleClose, cardHoldMs]);
 
   const cancel = useCallback(() => {
     activeRef.current = false;
@@ -250,7 +261,7 @@ export function useVoiceAssistant(ctx: VoiceCommandContext, options: { enabled?:
       } catch {
         setErrorMessage('Permissão de microfone negada.');
         setState('erro');
-        scheduleClose(2400);
+        scheduleClose(cardHoldMs);
         return;
       }
     }
@@ -258,7 +269,7 @@ export function useVoiceAssistant(ctx: VoiceCommandContext, options: { enabled?:
     window.setTimeout(() => {
       if (activeRef.current) startListening();
     }, 200);
-  }, [cancel, enabled, scheduleClose, startListening]);
+  }, [cancel, enabled, scheduleClose, startListening, cardHoldMs]);
 
   // Atalho único Ctrl+Alt+V: abre e já começa a escutar; ignora
   // event.repeat; Escape cancela com segurança.

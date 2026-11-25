@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type PointerEvent as ReactPointerEvent, type ReactNode } from 'react';
+import { useEffect, useRef, useState, type PointerEvent as ReactPointerEvent, type ReactNode, type WheelEvent as ReactWheelEvent } from 'react';
 import { Pagination } from '../Pagination/Pagination';
 import { EditModeBar } from '../EditModeBar/EditModeBar';
 import './MainCarousel.css';
@@ -24,8 +24,10 @@ const STAGE_WIDTH = 1280;
  * "trocar tela inteira" por um track deslizante real: arraste por
  * ponteiro/mouse (com limiar, resistência nas pontas e proteção contra
  * clique acidental via `setPointerCapture`, que cancela o long-press do
- * ícone de origem emitindo `pointercancel`), cliques nos indicadores e
- * setas do teclado. O long-press/jiggle da Home continua funcionando
+ * ícone de origem emitindo `pointercancel`), cliques nos indicadores,
+ * setas do teclado e roda do mouse horizontal/trackpad (Fase 9 — só reage
+ * a `deltaX` real ou "Shift + roda", nunca à rolagem vertical comum de uma
+ * lista interna). O long-press/jiggle da Home continua funcionando
  * normalmente: só é interrompido quando o arraste realmente ultrapassa o
  * limiar horizontal.
  */
@@ -44,6 +46,7 @@ export function MainCarousel({
   const [dragX, setDragX] = useState(0);
   const [dragging, setDragging] = useState(false);
   const dragRef = useRef<{ pointerId: number; startX: number; startY: number; active: boolean } | null>(null);
+  const wheelLockRef = useRef(false);
 
   const clamp = (n: number) => Math.max(0, Math.min(total - 1, n));
 
@@ -93,6 +96,19 @@ export function MainCarousel({
     }
   };
 
+  const handleWheel = (e: ReactWheelEvent<HTMLDivElement>) => {
+    // Scroll horizontal real (trackpad ou "shift + roda") — ignora rolagem
+    // vertical comum (listas internas de um app continuam rolando normal).
+    const horizontal = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.shiftKey ? e.deltaY : 0;
+    if (horizontal === 0 || wheelLockRef.current) return;
+    if (Math.abs(horizontal) < 24) return;
+    wheelLockRef.current = true;
+    onChangePosition(clamp(position + (horizontal > 0 ? 1 : -1)));
+    window.setTimeout(() => {
+      wheelLockRef.current = false;
+    }, 380);
+  };
+
   useEffect(() => {
     function onKeyDown(event: KeyboardEvent) {
       const tag = (document.activeElement as HTMLElement | null)?.tagName;
@@ -119,6 +135,7 @@ export function MainCarousel({
       onPointerMove={handlePointerMove}
       onPointerUp={(e) => endDrag(e, true)}
       onPointerCancel={(e) => endDrag(e, false)}
+      onWheel={handleWheel}
     >
       <div
         className="main-carousel__track"

@@ -55,7 +55,7 @@ Calendário. Dois atalhos que antes só registravam um log foram concluídos:
 **todo ícone da Home abre uma tela real**. Veja a seção "Fase 7" abaixo
 para detalhes, reaproveitamento, testes e limitações.
 
-**Fase 8 (atual):** revisão geral transversal — Home ganhou **swipe/arraste
+**Fase 8:** revisão geral transversal — Home ganhou **swipe/arraste
 real** (Pointer Events, com resistência e cancelamento correto do
 long-press), paginação clicável e navegação por setas; o `NavCard` do
 Dashboard abre a Navegação com a manobra/distância sincronizadas nos dois
@@ -69,6 +69,27 @@ todos os apps substituiu os últimos controles "só `console.info`" (tela de
 Música) por um aviso real na interface, além de corrigir a sobreposição do
 botão de voltar no Esportes (pendência registrada desde a Fase 6). Veja a
 seção "Fase 8" abaixo para detalhes, testes e limitações.
+
+**Fase 9 (atual):** reconstrução visual/funcional de alta fidelidade — o
+**tema Claro/Escuro/Automático agora alcança de verdade todas as telas com
+identidade própria** (Dashboard, Música, Rádio, Veículo, Trabalho, Clima,
+Esportes, Radar, Chamadas — Clima nem tinha fundo próprio antes), não só os
+apps de lista estilo iOS; **Ajustes foi ampliado para 11 seções** com
+cartões de prévia visual Claro/Escuro/Automático (em vez de texto),
+seções novas Sistema (relógio 12h/24h real) e Integrações, e controles
+reais de velocidade/brilho/duração do Assistente de Voz, além de uma lista
+"Vozes" honesta (web speech ativo; locais/nuvem claramente "Não
+instalado"); o **cartão do Assistente de Voz foi redesenhado** como uma
+pílula compacta ancorada ao dock (como na referência real
+`imagens/de/voice.png`), não mais um toast largo centralizado; a Home
+ganhou **roda do mouse horizontal** como mais um jeito de passar de
+página, e os ícones agora **animam ao reorganizar** em vez de saltar; o
+`Stage` passou a **escalar de verdade** para preencher qualquer display
+16:9 (antes só centralizava em 1280×720 fixos apesar do comentário dizer o
+contrário); e "Fila"/"Letra" da Música viraram navegação real (a Fila toca
+a faixa escolhida) em vez de só um aviso. Veja a seção "Fase 9" abaixo e
+`docs/FIGMA_CARPLAY_AUDIT.md`, `docs/EXTERNAL_SOURCES_AND_LICENSES.md` e
+`docs/FINAL_UI_REVIEW.md` para detalhes, testes e limitações.
 
 ## Como executar
 
@@ -770,6 +791,133 @@ construtores; `npm run lint` agora não imprime nada (0 avisos, 0 erros).
 - ETS2/TruckSimMap permanece marcado "Em breve" em Ajustes > Privacidade,
   sem nenhuma integração real — nenhuma alegação de "100% idêntico ao iOS
   27 oficial" é feita em nenhum momento.
+
+## Fase 9
+
+Reconstrução visual e funcional sistêmica, não uma "melhorada um pouco de
+CSS" — motivada pela rejeição do resultado anterior por parecer genérico.
+Referência Figma Community fornecida não foi inspecionável ao vivo nesta
+sessão (canvas WebGL sem conteúdo acessível/capturável no ambiente de
+automação disponível, nenhum MCP de Figma presente); nada neste README ou
+nos docs alega ter extraído cor/asset dali — ver
+`docs/FIGMA_CARPLAY_AUDIT.md` para o registro completo e para as
+referências reais usadas no lugar (capturas locais, incluindo duas novas:
+`imagens/de/apple-dark.png` e `imagens/de/voice.png`, ambas capturas reais
+de CarPlay/Siri).
+
+### Tema Claro/Escuro/Automático — agora alcança todas as telas
+
+A inconsistência relatada ("telas com CSS hardcoded que permanecem escuras
+mesmo após tema Claro") foi eliminada: `src/styles/ios-tokens.css` ganhou
+pares de tokens claro/escuro próprios para cada família visual —
+`--wallpaper-*` (Home), `--map-*`/`--nav-card-*`/`--music-*` (Dashboard),
+`--radio-*`, `--panel-*` (Veículo/Trabalho), `--clima-*`, `--carplay-*`
+(Esportes), `--radar-*`, `--call-card-*` (Chamadas) — em vez de inverter
+com `filter` ou sobrepor uma camada branca. O SVG do mapa troca cor de
+gradiente via `style={{ stopColor: 'var(--token)' }}`, não um `fill` fixo.
+**Achado corrigido nesta varredura**: a tela de Clima não tinha absolutamente
+nenhum fundo próprio (`"clima-screen"` sem `background` algum) — caía para
+o preto do stage por trás; agora tem um gradiente de céu dia/noite
+(`imagens/wetter.png` mostra um céu noturno estrelado como referência). O
+`SegmentedControl` compartilhado (usado por Esportes, Calendário, Diário de
+Bordo, Mensagens, Paradas, Veículo, Trabalho) também foi migrado para os
+tokens `--ios-fill`/`--ios-label`, corrigindo um "Tabela" quase invisível no
+tema Claro do Esportes.
+
+**Decisão deliberada preservada** (documentada na própria tela de Ajustes >
+Tela e Aparência): a bandeja lateral (dock) e o papel de parede da Home
+continuam um material escuro translúcido fixo em qualquer tema — reproduz
+o comportamento real visto em `imagens/de/apple-dark.png` (a bandeja do
+CarPlay real é sempre escura por cima de qualquer conteúdo, não "clareia").
+Cores de marca (Spotify, logos de caminhão, escudos de clube, rota do mapa)
+também são preservadas.
+
+### Ajustes — 11 seções, cartões de prévia visual
+
+O pedido de "não três linhas de texto soltas" para o tema foi atendido com
+`.ajustes-theme-grid`: três cartões clicáveis com uma prévia em miniatura
+real do próprio app (barra + linhas + swatch de cor), não só texto com
+`✓`. Novidades: **Sistema** (formato de relógio 12h/24h, com efeito real
+sobre o `StatusBar` do dock) e **Integrações** (promovida de dentro de
+"Home e Apps" para seção própria, com o status do football-data.org).
+Siri e Voz ganhou controles reais (velocidade da fala — `utterance.rate`,
+intensidade do brilho — `--voice-glow-intensity`, duração do cartão) e uma
+lista "Vozes" honesta (`src/types/voiceProvider.ts`): Web Speech aparece
+como "Ativo" (é o único motor realmente ligado), e sherpa-onnx/Kokoro,
+Piper, whisper.cpp e Azure Speech aparecem como **"Não instalado"** —
+nenhum desses foi baixado/instalado nesta sessão (ver
+`docs/EXTERNAL_SOURCES_AND_LICENSES.md` para o porquê). Sons e Áudio ganhou
+um botão "Testar som" real (toca o mesmo bipe Web Audio das notificações);
+Notificações ganhou um controle real de tempo de permanência do banner.
+Preferências persistidas com `schemaVersion` (migração aditiva, sem perder
+configurações de fases anteriores).
+
+### Assistente de Voz — cartão redesenhado
+
+A aparência "genérica" do cartão foi substituída por uma pílula compacta
+ancorada perto do dock (orb + duas linhas de texto), reproduzindo a
+composição real vista em `imagens/de/voice.png`, em vez do toast largo
+centralizado da Fase 6. O anel/halo de borda, o atalho `Ctrl+Alt+V`/Escape,
+a transcrição ao vivo e a resposta falada em pt-BR continuam
+funcionando sem mudança de comportamento — só a apresentação do cartão e
+os novos controles de Ajustes (acima) são novos. Os quatro repositórios de
+efeito de brilho citados na tarefa (`ios-siri-animation`, `voiceorbs`,
+`AppleIntelligenceGlowEffect`, o componente de `ui.wensity.com`) **não
+foram comparados ao vivo nesta sessão** (sem acesso de rede a eles); o
+anel continua uma implementação CSS original, não uma adaptação de
+nenhum desses repositórios — registrado honestamente em vez de alegar uma
+comparação que não aconteceu.
+
+### Home/Dashboard — gestos e reorganização
+
+Roda do mouse horizontal (`deltaX` real ou "Shift + roda") soma-se ao
+arraste por ponteiro, clique nos indicadores e setas do teclado já
+existentes desde a Fase 8. `AppGrid` ganhou uma transição CSS em
+`left`/`top`, então remover um atalho faz os ícones seguintes **deslizarem**
+para a posição anterior, em vez de saltar.
+
+### Stage — escala proporcional de verdade
+
+`Stage.tsx` tinha um comentário afirmando "scaled uniformly to fit the real
+viewport" que não correspondia ao CSS (`stage-canvas` só ficava centralizado
+em 1280×720 fixos, sobrando borda preta em qualquer display diferente).
+Corrigido com um `ResizeObserver` real aplicando
+`transform: scale(min(largura/1280, altura/720))` — testado preenchendo
+uma viewport 1920×1080 por inteiro, mantendo a proporção 16:9 e a nitidez
+vetorial dos ícones, sem reconstruir layouts de celular.
+
+### Música — "Fila"/"Letra" viraram navegação real
+
+"Fila" abre uma lista real da playlist de demonstração (3 faixas) e toca a
+faixa escolhida de verdade ao clicar (`playTrackAt`, compartilhado entre o
+botão do topo e o ícone de fila dos controles secundários). "Letra" mostra
+um estado vazio honesto ("sem letra disponível... nenhuma letra licenciada
+foi adicionada") em vez de inventar ou licenciar letras de música.
+"Adicionar à biblioteca" continua um aviso rápido na tela (não há uma
+"biblioteca" própria no app para adicionar de verdade).
+
+### Testes
+
+`scripts/test-fase9.mjs` (novo): cartões de prévia de tema, fundo próprio
+do Veículo/Clima no tema Claro, as 11 seções de Ajustes, relógio 12h/24h
+refletindo no dock, controles do Assistente + lista de Vozes, posição/
+largura do novo cartão compacto do Assistente, roda do mouse na Home,
+"Fila" trocando de faixa de verdade, segmented control do Esportes legível
+nos dois temas. Suíte completa das fases anteriores (`test-fase5.mjs` …
+`test-fase8.mjs`, `test-mocks.mjs`, `test-brands.mjs`,
+`test-music-radio.mjs`, `test-fase4-apps.mjs`, `check-console.mjs`,
+`test-edit-mode.mjs`, `check-statusbar.mjs`, `check-dock-statusbar.mjs`)
+reexecutada sem regressão nova. `npm run build`/`npm run lint` sem
+erros/avisos.
+
+### Limitações desta fase (sem promessa falsa)
+
+Ver `docs/FINAL_UI_REVIEW.md` para a lista completa. Resumo: Figma não
+inspecionado ao vivo; efeitos de Siri de terceiros não comparados ao vivo;
+nenhuma voz local/nuvem instalada (opcional, documentado); football-data.org
+não testado ponta a ponta nesta sessão (sem chave); ícones de sistema não
+foram redesenhados do zero (só os elementos com cor fixa que quebravam o
+tema Claro foram corrigidos).
 
 ## Estrutura
 

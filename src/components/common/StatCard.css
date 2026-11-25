@@ -4,17 +4,17 @@
   gap: 4px;
   padding: 14px 16px;
   border-radius: 14px;
-  background: rgba(255, 255, 255, 0.06);
+  background: var(--panel-chip);
 }
 
 .stat-card__label {
   font-size: 13px;
   font-weight: 600;
-  color: rgba(255, 255, 255, 0.55);
+  color: var(--panel-text-tertiary);
 }
 
 .stat-card__value {
   font-size: 20px;
   font-weight: 700;
-  color: #fff;
+  color: var(--panel-text);
 }

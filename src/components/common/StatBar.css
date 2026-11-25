@@ -6,7 +6,7 @@
 }
 
 .stat-bar__label {
-  color: #fff;
+  color: var(--panel-text);
   font-size: 16px;
   font-weight: 600;
 }
@@ -14,7 +14,7 @@
 .stat-bar__track {
   height: 8px;
   border-radius: 4px;
-  background: rgba(255, 255, 255, 0.14);
+  background: var(--panel-chip-strong);
   overflow: hidden;
 }
 
@@ -25,7 +25,7 @@
 }
 
 .stat-bar__value {
-  color: #fff;
+  color: var(--panel-text);
   font-size: 15px;
   font-weight: 700;
   text-align: right;

@@ -83,6 +83,193 @@
   --ios-glass-bg: var(--ios-glass-bg-light);
 }
 
+/*
+ * Tokens de telas "CarPlay" com identidade visual própria (Fase 9): cada
+ * app de conteúdo (Home/wallpaper, mapa do Dashboard, Música, Rádio,
+ * Veículo, Trabalho, Clima, Esportes, Radar, Chamadas) definia cor fixa
+ * mesmo com o tema global (bug relatado pelo usuário). Em vez de inverter
+ * com filter, cada tela declara seu PRÓPRIO par claro/escuro aqui,
+ * preservando o matiz de marca (mapa continua azul, Música continua no
+ * tom do álbum etc.) só trocando luminosidade/contraste de fundo e texto.
+ * O dock/tray (`.dock`) fica de fora de propósito: a referência real da
+ * Apple (`imagens/de/apple-dark.png`) mostra a bandeja sempre como uma
+ * cápsula escura translúcida sobre qualquer conteúdo, em qualquer tema —
+ * não é uma inconsistência, é o comportamento documentado do CarPlay.
+ */
+:root {
+  --wallpaper-bg-corner-1: #0c2746;
+  --wallpaper-bg-corner-2: #030a16;
+  --wallpaper-bg-corner-3: #061830;
+  --wallpaper-bg-corner-4: #15375f;
+  --wallpaper-line: rgba(150, 185, 225, 0.55);
+
+  --map-bg-1: #07192f;
+  --map-bg-2: #0a2440;
+  --map-land: #0f5f66;
+  --map-land-2: #0a4750;
+  --map-text: #ffffff;
+  --map-text-secondary: rgba(255, 255, 255, 0.85);
+  --map-chrome-bg: rgba(8, 14, 26, 0.6);
+  --map-chrome-border: rgba(255, 255, 255, 0.12);
+  --map-road: rgba(150, 180, 205, 0.4);
+
+  --nav-card-bg-1: #1c4fa8;
+  --nav-card-bg-2: #0d2d6e;
+  --nav-card-bg-3: #0a2358;
+  --nav-card-text: #ffffff;
+  --nav-card-text-secondary: rgba(255, 255, 255, 0.85);
+  --nav-card-chip: rgba(255, 255, 255, 0.14);
+  --nav-card-dot: rgba(255, 255, 255, 0.4);
+
+  --music-bg-1: #6f93e8;
+  --music-bg-2: #3f5fc4;
+  --music-bg-3: #2c3f8f;
+  --music-bg-4: #26316f;
+  --music-text: #ffffff;
+  --music-text-secondary: rgba(255, 255, 255, 0.75);
+  --music-chip: rgba(255, 255, 255, 0.14);
+  --music-chip-strong: rgba(255, 255, 255, 0.25);
+
+  --radio-bg-1: #4a3a52;
+  --radio-bg-2: #2c1f33;
+  --radio-bg-3: #1a1420;
+  --radio-text: #ffffff;
+  --radio-text-secondary: rgba(255, 255, 255, 0.75);
+  --radio-text-tertiary: rgba(255, 255, 255, 0.6);
+  --radio-chip: rgba(255, 255, 255, 0.08);
+  --radio-chip-strong: rgba(255, 255, 255, 0.14);
+  --radio-chip-border: rgba(255, 255, 255, 0.25);
+  --radio-list-bg: rgba(0, 0, 0, 0.18);
+  --radio-tab-active-bg: #ffffff;
+  --radio-tab-active-text: #2c1f33;
+
+  /* Veículo/Trabalho (mesmo gradiente "cockpit" escuro) */
+  --panel-bg-1: #142033;
+  --panel-bg-2: #0c1626;
+  --panel-bg-3: #0a1322;
+  --panel-text: #ffffff;
+  --panel-text-secondary: rgba(255, 255, 255, 0.75);
+  --panel-text-tertiary: rgba(255, 255, 255, 0.5);
+  --panel-chip: rgba(255, 255, 255, 0.08);
+  --panel-chip-strong: rgba(255, 255, 255, 0.14);
+  --panel-border: rgba(255, 255, 255, 0.1);
+  --panel-separator: rgba(255, 255, 255, 0.07);
+
+  /* Clima (céu noturno, ver imagens/wetter.png) */
+  --clima-bg-1: #0a1430;
+  --clima-bg-2: #142554;
+  --clima-bg-3: #1c3366;
+
+  /* Radar (tela cheia neutra) */
+  --radar-bg: #0c0d10;
+  --radar-text: #ffffff;
+  --radar-text-secondary: rgba(255, 255, 255, 0.7);
+  --radar-chip: rgba(255, 255, 255, 0.08);
+
+  /* Cartão de chamada (overlay sobre qualquer tela) */
+  --call-card-bg: rgba(10, 16, 28, 0.88);
+  --call-card-border: rgba(255, 255, 255, 0.08);
+  --call-card-text: #ffffff;
+  --call-card-text-secondary: rgba(255, 255, 255, 0.7);
+
+  --carplay-surface-1: #0e1230;
+  --carplay-surface-2: #1c2550;
+  --carplay-surface-3: #07081c;
+  --carplay-text: #ffffff;
+  --carplay-text-secondary: rgba(255, 255, 255, 0.7);
+  --carplay-text-tertiary: rgba(255, 255, 255, 0.45);
+  --carplay-card-bg: rgba(255, 255, 255, 0.06);
+  --carplay-card-bg-weak: rgba(255, 255, 255, 0.05);
+  --carplay-card-border: rgba(255, 255, 255, 0.1);
+  --carplay-chip: rgba(255, 255, 255, 0.12);
+  --carplay-chip-strong: rgba(255, 255, 255, 0.16);
+}
+
+:root[data-theme='light'] {
+  --wallpaper-bg-corner-1: #4f7cc4;
+  --wallpaper-bg-corner-2: #2f5694;
+  --wallpaper-bg-corner-3: #3a69ac;
+  --wallpaper-bg-corner-4: #6b97d6;
+  --wallpaper-line: rgba(255, 255, 255, 0.4);
+
+  --map-bg-1: #dbe6f0;
+  --map-bg-2: #eef3f8;
+  --map-land: #bfe3d8;
+  --map-land-2: #a9d8ca;
+  --map-text: #10243a;
+  --map-text-secondary: rgba(16, 36, 58, 0.75);
+  --map-chrome-bg: rgba(255, 255, 255, 0.78);
+  --map-chrome-border: rgba(16, 36, 58, 0.12);
+  --map-road: rgba(60, 90, 115, 0.45);
+
+  --nav-card-bg-1: #bcd4f7;
+  --nav-card-bg-2: #8fb2ea;
+  --nav-card-bg-3: #6f98de;
+  --nav-card-text: #0c1b33;
+  --nav-card-text-secondary: rgba(12, 27, 51, 0.72);
+  --nav-card-chip: rgba(12, 27, 51, 0.1);
+  --nav-card-dot: rgba(12, 27, 51, 0.35);
+
+  --music-bg-1: #eaf0fe;
+  --music-bg-2: #c3d4f7;
+  --music-bg-3: #9fb3e8;
+  --music-bg-4: #7f94d8;
+  --music-text: #10172b;
+  --music-text-secondary: rgba(16, 23, 43, 0.7);
+  --music-chip: rgba(16, 23, 43, 0.08);
+  --music-chip-strong: rgba(16, 23, 43, 0.14);
+
+  --radio-bg-1: #f3e9f7;
+  --radio-bg-2: #e3d2ec;
+  --radio-bg-3: #cbb3dd;
+  --radio-text: #221728;
+  --radio-text-secondary: rgba(34, 23, 40, 0.7);
+  --radio-text-tertiary: rgba(34, 23, 40, 0.55);
+  --radio-chip: rgba(34, 23, 40, 0.06);
+  --radio-chip-strong: rgba(34, 23, 40, 0.1);
+  --radio-chip-border: rgba(34, 23, 40, 0.18);
+  --radio-list-bg: rgba(34, 23, 40, 0.05);
+  --radio-tab-active-bg: #221728;
+  --radio-tab-active-text: #ffffff;
+
+  --panel-bg-1: #eef2f8;
+  --panel-bg-2: #dbe3f0;
+  --panel-bg-3: #c7d3e8;
+  --panel-text: #0f1726;
+  --panel-text-secondary: rgba(15, 23, 38, 0.7);
+  --panel-text-tertiary: rgba(15, 23, 38, 0.5);
+  --panel-chip: rgba(15, 23, 38, 0.05);
+  --panel-chip-strong: rgba(15, 23, 38, 0.1);
+  --panel-border: rgba(15, 23, 38, 0.12);
+  --panel-separator: rgba(15, 23, 38, 0.08);
+
+  --clima-bg-1: #bfe0f7;
+  --clima-bg-2: #e3f1fc;
+  --clima-bg-3: #f3f9ff;
+
+  --radar-bg: #f0f1f4;
+  --radar-text: #15171c;
+  --radar-text-secondary: rgba(21, 23, 28, 0.7);
+  --radar-chip: rgba(21, 23, 28, 0.06);
+
+  --call-card-bg: rgba(255, 255, 255, 0.92);
+  --call-card-border: rgba(15, 23, 38, 0.1);
+  --call-card-text: #0f1726;
+  --call-card-text-secondary: rgba(15, 23, 38, 0.7);
+
+  --carplay-surface-1: #eef1fb;
+  --carplay-surface-2: #dde4f7;
+  --carplay-surface-3: #ffffff;
+  --carplay-text: #10131a;
+  --carplay-text-secondary: rgba(16, 19, 26, 0.65);
+  --carplay-text-tertiary: rgba(16, 19, 26, 0.45);
+  --carplay-card-bg: rgba(16, 19, 26, 0.05);
+  --carplay-card-bg-weak: rgba(16, 19, 26, 0.04);
+  --carplay-card-border: rgba(16, 19, 26, 0.1);
+  --carplay-chip: rgba(16, 19, 26, 0.08);
+  --carplay-chip-strong: rgba(16, 19, 26, 0.12);
+}
+
 /* "Reduzir movimento" (Ajustes > Acessibilidade) — override explícito do
    app, independente do prefers-reduced-motion do sistema operacional. */
 :root[data-reduce-motion='true'] *,

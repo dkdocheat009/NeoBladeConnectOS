@@ -82,8 +82,9 @@ await page.waitForTimeout(500);
 await shot('09_ajustes_aparencia');
 if (!(await page.locator('.ajustes-screen').isVisible())) throw new Error('Ajustes: tela não abriu.');
 const navRows = await page.locator('.ajustes-screen__nav-list .ios-list-row').count();
-// Fase 8 acrescentou Acessibilidade e Privacidade (7 -> 9 seções).
-if (navRows !== 9) throw new Error(`Ajustes: esperado 9 seções, encontrado ${navRows}.`);
+// Fase 8 acrescentou Acessibilidade e Privacidade (7 -> 9); Fase 9
+// acrescentou Sistema e promoveu Integrações a seção própria (9 -> 11).
+if (navRows !== 11) throw new Error(`Ajustes: esperado 11 seções, encontrado ${navRows}.`);
 // Intensidade do Liquid Glass tem efeito real (CSS var no root).
 const blurBefore = await page.evaluate(() => getComputedStyle(document.documentElement).getPropertyValue('--ios-glass-blur'));
 await page.locator('.ajustes-screen__slider').first().evaluate((input) => {

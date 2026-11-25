@@ -1,7 +1,7 @@
 .music-screen {
   position: absolute;
   inset: 0;
-  background: radial-gradient(120% 120% at 20% 15%, #6f93e8 0%, #3f5fc4 42%, #2c3f8f 75%, #26316f 100%);
+  background: radial-gradient(120% 120% at 20% 15%, var(--music-bg-1) 0%, var(--music-bg-2) 42%, var(--music-bg-3) 75%, var(--music-bg-4) 100%);
   overflow: hidden;
 }
 
@@ -16,21 +16,21 @@
   margin: 0;
   font-size: 30px;
   font-weight: 800;
-  color: #fff;
+  color: var(--music-text);
 }
 
 .music-screen__artist {
   margin: 6px 0 0;
   font-size: 18px;
   font-weight: 600;
-  color: rgba(255, 255, 255, 0.88);
+  color: var(--music-text-secondary);
 }
 
 .music-screen__album {
   margin: 2px 0 0;
   font-size: 15px;
   font-weight: 500;
-  color: rgba(255, 255, 255, 0.6);
+  color: var(--music-text-secondary);
 }
 
 .music-screen__aux-actions {
@@ -42,9 +42,9 @@
 }
 
 .music-screen__pill {
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  background: rgba(255, 255, 255, 0.12);
-  color: #fff;
+  border: 1px solid var(--music-chip-strong);
+  background: var(--music-chip);
+  color: var(--music-text);
   font-size: 14px;
   font-weight: 700;
   padding: 9px 18px;
@@ -83,7 +83,7 @@
   width: 64px;
   height: 64px;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.18);
+  background: var(--music-chip-strong);
   align-items: center;
   justify-content: center;
 }
@@ -96,7 +96,7 @@
   display: flex;
   align-items: center;
   gap: 14px;
-  color: #fff;
+  color: var(--music-text);
   font-size: 15px;
   font-weight: 600;
 }
@@ -106,7 +106,7 @@
   flex: 1;
   height: 4px;
   border-radius: 2px;
-  background: rgba(255, 255, 255, 0.3);
+  background: var(--music-chip-strong);
   cursor: pointer;
 }
 
@@ -115,7 +115,7 @@
   inset: 0 auto 0 0;
   height: 100%;
   border-radius: 2px;
-  background: #fff;
+  background: var(--music-text);
 }
 
 .music-screen__seek-thumb {
@@ -124,7 +124,7 @@
   width: 14px;
   height: 14px;
   border-radius: 50%;
-  background: #fff;
+  background: var(--music-text);
   transform: translate(-50%, -50%);
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
 }
@@ -136,7 +136,7 @@
   width: 500px;
   display: flex;
   justify-content: space-between;
-  color: #fff;
+  color: var(--music-text);
 }
 
 .music-screen__secondary button {
@@ -144,11 +144,112 @@
   background: none;
   padding: 8px;
   cursor: pointer;
-  color: rgba(255, 255, 255, 0.85);
+  color: var(--music-text-secondary);
 }
 
 .music-screen__secondary button.is-active {
   color: #ffd166;
+}
+
+.music-screen__sheet {
+  position: absolute;
+  right: 30px;
+  top: 70px;
+  width: 300px;
+  max-height: 420px;
+  display: flex;
+  flex-direction: column;
+  background: rgba(10, 10, 16, 0.8);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--music-chip-strong);
+  border-radius: 18px;
+  padding: 14px;
+  box-sizing: border-box;
+  z-index: 5;
+}
+
+.music-screen__sheet-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.music-screen__sheet-title {
+  font-size: 15px;
+  font-weight: 800;
+  color: #fff;
+}
+
+.music-screen__sheet-close {
+  border: none;
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 11px;
+}
+
+.music-screen__sheet-empty {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.music-screen__queue {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  overflow-y: auto;
+}
+
+.music-screen__queue-row {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  border: none;
+  background: none;
+  padding: 10px 8px;
+  border-radius: 10px;
+  cursor: pointer;
+  text-align: left;
+}
+
+.music-screen__queue-row.is-active {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.music-screen__queue-info {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.music-screen__queue-title {
+  color: #fff;
+  font-size: 14px;
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.music-screen__queue-artist {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 12px;
+}
+
+.music-screen__queue-now {
+  flex: none;
+  font-size: 11px;
+  font-weight: 700;
+  color: #34d399;
 }
 
 .music-screen__toast {
@@ -156,7 +257,7 @@
   left: 50%;
   bottom: 40px;
   transform: translateX(-50%);
-  background: rgba(40, 40, 46, 0.9);
+  background: rgba(20, 20, 24, 0.85);
   color: #fff;
   font-weight: 600;
   font-size: 14px;

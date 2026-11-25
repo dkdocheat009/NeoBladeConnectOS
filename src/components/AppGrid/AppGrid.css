@@ -8,4 +8,7 @@
   position: absolute;
   transform: translateX(-50%);
   pointer-events: auto;
+  /* Anima a reorganização dos ícones (ex.: remover um atalho faz os
+     seguintes deslizarem para a posição anterior, Fase 9), não só saltar. */
+  transition: left 280ms cubic-bezier(0.22, 0.8, 0.2, 1), top 280ms cubic-bezier(0.22, 0.8, 0.2, 1);
 }

@@ -5,8 +5,8 @@
   width: 460px;
   height: 64px;
   border-radius: 20px;
-  background: rgba(10, 16, 28, 0.88);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: var(--call-card-bg);
+  border: 1px solid var(--call-card-border);
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
   display: flex;
   align-items: center;
@@ -18,7 +18,7 @@
 }
 
 .chamada-card--ended {
-  background: rgba(10, 16, 28, 0.7);
+  opacity: 0.82;
 }
 
 @keyframes chamada-pop {
@@ -38,7 +38,7 @@
   height: 38px;
   border-radius: 50%;
   background: #3b82f6;
-  color: #fff;
+  color: #ffffff;
   font-size: 16px;
   font-weight: 700;
   display: flex;
@@ -57,7 +57,7 @@
 .chamada-card__name {
   font-size: 15px;
   font-weight: 700;
-  color: #fff;
+  color: var(--call-card-text);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -65,7 +65,7 @@
 
 .chamada-card__subtitle {
   font-size: 12px;
-  color: rgba(255, 255, 255, 0.55);
+  color: var(--call-card-text-secondary);
   font-variant-numeric: tabular-nums;
 }
 
@@ -95,7 +95,7 @@
 }
 
 .chamada-card__btn--mute {
-  background: rgba(255, 255, 255, 0.14);
+  background: color-mix(in srgb, var(--call-card-text) 14%, transparent);
 }
 
 .chamada-card__btn--mute.is-active {

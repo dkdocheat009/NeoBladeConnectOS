@@ -1,7 +1,7 @@
 import { useState, type MouseEvent } from 'react';
 import albumArt from '../../assets/icons/album-art.png';
 import { BackButton } from '../BackButton/BackButton';
-import type { MusicPlayerState } from '../../hooks/useMusicPlayerState';
+import { MOCK_PLAYLIST, type MusicPlayerState } from '../../hooks/useMusicPlayerState';
 import './MusicScreen.css';
 
 interface MusicScreenProps {
@@ -9,14 +9,19 @@ interface MusicScreenProps {
   onBack: () => void;
 }
 
+type Sheet = null | 'letra' | 'fila';
+
 /**
  * Reproduz de.bilder/music.png (também en/music.png): tela cheia do
- * Spotify mock. "Letra"/"Fila"/"Adicionar à biblioteca" são apenas visuais —
- * sem conteúdo real, ver README. Em vez de ficar silencioso (Fase 8),
- * mostram um aviso honesto na tela em vez de só um console.info.
+ * Spotify mock. "Letra"/"Fila" abrem uma folha real (Fase 9): "Fila" lista
+ * a playlist de demonstração e navega de verdade (toca a faixa clicada);
+ * "Letra" mostra um estado vazio honesto — não há letra licenciada para
+ * reproduzir, então não inventamos uma. "Adicionar à biblioteca" continua
+ * um aviso rápido (não há uma "biblioteca" própria para adicionar).
  * Shuffle/repeat/seek são estados de demonstração.
  */
 export function MusicScreen({ player, onBack }: MusicScreenProps) {
+  const [sheet, setSheet] = useState<Sheet>(null);
   const [unavailableToast, setUnavailableToast] = useState<string | null>(null);
   const showUnavailable = (label: string) => {
     setUnavailableToast(`"${label}" ainda não disponível nesta versão.`);
@@ -25,6 +30,7 @@ export function MusicScreen({ player, onBack }: MusicScreenProps) {
 
   const {
     track,
+    trackIndex,
     isPlaying,
     shuffle,
     repeat,
@@ -37,6 +43,7 @@ export function MusicScreen({ player, onBack }: MusicScreenProps) {
     seek,
     next,
     prev,
+    playTrackAt,
   } = player;
 
   const handleSeek = (event: MouseEvent<HTMLDivElement>) => {
@@ -58,25 +65,63 @@ export function MusicScreen({ player, onBack }: MusicScreenProps) {
         <button
           type="button"
           className="music-screen__pill"
-          onClick={() => showUnavailable('Letra')}
+          onClick={() => setSheet(sheet === 'letra' ? null : 'letra')}
         >
           <span aria-hidden="true">"</span> Letra
         </button>
         <button
           type="button"
           className="music-screen__pill"
-          onClick={() => showUnavailable('Fila')}
+          onClick={() => setSheet(sheet === 'fila' ? null : 'fila')}
         >
           Fila
         </button>
       </div>
+
+      {sheet && (
+        <div className="music-screen__sheet">
+          <div className="music-screen__sheet-header">
+            <span className="music-screen__sheet-title">{sheet === 'fila' ? 'Fila' : 'Letra'}</span>
+            <button type="button" className="music-screen__sheet-close" onClick={() => setSheet(null)} aria-label="Fechar">
+              ✕
+            </button>
+          </div>
+          {sheet === 'fila' ? (
+            <ul className="music-screen__queue">
+              {MOCK_PLAYLIST.map((t, i) => (
+                <li key={t.title}>
+                  <button
+                    type="button"
+                    className={`music-screen__queue-row${i === trackIndex ? ' is-active' : ''}`}
+                    onClick={() => {
+                      playTrackAt(i);
+                      setSheet(null);
+                    }}
+                  >
+                    <span className="music-screen__queue-info">
+                      <span className="music-screen__queue-title">{t.title}</span>
+                      <span className="music-screen__queue-artist">{t.artist}</span>
+                    </span>
+                    {i === trackIndex && <span className="music-screen__queue-now">Tocando</span>}
+                  </button>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="music-screen__sheet-empty">
+              Sem letra disponível para "{track.title}" nesta versão de demonstração — nenhuma letra licenciada foi
+              adicionada ao projeto.
+            </p>
+          )}
+        </div>
+      )}
 
       <img className="music-screen__art" src={albumArt} alt="" />
 
       <div className="music-screen__transport">
         <button type="button" aria-label="Faixa anterior" onClick={prev}>
           <svg viewBox="0 0 36 36" width="34" height="34" aria-hidden="true">
-            <path d="M9 7h4v22H9zM28 7 11 18l17 11z" fill="#fff" />
+            <path d="M9 7h4v22H9zM28 7 11 18l17 11z" style={{ fill: 'var(--music-text)' }} />
           </svg>
         </button>
         <button
@@ -87,18 +132,18 @@ export function MusicScreen({ player, onBack }: MusicScreenProps) {
         >
           {isPlaying ? (
             <svg viewBox="0 0 36 36" width="30" height="30" aria-hidden="true">
-              <rect x="9" y="6" width="7" height="24" rx="1.5" fill="#fff" />
-              <rect x="20" y="6" width="7" height="24" rx="1.5" fill="#fff" />
+              <rect x="9" y="6" width="7" height="24" rx="1.5" style={{ fill: 'var(--music-text)' }} />
+              <rect x="20" y="6" width="7" height="24" rx="1.5" style={{ fill: 'var(--music-text)' }} />
             </svg>
           ) : (
             <svg viewBox="0 0 36 36" width="30" height="30" aria-hidden="true">
-              <path d="M10 6v24l20-12z" fill="#fff" />
+              <path d="M10 6v24l20-12z" style={{ fill: 'var(--music-text)' }} />
             </svg>
           )}
         </button>
         <button type="button" aria-label="Próxima faixa" onClick={next}>
           <svg viewBox="0 0 36 36" width="34" height="34" aria-hidden="true">
-            <path d="M23 7h4v22h-4zM8 7l17 11-17 11z" fill="#fff" />
+            <path d="M23 7h4v22h-4zM8 7l17 11-17 11z" style={{ fill: 'var(--music-text)' }} />
           </svg>
         </button>
       </div>
@@ -119,8 +164,8 @@ export function MusicScreen({ player, onBack }: MusicScreenProps) {
           onClick={() => showUnavailable('Adicionar à biblioteca')}
         >
           <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
-            <circle cx="12" cy="12" r="9.5" fill="none" stroke="#fff" strokeWidth="1.6" />
-            <path d="M12 7v10M7 12h10" stroke="#fff" strokeWidth="1.6" strokeLinecap="round" />
+            <circle cx="12" cy="12" r="9.5" fill="none" style={{ stroke: 'var(--music-text)' }} strokeWidth="1.6" />
+            <path d="M12 7v10M7 12h10" style={{ stroke: 'var(--music-text)' }} strokeWidth="1.6" strokeLinecap="round" />
           </svg>
         </button>
         <button
@@ -162,13 +207,13 @@ export function MusicScreen({ player, onBack }: MusicScreenProps) {
         <button
           type="button"
           aria-label="Fila de reprodução"
-          onClick={() => showUnavailable('Fila de reprodução')}
+          onClick={() => setSheet(sheet === 'fila' ? null : 'fila')}
         >
           <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
             <path
               d="M4 6h12M4 12h12M4 18h8M18 9v10m0 0 3-3m-3 3-3-3"
               fill="none"
-              stroke="#fff"
+              style={{ stroke: 'var(--music-text)' }}
               strokeWidth="1.6"
               strokeLinecap="round"
             />
