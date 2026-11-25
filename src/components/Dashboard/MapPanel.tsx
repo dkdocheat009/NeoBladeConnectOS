@@ -1,14 +1,21 @@
+import type { NavDemoState } from '../../hooks/useNavDemoState';
 import './MapPanel.css';
+
+interface MapPanelProps {
+  nav: NavDemoState;
+}
 
 /**
  * Decorative, non-functional stand-in for the navigation map seen in the
  * dashboard reference capture: stylised land shapes, a route line and a
  * position marker drawn in SVG. It is a demo representation only — no real
- * map/GPS data is used or implied (ver CLAUDE.md / tarefa da Fase 2).
+ * map/GPS data is used or implied (ver CLAUDE.md / tarefa da Fase 2). A
+ * tarja da via reflete a manobra demonstrativa atual (Fase 8, compartilhada
+ * com o NavCard/NavegacaoScreen); some quando a rota demo é encerrada.
  */
-export function MapPanel() {
+export function MapPanel({ nav }: MapPanelProps) {
   return (
-    <div className="map-panel">
+    <div className={`map-panel${nav.routeActive ? '' : ' map-panel--inactive'}`}>
       <svg
         className="map-panel__art"
         viewBox="0 0 732 696"
@@ -68,11 +75,17 @@ export function MapPanel() {
       </svg>
 
       <div className="map-panel__badge map-panel__badge--a" style={{ left: 172, top: 142 }}>
-        A50
+        {nav.step.roadShield}
       </div>
       <div className="map-panel__badge map-panel__badge--b" style={{ left: 300, top: 430 }}>
         A12
       </div>
+
+      {!nav.routeActive && (
+        <div className="map-panel__overlay">
+          <span>Sem rota ativa</span>
+        </div>
+      )}
 
       <div className="map-panel__speed">
         <div className="map-panel__sign" aria-label="Limite de velocidade 90 km/h">

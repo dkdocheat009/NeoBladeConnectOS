@@ -1,4 +1,4 @@
-import type { MouseEvent } from 'react';
+import { useState, type MouseEvent } from 'react';
 import albumArt from '../../assets/icons/album-art.png';
 import { BackButton } from '../BackButton/BackButton';
 import type { MusicPlayerState } from '../../hooks/useMusicPlayerState';
@@ -11,10 +11,18 @@ interface MusicScreenProps {
 
 /**
  * Reproduz de.bilder/music.png (também en/music.png): tela cheia do
- * Spotify mock. "Letra"/"Fila" são apenas visuais — sem conteúdo real,
- * ver README. Shuffle/repeat/seek são estados de demonstração.
+ * Spotify mock. "Letra"/"Fila"/"Adicionar à biblioteca" são apenas visuais —
+ * sem conteúdo real, ver README. Em vez de ficar silencioso (Fase 8),
+ * mostram um aviso honesto na tela em vez de só um console.info.
+ * Shuffle/repeat/seek são estados de demonstração.
  */
 export function MusicScreen({ player, onBack }: MusicScreenProps) {
+  const [unavailableToast, setUnavailableToast] = useState<string | null>(null);
+  const showUnavailable = (label: string) => {
+    setUnavailableToast(`"${label}" ainda não disponível nesta versão.`);
+    window.setTimeout(() => setUnavailableToast(null), 1800);
+  };
+
   const {
     track,
     isPlaying,
@@ -50,14 +58,14 @@ export function MusicScreen({ player, onBack }: MusicScreenProps) {
         <button
           type="button"
           className="music-screen__pill"
-          onClick={() => console.info('[NeoBladeConnectOS] "Letra" ainda não implementado (sem dados reais).')}
+          onClick={() => showUnavailable('Letra')}
         >
           <span aria-hidden="true">"</span> Letra
         </button>
         <button
           type="button"
           className="music-screen__pill"
-          onClick={() => console.info('[NeoBladeConnectOS] "Fila" ainda não implementado (sem dados reais).')}
+          onClick={() => showUnavailable('Fila')}
         >
           Fila
         </button>
@@ -108,7 +116,7 @@ export function MusicScreen({ player, onBack }: MusicScreenProps) {
         <button
           type="button"
           aria-label="Adicionar à biblioteca"
-          onClick={() => console.info('[NeoBladeConnectOS] "Adicionar à biblioteca" ainda não implementado.')}
+          onClick={() => showUnavailable('Adicionar à biblioteca')}
         >
           <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
             <circle cx="12" cy="12" r="9.5" fill="none" stroke="#fff" strokeWidth="1.6" />
@@ -154,7 +162,7 @@ export function MusicScreen({ player, onBack }: MusicScreenProps) {
         <button
           type="button"
           aria-label="Fila de reprodução"
-          onClick={() => console.info('[NeoBladeConnectOS] "Fila de reprodução" ainda não implementado.')}
+          onClick={() => showUnavailable('Fila de reprodução')}
         >
           <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
             <path
@@ -167,6 +175,8 @@ export function MusicScreen({ player, onBack }: MusicScreenProps) {
           </svg>
         </button>
       </div>
+
+      {unavailableToast && <div className="music-screen__toast">{unavailableToast}</div>}
     </div>
   );
 }

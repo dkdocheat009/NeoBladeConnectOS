@@ -5,7 +5,7 @@ import { IosToggle } from '../ios/IosToggle';
 import { IosSearchField } from '../ios/IosSearchField';
 import { useRemovedApps } from '../../hooks/useRemovedApps';
 import { homeApps } from '../../data/apps';
-import type { SettingsState } from '../../hooks/useSettingsState';
+import type { SettingsState, ThemeMode, TextSize } from '../../hooks/useSettingsState';
 import './ConfiguracoesScreen.css';
 
 interface ConfiguracoesScreenProps {
@@ -14,7 +14,16 @@ interface ConfiguracoesScreenProps {
   onOpenNotificacoes: () => void;
 }
 
-type SectionId = 'aparencia' | 'audio' | 'voz' | 'notificacoes' | 'apps' | 'idioma' | 'sobre';
+type SectionId =
+  | 'aparencia'
+  | 'audio'
+  | 'voz'
+  | 'notificacoes'
+  | 'acessibilidade'
+  | 'privacidade'
+  | 'apps'
+  | 'idioma'
+  | 'sobre';
 
 interface Section {
   id: SectionId;
@@ -25,27 +34,45 @@ interface Section {
 }
 
 const SECTIONS: Section[] = [
-  { id: 'aparencia', label: 'Aparência', icon: '🎨', color: '#8e44ec', summary: 'Tema e transparência' },
+  { id: 'aparencia', label: 'Tela e Aparência', icon: '🎨', color: '#8e44ec', summary: 'Tema, transparência' },
   { id: 'audio', label: 'Sons e Áudio', icon: '🔊', color: '#ff453a', summary: 'Volume e avisos' },
   { id: 'voz', label: 'Siri e Voz', icon: '🎙️', color: '#2c2c2e', summary: 'Assistente de voz' },
   { id: 'notificacoes', label: 'Notificações', icon: '🔔', color: '#ff453a', summary: 'Badges e banners' },
-  { id: 'apps', label: 'Aplicativos', icon: '▦', color: '#0a84ff', summary: 'Atalhos removidos' },
+  { id: 'acessibilidade', label: 'Acessibilidade', icon: '♿', color: '#0a84ff', summary: 'Movimento, texto' },
+  { id: 'privacidade', label: 'Privacidade', icon: '🔒', color: '#8e8e93', summary: 'Microfone' },
+  { id: 'apps', label: 'Home e Apps', icon: '▦', color: '#30d158', summary: 'Atalhos, integrações' },
   { id: 'idioma', label: 'Idioma e Região', icon: '🌐', color: '#30d158', summary: 'Português (Brasil)' },
   { id: 'sobre', label: 'Sobre', icon: 'ℹ️', color: '#8e8e93', summary: 'Versão e sistema' },
 ];
 
+const THEME_OPTIONS: { id: ThemeMode; label: string }[] = [
+  { id: 'claro', label: 'Claro' },
+  { id: 'escuro', label: 'Escuro' },
+  { id: 'automatico', label: 'Automático' },
+];
+
+const TEXT_SIZE_OPTIONS: { id: TextSize; label: string }[] = [
+  { id: 'pequeno', label: 'Pequeno' },
+  { id: 'padrao', label: 'Padrão' },
+  { id: 'grande', label: 'Grande' },
+];
+
+type MicStatus = 'idle' | 'checking' | 'granted' | 'denied' | 'error' | 'unsupported';
+
 /**
- * App **Ajustes** (antes "Configurações" — Fase 7 refaz a apresentação
- * para a linguagem do iOS/Ajustes do iPhone, mantendo o id de tela
- * `configuracoes` e o estado existente por compatibilidade). Navegação
- * mestre-detalhe: lista agrupada à esquerda (com busca funcional),
- * detalhe da seção à direita — nunca os dois mesmos 5 botões de aba da
- * versão anterior. Cada controle continua tendo efeito real e
- * persistido (useSettingsState); nenhuma opção liga um recurso fictício.
+ * App **Ajustes** (antes "Configurações"). Navegação mestre-detalhe: lista
+ * agrupada à esquerda (com busca funcional), detalhe da seção à direita.
+ * Fase 8: tema Claro/Escuro/Automático afeta o app inteiro de verdade (ver
+ * useSettingsState — aplica `data-theme` no `<html>`), e ganhou
+ * Acessibilidade (reduzir transparência/movimento, tamanho do texto, com
+ * efeito real) e Privacidade (teste de permissão de microfone). Cada
+ * controle tem efeito real e persistido; nenhuma opção liga um recurso
+ * fictício nem simula hardware (brilho físico, bateria do telefone).
  */
 export function ConfiguracoesScreen({ onBack, settings, onOpenNotificacoes }: ConfiguracoesScreenProps) {
   const [sectionId, setSectionId] = useState<SectionId>('aparencia');
   const [query, setQuery] = useState('');
+  const [micStatus, setMicStatus] = useState<MicStatus>('idle');
   const { settings: s, update } = settings;
   const removedApps = useRemovedApps();
 
@@ -56,6 +83,21 @@ export function ConfiguracoesScreen({ onBack, settings, onOpenNotificacoes }: Co
   }, [query]);
 
   const activeSection = filteredSections.find((sec) => sec.id === sectionId) ?? filteredSections[0];
+
+  const testMicrophone = async () => {
+    if (!navigator.mediaDevices?.getUserMedia) {
+      setMicStatus('unsupported');
+      return;
+    }
+    setMicStatus('checking');
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      stream.getTracks().forEach((t) => t.stop());
+      setMicStatus('granted');
+    } catch {
+      setMicStatus('denied');
+    }
+  };
 
   return (
     <div className="ajustes-screen">
@@ -84,14 +126,24 @@ export function ConfiguracoesScreen({ onBack, settings, onOpenNotificacoes }: Co
       <section className="ajustes-screen__detail">
         {activeSection?.id === 'aparencia' && (
           <>
-            <h2 className="ajustes-screen__detail-title ios-title1">Aparência</h2>
+            <h2 className="ajustes-screen__detail-title ios-title1">Tela e Aparência</h2>
             <IosListGroup
-              footer="O tema claro só se aplica à tela de Navegação, o único app com referência visual para os dois temas. As demais telas mantêm o visual escuro original do CarPlay, aprovado nas fases anteriores."
+              header="Tema"
+              footer="Automático segue a preferência clara/escura do seu sistema operacional (prefers-color-scheme) e atualiza sozinho se você mudar o sistema. Mapas (Navegação) e gradientes de marca (Música, Rádio, Esportes) preservam suas próprias cores em qualquer tema, para manter legibilidade e identidade visual."
             >
-              <IosListRow label="Escuro" value={s.theme === 'escuro' ? '✓' : undefined} onClick={() => update('theme', 'escuro')} />
-              <IosListRow label="Claro (Navegação)" value={s.theme === 'claro' ? '✓' : undefined} onClick={() => update('theme', 'claro')} />
+              {THEME_OPTIONS.map((opt) => (
+                <IosListRow
+                  key={opt.id}
+                  label={opt.label}
+                  value={s.theme === opt.id ? '✓' : undefined}
+                  onClick={() => update('theme', opt.id)}
+                />
+              ))}
             </IosListGroup>
-            <IosListGroup header="Liquid Glass" footer="Controla o desfoque e a opacidade dos cartões flutuantes (Assistente de Voz e banner de Notificações).">
+            <IosListGroup
+              header="Liquid Glass"
+              footer="Controla o desfoque e a opacidade dos cartões flutuantes (Assistente de Voz e banner de Notificações)."
+            >
               <div className="ajustes-screen__slider-row">
                 <span className="ios-body">Intensidade da transparência</span>
                 <input
@@ -99,11 +151,17 @@ export function ConfiguracoesScreen({ onBack, settings, onOpenNotificacoes }: Co
                   min={0}
                   max={100}
                   value={s.glassIntensity}
+                  disabled={s.reduceTransparency}
                   onChange={(e) => update('glassIntensity', Number(e.target.value))}
                   className="ajustes-screen__slider"
                 />
                 <span className="ajustes-screen__slider-value ios-subheadline">{s.glassIntensity}%</span>
               </div>
+              {s.reduceTransparency && (
+                <p className="ajustes-screen__hint ios-footnote">
+                  Desativado porque "Reduzir transparência" está ativo (ver Acessibilidade).
+                </p>
+              )}
             </IosListGroup>
           </>
         )}
@@ -135,7 +193,7 @@ export function ConfiguracoesScreen({ onBack, settings, onOpenNotificacoes }: Co
         {activeSection?.id === 'voz' && (
           <>
             <h2 className="ajustes-screen__detail-title ios-title1">Siri e Voz</h2>
-            <IosListGroup footer="Atalho: Ctrl+Alt+V. Não é a Siri oficial nem usa SiriKit — é a interface própria do NeoBladeConnectOS, inspirada visualmente no efeito do Apple Intelligence/Siri.">
+            <IosListGroup footer="Atalho: Ctrl+Alt+V. Não é a Siri oficial nem usa SiriKit — é a interface própria do NeoBladeConnectOS, inspirada visualmente no efeito do Apple Intelligence/Siri. Nenhuma ligação telefônica real é feita ou recebida.">
               <IosListRow
                 label="Assistente de voz"
                 trailing={<IosToggle checked={s.assistantEnabled} onChange={(v) => update('assistantEnabled', v)} />}
@@ -168,9 +226,68 @@ export function ConfiguracoesScreen({ onBack, settings, onOpenNotificacoes }: Co
           </>
         )}
 
+        {activeSection?.id === 'acessibilidade' && (
+          <>
+            <h2 className="ajustes-screen__detail-title ios-title1">Acessibilidade</h2>
+            <IosListGroup header="Movimento" footer="Reduz/desativa animações e transições em todo o app, além da preferência do sistema operacional.">
+              <IosListRow
+                label="Reduzir movimento"
+                trailing={<IosToggle checked={s.reduceMotion} onChange={(v) => update('reduceMotion', v)} />}
+              />
+            </IosListGroup>
+            <IosListGroup header="Visualização" footer="Reduz a transparência dos cartões flutuantes (Siri, Notificações) para um fundo mais sólido e com mais contraste.">
+              <IosListRow
+                label="Reduzir transparência"
+                trailing={<IosToggle checked={s.reduceTransparency} onChange={(v) => update('reduceTransparency', v)} />}
+              />
+            </IosListGroup>
+            <IosListGroup header="Tamanho do texto" footer="Afeta títulos, listas e textos de Ajustes, Mensagens, Notificações, Calendário, Paradas e Diário de Bordo.">
+              {TEXT_SIZE_OPTIONS.map((opt) => (
+                <IosListRow
+                  key={opt.id}
+                  label={opt.label}
+                  value={s.textSize === opt.id ? '✓' : undefined}
+                  onClick={() => update('textSize', opt.id)}
+                />
+              ))}
+            </IosListGroup>
+          </>
+        )}
+
+        {activeSection?.id === 'privacidade' && (
+          <>
+            <h2 className="ajustes-screen__detail-title ios-title1">Privacidade</h2>
+            <IosListGroup
+              header="Microfone"
+              footer="Usado só enquanto o Assistente de Voz está ouvindo ativamente (Ctrl+Alt+V) ou durante o ditado de uma resposta em Mensagens. O áudio nunca é gravado, salvo ou enviado a um servidor — a transcrição acontece no próprio navegador."
+            >
+              <IosListRow
+                label="Testar permissão de microfone"
+                value={
+                  micStatus === 'checking'
+                    ? 'Verificando…'
+                    : micStatus === 'granted'
+                      ? 'Permitido ✓'
+                      : micStatus === 'denied'
+                        ? 'Negado'
+                        : micStatus === 'unsupported'
+                          ? 'Sem suporte'
+                          : undefined
+                }
+                chevron
+                onClick={testMicrophone}
+              />
+            </IosListGroup>
+            <IosListGroup footer="Este app não acessa câmera, localização, contatos ou arquivos do dispositivo.">
+              <IosListRow label="Câmera" value="Não utilizada" />
+              <IosListRow label="Localização" value="Não utilizada" />
+            </IosListGroup>
+          </>
+        )}
+
         {activeSection?.id === 'apps' && (
           <>
-            <h2 className="ajustes-screen__detail-title ios-title1">Aplicativos</h2>
+            <h2 className="ajustes-screen__detail-title ios-title1">Home e Apps</h2>
             {removedApps.removedIds.length === 0 ? (
               <IosListGroup footer="Nenhum atalho removido da Home.">
                 <IosListRow label="Todos os atalhos estão visíveis" />
@@ -198,6 +315,9 @@ export function ConfiguracoesScreen({ onBack, settings, onOpenNotificacoes }: Co
                 Restaurar todos os atalhos removidos
               </button>
             )}
+            <IosListGroup header="Integrações" footer="Planejadas para uma versão futura — não há conexão real com o ETS2/TruckSimMap nesta build; nenhum dado de telemetria é lido ou exibido.">
+              <IosListRow label="ETS2 / TruckSimMap" value="Em breve" disabled />
+            </IosListGroup>
           </>
         )}
 
@@ -215,7 +335,7 @@ export function ConfiguracoesScreen({ onBack, settings, onOpenNotificacoes }: Co
           <>
             <h2 className="ajustes-screen__detail-title ios-title1">Sobre</h2>
             <IosListGroup>
-              <IosListRow label="Versão" value="NeoBladeConnectOS — Fase 7" />
+              <IosListRow label="Versão" value="NeoBladeConnectOS — Fase 8" />
               <IosListRow label="Resolução do stage" value="1280 × 720" />
               <IosListRow label="Navegador" value={detectBrowserName()} />
               <IosListRow label="Modo" value={import.meta.env.DEV ? 'Desenvolvimento' : 'Produção'} />

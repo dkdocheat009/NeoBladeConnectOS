@@ -150,3 +150,16 @@
 .music-screen__secondary button.is-active {
   color: #ffd166;
 }
+
+.music-screen__toast {
+  position: absolute;
+  left: 50%;
+  bottom: 40px;
+  transform: translateX(-50%);
+  background: rgba(40, 40, 46, 0.9);
+  color: #fff;
+  font-weight: 600;
+  font-size: 14px;
+  padding: 10px 20px;
+  border-radius: var(--ios-radius-lg, 16px);
+}

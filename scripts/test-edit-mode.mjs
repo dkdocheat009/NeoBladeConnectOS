@@ -9,12 +9,16 @@ const box = await mapsIcon.boundingBox();
 const cx = box.x + box.width / 2;
 const cy = box.y - 60; // icon glyph sits above the label
 
-// Short click should NOT trigger edit mode.
+// Short click should NOT trigger edit mode — it should open the app normally
+// instead (desde a Fase 5, "Google Maps" abre a Navegação de verdade).
 await page.mouse.move(cx, cy);
 await page.mouse.down();
 await page.mouse.up();
-await page.waitForTimeout(100);
+await page.waitForTimeout(150);
+console.log('short click opened Navegação (comportamento normal, não edição):', await page.locator('.nav-screen').isVisible());
 console.log('after short click, remove buttons visible:', await page.locator('.app-icon__remove').count());
+await page.locator('.back-button').click();
+await page.waitForTimeout(300);
 
 // Long press (>=600ms) should trigger edit mode.
 await page.mouse.move(cx, cy);

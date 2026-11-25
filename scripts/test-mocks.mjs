@@ -12,7 +12,9 @@ await page.waitForTimeout(500);
 console.log('abriu a tela de Notificações:', await page.locator('.notificacoes-screen').count());
 await page.locator('.back-button').click();
 await page.waitForTimeout(400);
-console.log('voltou para a Home:', await page.locator('.home-content').count());
+// Fase 8: ambas as páginas da Home ficam montadas ao mesmo tempo (só uma
+// visível), então checamos visibilidade, não contagem de ".home-content".
+console.log('voltou para a Home:', await page.locator('.shell__main:not(.is-hidden)').isVisible());
 
 // Nota: a partir da Fase 4, clicar em "Veículo" abre o app Veículo (a troca
 // de marca agora acontece dentro dele, aba "Cavalo Mecânico") — coberto em

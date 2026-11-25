@@ -8,7 +8,10 @@
 .esportes-screen__sidebar {
   position: absolute;
   left: 143px;
-  top: 24px;
+  /* top maior que a altura do BackButton (38px a partir de top:24px) evita
+     a sobreposição visual com "Competições" — mesmo ajuste já usado em
+     Ajustes (ConfiguracoesScreen.css), corrigido na Fase 8. */
+  top: 70px;
   bottom: 24px;
   width: 210px;
   display: flex;

@@ -15,11 +15,15 @@ console.log('on music screen:', await page.locator('.music-screen').count());
 console.log('track title:', await page.locator('.music-screen__title').innerText());
 
 // shuffle/repeat toggle
-await page.locator('[aria-label="Aleatório"]').click();
-console.log('shuffle active:', await page.locator('[aria-label="Aleatório"]').getAttribute('aria-pressed'));
+// Fase 8: o Dashboard (com seu próprio MusicCard) fica sempre montado por
+// baixo (só oculto via CSS), então os seletores por aria-label precisam
+// ser restritos à tela cheia de Música para não colidir com o cartão.
+const musicScreen = page.locator('.music-screen');
+await musicScreen.locator('[aria-label="Aleatório"]').click();
+console.log('shuffle active:', await musicScreen.locator('[aria-label="Aleatório"]').getAttribute('aria-pressed'));
 
 // next track
-await page.locator('[aria-label="Próxima faixa"]').click();
+await musicScreen.locator('[aria-label="Próxima faixa"]').click();
 await page.waitForTimeout(100);
 console.log('track after next:', await page.locator('.music-screen__title').innerText());
 
@@ -54,15 +58,18 @@ await page.waitForTimeout(400);
 console.log('back on home via dock:', await page.getByText('Google Maps', { exact: true }).count());
 
 // navigate: Home -> Dashboard -> open music via dashboard card -> back -> dashboard
+// Fase 8: o Dashboard fica sempre montado (escondido via CSS quando não é
+// a tela ativa), então ".dashboard".count() não serve mais para saber se
+// está visível — checamos isVisible() em vez disso.
 await page.locator('.dock__home').click(); // home -> dashboard
 await page.waitForTimeout(400);
-console.log('on dashboard:', await page.locator('.dashboard').count());
+console.log('on dashboard:', await page.locator('.dashboard').isVisible());
 await page.locator('.music-card').click();
 await page.waitForTimeout(400);
 console.log('on music (from dashboard):', await page.locator('.music-screen').count());
 await page.locator('.back-button').click();
 await page.waitForTimeout(400);
-console.log('back on dashboard (not home):', await page.locator('.dashboard').count());
+console.log('back on dashboard (not home):', await page.locator('.dashboard').isVisible());
 
 console.log('errors:', JSON.stringify(errors));
 await browser.close();

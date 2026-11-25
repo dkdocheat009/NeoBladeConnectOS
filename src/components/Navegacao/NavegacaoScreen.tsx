@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { BackButton } from '../BackButton/BackButton';
 import type { IncomingCall } from '../../hooks/useIncomingCall';
+import type { NavDemoState } from '../../hooks/useNavDemoState';
 import { mockRoute } from '../../data/navMock';
 import './NavegacaoScreen.css';
 
@@ -12,22 +13,36 @@ interface NavegacaoScreenProps {
   onOpenRadar: () => void;
   call: IncomingCall;
   initialTheme?: Theme;
+  nav: NavDemoState;
 }
 
 /**
  * Reproduz navi-dunkel.png / navi-hell.png (tema) e karte-3d.png (visão
  * geral, sem instrução de manobra ativa). Mapa é um mock em SVG/CSS — sem
  * GPS, TruckSimMap ou telemetria real. Botão "…" alterna tema; botão de
- * rota alterna visão geral; o selo de limite/velocidade abre o módulo de
- * Radar (ver blitzer.png, onde o mesmo selo aparece ampliado). `initialTheme`
- * vem de Configurações > Aparência (Fase 6); a alternância "…" continua
- * funcionando normalmente por cima dessa preferência.
+ * rota alterna visão geral (e também inicia/encerra a rota demonstrativa
+ * compartilhada com o Dashboard — Fase 8); o selo de limite/velocidade
+ * abre o módulo de Radar (ver blitzer.png, onde o mesmo selo aparece
+ * ampliado). `initialTheme` vem de Ajustes > Tela e Aparência; a
+ * alternância "…" continua funcionando normalmente por cima dessa
+ * preferência. A manobra/distância/destino vêm de `nav` (useNavDemoState,
+ * instanciado uma vez no Shell) — a mesma exibida no cartão do Dashboard.
  */
-export function NavegacaoScreen({ onBack, onOpenRadar, call, initialTheme = 'escuro' }: NavegacaoScreenProps) {
+export function NavegacaoScreen({ onBack, onOpenRadar, call, initialTheme = 'escuro', nav }: NavegacaoScreenProps) {
   const [theme, setTheme] = useState<Theme>(initialTheme);
-  const [view, setView] = useState<View>('ativa');
+  const [view, setView] = useState<View>(nav.routeActive ? 'ativa' : 'geral');
 
   const isOverview = view === 'geral';
+
+  const toggleOverview = () => {
+    if (view === 'ativa') {
+      setView('geral');
+      nav.endRoute();
+    } else {
+      setView('ativa');
+      nav.startRoute();
+    }
+  };
 
   return (
     <div className={`nav-screen nav-screen--${theme}`}>
@@ -66,12 +81,12 @@ export function NavegacaoScreen({ onBack, onOpenRadar, call, initialTheme = 'esc
         <div className="nav-screen__instruction">
           <div className="nav-screen__instruction-row">
             <TurnArrow />
-            <span className="nav-screen__instruction-distance">{mockRoute.distanceToTurn}</span>
+            <span className="nav-screen__instruction-distance">{nav.step.distanceToTurn}</span>
           </div>
           <p className="nav-screen__instruction-text">
-            {mockRoute.instruction} ·{' '}
-            <span className="nav-screen__shield">{mockRoute.roadShield}</span>{' '}
-            {mockRoute.roadDestination}
+            {nav.step.instruction} ·{' '}
+            <span className="nav-screen__shield">{nav.step.roadShield}</span>{' '}
+            {nav.step.roadDestination}
           </p>
           <div className="nav-screen__lanes">
             {mockRoute.upcomingLanes.map((active, i) => (
@@ -117,7 +132,7 @@ export function NavegacaoScreen({ onBack, onOpenRadar, call, initialTheme = 'esc
           type="button"
           className="nav-screen__fab"
           aria-label="Alternar visão geral da rota"
-          onClick={() => setView((v) => (v === 'ativa' ? 'geral' : 'ativa'))}
+          onClick={toggleOverview}
         >
           <RouteGlyph />
         </button>

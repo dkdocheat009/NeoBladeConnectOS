@@ -43,7 +43,7 @@ uma notificação flutuante estilo Siri (ícone multicolorido, transcrição
 navegáveis reais. Veja a seção "Fase 6" abaixo para detalhes, evidências e
 limitações.
 
-**Fase 7 (atual):** conclusão visual de toda a interface no vocabulário do
+**Fase 7:** conclusão visual de toda a interface no vocabulário do
 iOS/CarPlay ("iOS 27"). **Configurações virou Ajustes** — navegação
 mestre-detalhe (lista agrupada à esquerda com busca funcional, detalhe à
 direita), substituindo o painel de 5 abas pequenas. Criado um pequeno
@@ -54,6 +54,21 @@ Calendário. Dois atalhos que antes só registravam um log foram concluídos:
 **Diário de Bordo** (histórico de viagens + resumo de estatísticas) — agora
 **todo ícone da Home abre uma tela real**. Veja a seção "Fase 7" abaixo
 para detalhes, reaproveitamento, testes e limitações.
+
+**Fase 8 (atual):** revisão geral transversal — Home ganhou **swipe/arraste
+real** (Pointer Events, com resistência e cancelamento correto do
+long-press), paginação clicável e navegação por setas; o `NavCard` do
+Dashboard abre a Navegação com a manobra/distância sincronizadas nos dois
+lugares; o **tema Claro/Escuro/Automático virou realmente global**
+(`data-theme` no `<html>` + tokens CSS, sem remount), reaplicado à Home e
+Apps, Ajustes, Mensagens, Notificações, Calendário, Diário, Paradas,
+Navegação e ao overlay do Assistente de Voz; Ajustes ganhou Acessibilidade
+e Privacidade (9 seções); os dois avisos do `npm run lint`
+(`constructor-super`) foram corrigidos na causa raiz; e uma varredura por
+todos os apps substituiu os últimos controles "só `console.info`" (tela de
+Música) por um aviso real na interface, além de corrigir a sobreposição do
+botão de voltar no Esportes (pendência registrada desde a Fase 6). Veja a
+seção "Fase 8" abaixo para detalhes, testes e limitações.
 
 ## Como executar
 
@@ -592,6 +607,169 @@ esta fase). `npm run build` e `npm run lint` passam sem erros/avisos novos.
   tocadas nesta fase; a validação foi funcional (Playwright) e visual por
   inspeção manual no navegador, não um diff automatizado contra um
   mockup do iOS 27 oficial.
+
+## Fase 8
+
+Revisão geral e conclusão visual/funcional: não é um app novo, é uma
+passada transversal sobre tudo o que já existia, corrigindo defeitos
+comprovados pelo usuário sem reiniciar o projeto nem remover nada aprovado.
+
+### A) Home — swipe, paginação e teclado de verdade
+
+- `src/components/MainCarousel/`: arraste horizontal real por Pointer
+  Events (toque e mouse), com limiar de 10px, resistência (`dx * 0.35`) nas
+  bordas do carrossel, `setPointerCapture` para assumir o gesto e decisão
+  de "comitar ou voltar" a 90px de arraste. Setas ←/→ do teclado também
+  navegam. `src/components/Pagination/`: os três indicadores viraram
+  botões reais — o quadrado abre o Dashboard, os outros dois selecionam a
+  página de apps correspondente.
+- Os apps são divididos em páginas de 10 (sem página vazia e sem inventar
+  atalho de preenchimento); a contagem de páginas é recalculada ao remover
+  atalhos, nunca deixando uma página fantasma.
+- O arraste horizontal não entra em conflito com o pressionar-e-segurar:
+  o modo de edição usa `pointercancel` nativo do navegador (disparado
+  assim que o carrossel assume o ponteiro via `setPointerCapture`), então
+  não foi preciso alterar `useLongPress.ts`. O estado de edição e a lista
+  de atalhos removidos subiram para `Shell`, compartilhados pelas duas
+  páginas (jiggle/scrim afeta as duas ao mesmo tempo, como no iOS real).
+
+### B) Dashboard — `NavCard` deixou de ser decorativo
+
+- `src/hooks/useNavDemoState.ts`: uma única fonte de verdade para a rota
+  demonstrativa (manobra atual, distância, destino, rota ativa/encerrada),
+  instanciada uma vez em `Shell` e compartilhada por `MapPanel`, `NavCard`
+  e `NavegacaoScreen`.
+- Tocar no cartão do Dashboard abre a `NavegacaoScreen` já na manobra
+  exibida no cartão; o botão "⋯" do cartão avança a manobra demonstrativa
+  (ação visível, não decorativa); iniciar/encerrar rota e alternar visão
+  geral na tela cheia atualiza o Dashboard ao voltar.
+
+### C) Tema Claro/Escuro/Automático — agora é global de verdade
+
+- `useSettingsState.ts` aplica `data-theme="light"|"dark"` em
+  `document.documentElement` e `src/styles/ios-tokens.css` define os
+  tokens semânticos para os dois (`:root[data-theme='light'] { ... }`),
+  sem `filter: invert()` nem camada branca por cima — e sem nenhum
+  remount de componente (a troca é só CSS reagindo à mudança do atributo).
+  "Automático" usa `window.matchMedia('(prefers-color-scheme: dark)')`
+  com listener ao vivo, reagindo a uma mudança do SO sem precisar recarregar
+  a página. A preferência persiste em `localStorage`.
+- Reflete de verdade em: Home/dock (relógio e textos, sem precisar tocar o
+  wallpaper), Ajustes, Mensagens, Notificações, Calendário, Diário de
+  Bordo, Abastecer e Descansar, Navegação (tema padrão sincronizado com o
+  ajuste global; o botão "…" interno continua podendo alternar por cima,
+  para demonstração) e o cartão do Assistente de Voz/banner de
+  Notificações (via `--ios-glass-*`).
+- **Decisão de escopo, documentada na própria tela de Ajustes** (não só
+  aqui): Dashboard, Música, Rádio, Veículo, Trabalho, Clima, Esportes,
+  Radar e Chamadas são composições CarPlay medidas pixel a pixel contra as
+  capturas originais — capturas que só existem no tom escuro/colorido de
+  marca. Não existe captura de referência clara para essas telas, e a
+  prioridade do projeto é fidelidade às capturas reais sobre inventar uma
+  versão clara sem referência (ver ordem de precedência da tarefa). Essas
+  telas mantêm sua composição/gradiente de marca fiel à captura em
+  qualquer tema — é uma fronteira deliberada, não um bug, e está escrita
+  na própria UI de Ajustes > Tela e Aparência.
+- Acessibilidade ganhou efeito real, não só visual: "Reduzir movimento"
+  escreve `data-reduce-motion="true"` no `<html>`, e uma única regra CSS
+  zera a duração de toda animação/transição do app (presente e futura,
+  sem precisar editar CSS por componente); "Tamanho do texto" usa uma
+  variável `--ios-text-scale` multiplicada nas classes de tipografia
+  compartilhadas; "Reduzir transparência" desliga o blur do Liquid Glass.
+
+### D) Ajustes — 9 seções reais
+
+Tela e Aparência (tema + Liquid Glass), Sons e Áudio, Siri e Voz,
+Notificações, **Acessibilidade** (nova: reduzir movimento, reduzir
+transparência, tamanho do texto), **Privacidade** (nova: teste real de
+permissão de microfone via `getUserMedia`, mais um grupo "Integrações"
+com "ETS2 / TruckSimMap — Em breve" claramente desativado, nunca
+aparentando estar conectado), Home e Apps, Idioma e Região (informativo —
+só PT-BR, sem seletor fictício) e Sobre. Busca funcional filtra a lista de
+seções em tempo real.
+
+### E) Status do dock — reconferido, sem mudanças necessárias
+
+`scripts/check-dock-statusbar.mjs` foi reexecutado gerando comparações
+[referência | atual | diff] em 3 horários (09:09/12:40/17:59) × 3 telas
+(Home/Dashboard/Veículo): relógio, barras, "5G" e bateria continuam na
+mesma posição relativa ao dock em todos os horários, e a bateria continua
+um mock puramente visual (ícone verde com raio, sem número/porcentagem,
+sem ler telemetria real) — a correção de causa raiz já tinha sido feita na
+Fase 5; esta fase só reconfirmou com uma nova bateria de evidências, sem
+precisar de ajuste adicional.
+
+### F) Auditoria de animações e controles em todos os apps
+
+- Varredura por `console.info`/`console.log` em todo `src/`: restavam 6
+  ocorrências. Quatro eram botões reais na tela de Música ("Letra",
+  "Fila", "Adicionar à biblioteca", "Fila de reprodução") que só
+  escreviam no console — agora mostram um aviso honesto na própria tela
+  (`"X" ainda não disponível nesta versão.`, com fade automático) em vez
+  de ficarem silenciosos. As outras duas (`Shell.tsx`/
+  `useHomeMockState.ts`) são blocos de segurança para um id de atalho não
+  mapeado — inalcançáveis hoje, já que os 11 ícones da Home e os 2
+  atalhos do dock cobrem todos os ids existentes (confirmado pelo smoke
+  test da Fase 7); mantidos como fallback defensivo, não como "botão
+  fake", pois nenhum controle visível os aciona.
+- Corrigida a pendência registrada desde a Fase 6: no Esportes, o botão
+  de voltar ficava visualmente sobre o texto "Competições" da barra
+  lateral (`esportes-screen__sidebar` agora começa em `top: 70px`, mesmo
+  ajuste de espaçamento já usado em Ajustes desde a Fase 7).
+- Nenhum uso de `filter: invert()` para tema em todo o projeto (checado
+  por grep). `prefers-reduced-motion`/"Reduzir movimento" cobre toda
+  animação existente via a regra global citada no item C.
+- football-data.org, o token server-only (`vite.config.ts`) e o
+  Assistente de Voz (`Ctrl+Alt+V`, SpeechRecognition/SpeechSynthesis reais
+  em pt-BR) foram preservados exatamente como estavam — não fazem parte
+  do escopo de correção desta fase.
+
+### G) Lint — causa raiz corrigida
+
+Os dois avisos `eslint(constructor-super)` (`scripts/check-statusbar.mjs`
+e `scripts/check-dock-statusbar.mjs`) vinham de uma subclasse de `Date`
+que fazia `return new RealDate(...)` em vez de chamar `super(...)` — além
+do aviso, isso quebrava a cadeia de protótipos (`instanceof` incorreto).
+Corrigido chamando `super(...)` com os argumentos certos nos dois
+construtores; `npm run lint` agora não imprime nada (0 avisos, 0 erros).
+
+### Testes
+
+- `scripts/test-fase8.mjs` (novo): paginação clicável, arraste horizontal
+  de volta à página 1, indicador quadrado abrindo o Dashboard, seta do
+  teclado voltando à Home, long press continuando a funcionar após um
+  arraste, `NavCard` avançando a manobra e abrindo a Navegação já
+  sincronizada, tema Claro aplicado/persistido após reload e revertido, e
+  o toggle de reduzir movimento com efeito real no DOM.
+- Suíte completa reexecutada sem regressões novas: `test-fase5.mjs`,
+  `test-fase6.mjs`, `test-fase7.mjs`, `test-mocks.mjs`, `test-brands.mjs`,
+  `test-music-radio.mjs`, `test-fase4-apps.mjs`, `check-console.mjs`,
+  `test-edit-mode.mjs`, `check-statusbar.mjs`, `check-dock-statusbar.mjs`.
+  `test-edit-mode.mjs` precisou de um ajuste (não um bug): desde a Fase 5
+  "Google Maps" abre a Navegação de verdade, então o passo de "clique
+  curto" do script agora volta explicitamente para a Home antes de testar
+  o long press, em vez de pressupor que o clique curto não navega para
+  lugar nenhum.
+- Capturas em Claro e Escuro de 13 telas principais (Home, Dashboard,
+  Ajustes, Navegação, Mensagens, Notificações, Calendário, Paradas,
+  Diário, Música, Veículo, Clima, Esportes) em 1280×720, mais uma checagem
+  rápida de escala proporcional em 1920×1080 — sem reconstruir layouts de
+  celular. `npm run build` e `npm run lint` sem erros/avisos.
+
+### Limitações desta fase
+
+- Tema Claro não repinta Dashboard/Música/Rádio/Veículo/Trabalho/Clima/
+  Esportes/Radar/Chamadas (ver decisão de escopo no item C) — é uma
+  fronteira deliberada e documentada, não uma pendência esquecida.
+- Não foi possível testar a integração real da football-data.org nesta
+  sessão (sem `FOOTBALL_DATA_API_KEY` configurada).
+- Microfone/voz (Assistente, teste de permissão em Privacidade) dependem
+  de interação humana real com o navegador para validação ponta a ponta;
+  a cobertura automatizada aqui se limitou ao que é verificável sem
+  microfone de verdade.
+- ETS2/TruckSimMap permanece marcado "Em breve" em Ajustes > Privacidade,
+  sem nenhuma integração real — nenhuma alegação de "100% idêntico ao iOS
+  27 oficial" é feita em nenhum momento.
 
 ## Estrutura
 

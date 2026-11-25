@@ -17,7 +17,12 @@ const shot = (name) => page.screenshot({ path: `comparacoes/fase7_${name}.png` }
 const goHome = async () => {
   await page.locator('.back-button').click().catch(() => {});
   await page.waitForTimeout(400);
-  if (!(await page.locator('.home-content').isVisible())) {
+  // Fase 8: a Home virou um carrossel (ambas as páginas ficam montadas ao
+  // mesmo tempo, só uma fica visível), então ".home-content" não é mais
+  // único — "shell__main" sem "is-hidden" é o jeito confiável de saber que
+  // estamos em Home/Dashboard.
+  const onMain = await page.locator('.shell__main:not(.is-hidden)').isVisible();
+  if (!onMain) {
     await page.locator('.dock__home').click();
     await page.waitForTimeout(400);
   }
@@ -77,7 +82,8 @@ await page.waitForTimeout(500);
 await shot('09_ajustes_aparencia');
 if (!(await page.locator('.ajustes-screen').isVisible())) throw new Error('Ajustes: tela não abriu.');
 const navRows = await page.locator('.ajustes-screen__nav-list .ios-list-row').count();
-if (navRows !== 7) throw new Error(`Ajustes: esperado 7 seções, encontrado ${navRows}.`);
+// Fase 8 acrescentou Acessibilidade e Privacidade (7 -> 9 seções).
+if (navRows !== 9) throw new Error(`Ajustes: esperado 9 seções, encontrado ${navRows}.`);
 // Intensidade do Liquid Glass tem efeito real (CSS var no root).
 const blurBefore = await page.evaluate(() => getComputedStyle(document.documentElement).getPropertyValue('--ios-glass-blur'));
 await page.locator('.ajustes-screen__slider').first().evaluate((input) => {
@@ -112,7 +118,7 @@ const homeAppLabels = [
 for (const label of homeAppLabels) {
   await page.getByText(label, { exact: true }).click();
   await page.waitForTimeout(400);
-  const stillOnHome = await page.locator('.home-content').isVisible();
+  const stillOnHome = await page.locator('.shell__main:not(.is-hidden)').isVisible();
   if (stillOnHome) throw new Error(`Smoke test: "${label}" não navegou para nenhuma tela (ainda inerte).`);
   await goHome();
 }

@@ -17,6 +17,28 @@
   display: block;
 }
 
+.map-panel--inactive .map-panel__route {
+  opacity: 0.25;
+}
+
+.map-panel__overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(7, 25, 47, 0.55);
+}
+
+.map-panel__overlay span {
+  background: rgba(0, 0, 0, 0.5);
+  color: #fff;
+  font-size: 18px;
+  font-weight: 700;
+  padding: 10px 20px;
+  border-radius: 14px;
+}
+
 .map-panel__route {
   filter: drop-shadow(0 0 6px rgba(47, 217, 232, 0.55));
 }

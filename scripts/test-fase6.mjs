@@ -114,7 +114,7 @@ await page.waitForTimeout(150);
 if (!(await page.locator('.voice-button').count())) {
   throw new Error('Ajustes: reativar o assistente deveria mostrar o botão de voz de novo.');
 }
-await page.getByText('Aplicativos', { exact: true }).click();
+await page.getByText('Home e Apps', { exact: true }).click();
 await page.waitForTimeout(150);
 await shot('13_ajustes_apps');
 // Busca funcional: filtra a lista de seções.

@@ -108,8 +108,8 @@ async function captureScreen(browser, hour, minute, navigateFn, label) {
       // eslint-disable-next-line no-global-assign
       Date = class extends RealDate {
         constructor(...args) {
-          if (args.length === 0) return new RealDate(fixed.getTime());
-          return new RealDate(...args);
+          if (args.length === 0) super(fixed.getTime());
+          else super(...args);
         }
         static now() {
           return fixed.getTime();

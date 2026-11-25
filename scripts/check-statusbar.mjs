@@ -12,11 +12,9 @@ async function captureAt(hour, minute, outPath) {
       const RealDate = Date;
       // eslint-disable-next-line no-global-assign
       Date = class extends RealDate {
-        // eslint-disable-next-line constructor-super -- returns an explicit
-        // object in every branch, so `this`/`super()` are never touched.
         constructor(...args) {
-          if (args.length === 0) return new RealDate(fixed.getTime());
-          return new RealDate(...args);
+          if (args.length === 0) super(fixed.getTime());
+          else super(...args);
         }
         static now() {
           return fixed.getTime();

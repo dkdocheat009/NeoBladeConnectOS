@@ -59,6 +59,15 @@
   text-align: right;
 }
 
+.ajustes-screen__slider:disabled {
+  opacity: 0.4;
+}
+
+.ajustes-screen__hint {
+  padding: 0 var(--ios-space-4) var(--ios-space-2);
+  margin: 0;
+}
+
 .ajustes-screen__restore-btn {
   border: none;
   background: var(--ios-blue);
