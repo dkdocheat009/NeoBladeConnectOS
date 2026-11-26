@@ -1,0 +1,30 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <!-- .NET 8 is the current LTS and is what COMPILAR_NO_PC.ps1 checks for;
+         targeting it (rather than whatever newer SDK happens to be on a
+         given machine) keeps the build reproducible across installs. -->
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <UseWindowsForms>true</UseWindowsForms>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <RootNamespace>NeoBladeHost</RootNamespace>
+    <AssemblyName>NeoBladeConnectOS.Host</AssemblyName>
+    <!-- Self-contained + single-file: COMPILAR_NO_PC.ps1 copies the published
+         output to dist/NeoBladeConnectOS-ETS2/host/ as a folder the user can
+         run without a separate ".NET must be installed" step for the host
+         itself (the native plugin still needs the VC++ redistributable;
+         see docs/ETS2_ARCHITECTURE.md). -->
+    <SelfContained>true</SelfContained>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <PublishSingleFile>true</PublishSingleFile>
+    <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+    <InvariantGlobalization>true</InvariantGlobalization>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.4370.26" />
+  </ItemGroup>
+
+</Project>

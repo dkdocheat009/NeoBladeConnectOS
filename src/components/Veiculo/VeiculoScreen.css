@@ -23,6 +23,21 @@
   flex-direction: column;
 }
 
+/* Fase 10: só aparece quando o host ETS2 enviou telemetria real valida
+   (ver useEts2Telemetry) — nunca mostrado junto com os dados de demo. */
+.veiculo-screen__live-badge {
+  align-self: flex-start;
+  margin-bottom: 10px;
+  padding: 3px 10px;
+  border-radius: var(--ios-radius-pill, 999px);
+  background: rgba(52, 199, 89, 0.18);
+  color: #34c759;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+}
+
 .veiculo-screen__right {
   left: 705px;
   right: 12px;

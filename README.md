@@ -70,7 +70,7 @@ Música) por um aviso real na interface, além de corrigir a sobreposição do
 botão de voltar no Esportes (pendência registrada desde a Fase 6). Veja a
 seção "Fase 8" abaixo para detalhes, testes e limitações.
 
-**Fase 9 (atual):** reconstrução visual/funcional de alta fidelidade — o
+**Fase 9:** reconstrução visual/funcional de alta fidelidade — o
 **tema Claro/Escuro/Automático agora alcança de verdade todas as telas com
 identidade própria** (Dashboard, Música, Rádio, Veículo, Trabalho, Clima,
 Esportes, Radar, Chamadas — Clima nem tinha fundo próprio antes), não só os
@@ -90,6 +90,31 @@ contrário); e "Fila"/"Letra" da Música viraram navegação real (a Fila toca
 a faixa escolhida) em vez de só um aviso. Veja a seção "Fase 9" abaixo e
 `docs/FIGMA_CARPLAY_AUDIT.md`, `docs/EXTERNAL_SOURCES_AND_LICENSES.md` e
 `docs/FINAL_UI_REVIEW.md` para detalhes, testes e limitações.
+
+**Fase 10 (atual, branch `feat/ets2-gps-native`):** integração nativa com
+o Euro Truck Simulator 2 — um **plugin C++ real** (`native/NeoBladeETS2`,
+CMake + SCS Telemetry SDK) que **foi efetivamente compilado nesta sessão**
+(não só escrito) produzindo `NeoBladeConnectOS_ETS2.dll` x64 com
+exatamente os dois exports que o jogo procura (`scs_telemetry_init`/
+`scs_telemetry_shutdown`, confirmados com `dumpbin`); um **host .NET +
+WebView2** (`host/NeoBladeHost`) que serve o build do React localmente e
+também foi compilado/publicado com sucesso nesta sessão; comunicação local
+via Named Pipe (telemetria, 10 Hz) + memória compartilhada (frames);
+atalho `Ctrl+Alt+I` para alternar um modo de interação real (mouse/
+teclado) sem roubar input do jogo quando inativo; telemetria real (SCS SDK)
+já ligada no app Veículo (selo "ETS2 ao vivo"); e automação completa de
+build/instalação (`COMPILAR_NO_PC.ps1`, `INSTALAR_NO_ETS2.ps1`,
+`DESINSTALAR_NEOBLADE.ps1`, `DIAGNOSTICAR_ETS2.ps1`,
+`tools/GERAR_MAPA_ETS2.ps1`) — todos rodados e verificados nesta máquina
+(que por acaso já tinha o VS/CMake/.NET SDK **e** uma instalação real do
+ETS2 instalados). **O que ainda depende do seu PC/jogo**: a substituição
+da textura 3D do GPS em si (as duas assinaturas de padrão necessárias
+ficam deliberadamente vazias — ver por quê e como preenchê-las em
+`docs/ETS2_ARCHITECTURE.md`) e o marcador ao vivo no mapa real gerado por
+`tools/GERAR_MAPA_ETS2.ps1` (TruckSim Maps, GPL-3.0). Nada disso foi
+alegado como testado dentro do ETS2 sem ter sido — ver
+`docs/ETS2_ARCHITECTURE.md`, `docs/ETS2_TESTING.md` e
+`docs/ETS2_INSTALL_GUIDE.md`.
 
 ## Como executar
 
@@ -918,6 +943,34 @@ nenhuma voz local/nuvem instalada (opcional, documentado); football-data.org
 não testado ponta a ponta nesta sessão (sem chave); ícones de sistema não
 foram redesenhados do zero (só os elementos com cor fixa que quebravam o
 tema Claro foram corrigidos).
+
+## Fase 10 — Integração nativa ETS2 (branch `feat/ets2-gps-native`)
+
+Trabalho feito em uma branch dedicada (não em `main`) por ser uma mudança
+grande e porque a validação final depende do ETS2 instalado — ver
+`docs/ETS2_ARCHITECTURE.md` para a arquitetura completa (o que foi
+pesquisado, o que foi **efetivamente compilado e verificado nesta sessão**
+com evidência de `dumpbin`, e o que ainda depende do seu PC),
+`docs/ETS2_TESTING.md` para os 7 passos de teste cumulativos com resultado
+esperado de cada um, e `docs/ETS2_INSTALL_GUIDE.md` para o caminho curto
+de compilar/instalar/desinstalar/diagnosticar.
+
+Resumo do que existe: `native/NeoBladeETS2/` (plugin C++/CMake — SCS SDK
+para telemetria real, Named Pipe para IPC, hook de `IDXGISwapChain::Present`
+via MinHook para o modo de diagnóstico, infraestrutura completa — mas não
+ativada — para substituir a textura do GPS); `host/NeoBladeHost/` (host
+.NET + WebView2 que serve o build do React e captura seus frames via
+`PrintWindow`); `src/integrations/ets2/` (ponte TypeScript com fallback
+mock desacoplado, já ligada ao app Veículo); `tools/GERAR_MAPA_ETS2.ps1`
+(gera dados reais de mapa a partir da sua própria instalação via
+TruckSim Maps, GPL-3.0); e os quatro scripts de build/instalação na raiz.
+
+**Limitações honestas desta entrega** (nenhuma alegação de teste dentro do
+ETS2 sem evidência real): a textura 3D do GPS ainda não é substituída de
+verdade (faltam duas assinaturas de padrão que só podem ser obtidas
+analisando o executável do jogo no seu PC — processo documentado); o
+marcador do caminhão no mapa real não está calibrado; multiplayer não foi
+considerado/testado.
 
 ## Estrutura
 

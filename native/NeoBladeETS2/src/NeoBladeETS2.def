@@ -1,0 +1,8 @@
+; ETS2 locates plugin entry points purely by exported name (see
+; scs_sdk/include/scs_sdk/readme.txt, "Plugin modules") — a .def file keeps
+; these two names un-mangled and undecorated without scattering
+; __declspec(dllexport)/extern "C" across the codebase.
+LIBRARY NeoBladeConnectOS_ETS2
+EXPORTS
+    scs_telemetry_init
+    scs_telemetry_shutdown

@@ -10,3 +10,15 @@ foto.zip
 comparacoes/
 playwright-report/
 test-results/
+
+# Fase 10 (ETS2 native integration) — build outputs, never source.
+native/NeoBladeETS2/build/
+host/NeoBladeHost/bin/
+host/NeoBladeHost/obj/
+dist/NeoBladeConnectOS-ETS2/
+tools/maps-src/
+tools/map-data/
+src/integrations/ets2/map-data/
+*.pdb
+*.ilk
+

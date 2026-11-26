@@ -1,4 +1,20 @@
-# Fontes externas e licenças — Fase 9
+# Fontes externas e licenças — Fases 9 e 10
+
+**Fase 10 (integração nativa ETS2)**: ver a tabela completa de
+repositórios pesquisados, o que foi lido versus copiado, e as licenças de
+cada um em `docs/ETS2_ARCHITECTURE.md`, seção 1 — não duplicado aqui para
+evitar as duas listas saírem de sincronia. Resumo das dependências novas
+desta fase:
+
+| Dependência | Licença | Como é obtida |
+|---|---|---|
+| SCS Telemetry SDK (via truckermudgeon/scs-sdk-plugin) | MIT (wrapper) + licença própria da SCS para o SDK | CMake `FetchContent` no PC do usuário, não vendida neste repo |
+| MinHook v1.3.4 | BSD-2-Clause | CMake `FetchContent` no PC do usuário |
+| Microsoft.Web.WebView2 (NuGet 1.0.4370.26) | Licença Microsoft (gratuita) | NuGet, restaurada ao compilar o host |
+| truckermudgeon/maps (parser/generator) | GPL-3.0 | Clonado por `tools/GERAR_MAPA_ETS2.ps1` para `tools/maps-src/` (gitignorado), nunca copiado para dentro deste repositório |
+| maplibre-gl 6.19.0 | BSD-3-Clause | `npm install`, dependência normal do frontend |
+
+
 
 Este documento lista as fontes/skills consultadas nesta fase e a origem de
 cada tipo de asset, conforme pedido pela tarefa da Fase 9 (seção 12). Nenhum
